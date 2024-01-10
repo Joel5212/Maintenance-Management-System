@@ -5,7 +5,7 @@ const mongoose = require('mongoose')
 
 
 const createToken = (_id) => {
-    return jwt.sign({ _id }, process.env.SECRET, { expiresIn: '3hr' })
+    return jwt.sign({ _id }, process.env.SECRET)
 }
 
 const loginUser = async (req, res) => {

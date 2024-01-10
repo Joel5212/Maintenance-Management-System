@@ -174,7 +174,6 @@ const AddUser = () => {
                     </div>
                 </div>
                 <div className='bottom'>
-                    {/* <div className="div-empty-space"></div> */}
                     <button className='btn btn-effect' type='submit'>Add</button>
                     {error && <div className='error'>{error}</div>}
                 </div>
