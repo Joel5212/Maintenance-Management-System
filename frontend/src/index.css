@@ -79,6 +79,14 @@ body {
   flex-direction: column;
 }
 
+.back-button-link {
+  width: 50vw;
+}
+
+.back-button {
+  width: 75px;
+}
+
 /* Global dropdown and input sizes */
 
 .Dropdown-control {
@@ -133,19 +141,6 @@ input {
   padding: 10px;
   border-radius: 4px;
   box-sizing: border-box;
-}
-
-.back-button-link {
-  display: flex;
-  justify-content: flex-start;
-  width: 90vh;
-}
-
-.back-button {
-  /* display: flex;
-  justify-content: flex-start; */
-  /* margin-left: 20%; */
-  width: 75px;
 }
 
 /* Login */
@@ -510,7 +505,17 @@ input {
   .back-button-link {
     display: flex;
     justify-content: flex-start;
-    width: 50vh;
+    width: 70vw;
+  }
+
+}
+
+@media screen and (max-width: 1900px) {
+
+  .back-button-link {
+    display: flex;
+    justify-content: flex-start;
+    width: 70vw;
   }
 
 }

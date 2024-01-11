@@ -76,6 +76,7 @@ const Users = () => {
     useEffect(() => {
         if (prevRoute !== '/users/add' && prevRoute !== '/users/viewOrUpdate' && user) {
             fetchUsers()
+            console.log(prevRoute, users)
         }
         prevRouterDispatch({ type: 'SET_PREV_ROUTE', location: location.pathname })
     }, [usersDispatch, user])
