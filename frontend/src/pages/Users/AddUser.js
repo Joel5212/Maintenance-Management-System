@@ -108,7 +108,7 @@ const AddUser = () => {
 
     return (
         <div className="add-user-container">
-            <Link to='/users'><button className='back-button'><ArrowBackIcon /></button></Link>
+            <Link to='/users' className='back-button-link'><button className='back-button'><ArrowBackIcon /></button></Link>
             <form className="add-user-form" onSubmit={handleSubmit}>
                 <h1 className="add-user-title">Add User</h1>
                 <div className='top'>
