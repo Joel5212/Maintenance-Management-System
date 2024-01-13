@@ -1,0 +1,53 @@
+/* Users Page */
+
+.users {
+    height: 100%;
+    width: 100%;
+}
+
+.users-title {
+    margin-left: 1%;
+}
+
+.users-header {
+    display: flex;
+    flex-direction: row;
+}
+
+.add-user-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    row-gap: 40px
+}
+
+.add-user-container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.add-user-title {
+    font-size: 30px
+}
+
+.label-input {
+    display: flex;
+    flex-direction: column;
+}
+
+@media screen and (max-width: 1400px) {
+    .add-user-form {
+        display: flex;
+        align-items: center;
+        row-gap: 20px
+    }
+
+    .add-user-container {
+        margin-top: 150px;
+    }
+}

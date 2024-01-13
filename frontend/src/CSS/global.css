@@ -1,0 +1,277 @@
+html,
+body,
+#root,
+.app {
+    height: 100%;
+    width: 100%;
+    margin: 0;
+}
+
+.div-empty-space {
+    display: flex;
+    flex: 1;
+}
+
+body {
+    overflow: hidden;
+}
+
+.new-item-nav-btn {
+    margin-right: 2%;
+}
+
+.new-item-nav-btn {
+    background-color: rgb(223, 202, 20);
+    border-color: rgba(0, 0, 0, 0.24);
+    color: #000000;
+    border-radius: 12px;
+    width: 100%;
+    height: 100%;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.new-item-nav-link {
+    text-decoration: none;
+    width: 8%;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    margin-right: 3%;
+
+}
+
+.btn {
+    background-color: rgb(223, 202, 20);
+    border-color: rgba(0, 0, 0, 0.24);
+    color: #000000;
+    border-radius: 12px;
+    width: 150px;
+    height: 40px;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.btn-effect:hover {
+    background-color: rgba(255, 235, 59, 0.473);
+    border-color: rgba(255, 235, 59, 0.473);
+    color: #000000;
+}
+
+.top {
+    display: flex;
+    flex-direction: row;
+    gap: 50px
+}
+
+.middle {
+    display: flex;
+    flex-direction: row;
+    gap: 50px
+}
+
+.bottom {
+    display: flex;
+    flex-direction: column;
+}
+
+.back-button-link {
+    width: 50vw;
+}
+
+.back-button {
+    width: 75px;
+}
+
+/* Global dropdown and input sizes */
+
+.Dropdown-control {
+    width: 350px;
+    height: 50px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+.input {
+    width: 350px;
+    height: 50px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+.invisible-input {
+    width: 330px;
+    height: 30px;
+    padding: 10px;
+    border: none
+}
+
+label,
+input {
+    display: block;
+}
+
+/* Errors */
+
+.error {
+    padding: 10px;
+    background: #ffefef;
+    border: 1px solid var(--error);
+    color: var(--error);
+    border-radius: 4px;
+    margin: 20px 0;
+}
+
+.dropdown-error {
+    border: 1px solid #ff0000;
+}
+
+.input-error {
+    border: 1px solid #ff0000;
+    width: 350px;
+    height: 50px;
+    padding: 10px;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+/* Home */
+
+.home {
+    display: flex;
+    flex-direction: row;
+    height: 100%;
+    width: 100%
+}
+
+/* Sidebar */
+
+.sidebar {
+    height: 100%;
+    width: 12%;
+    margin: 0;
+    background: linear-gradient(#424242, #212121);
+}
+
+.pages {
+    height: 100%;
+    width: 100%;
+    margin: 0;
+}
+
+.sidebarRoutes {
+    height: 100%;
+    padding: 0;
+    margin: 0;
+    width: 100%;
+    margin-bottom: 50%
+}
+
+.sidebarRoutes .sidebarRoute {
+    padding-top: 10%;
+    padding-bottom: 10%;
+    font-size: 25px;
+    width: 100%;
+    height: 30%;
+    text-decoration: none;
+    align-content: space-between;
+    display: flex;
+    color: white;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+}
+
+.sidebarRoutes .sidebarRoute:hover {
+    cursor: pointer;
+    background-color: #2e2d2d;
+}
+
+.sidebarUserIcon {
+    margin: 0;
+    font-size: 80px;
+    display: flex;
+    color: white;
+    justify-content: center;
+    align-items: center;
+}
+
+
+.sidebarItems .sidebarLogoutIconButton {
+    margin-left: 40%;
+    font-size: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+.sidebarLogoutIconButton:hover {
+    cursor: pointer;
+    background-color: #2e2d2d;
+}
+
+.sidebarLogoutIcon {
+    margin: 0;
+    color: white;
+}
+
+.sidebarUserInfo {
+    font-size: 23px;
+    display: flex;
+    flex-direction: column;
+    color: white;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 50px;
+}
+
+@media screen and (max-width: 1400px) {
+    .add-user-form {
+        display: flex;
+        align-items: center;
+        row-gap: 20px
+    }
+
+    .top {
+        display: flex;
+        flex-direction: column;
+        gap: 20px
+    }
+
+    .middle {
+        display: flex;
+        flex-direction: column;
+        gap: 20px
+    }
+
+    .bottom {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .add-user-container {
+        margin-top: 150px;
+    }
+
+    .back-button-link {
+        display: flex;
+        justify-content: flex-start;
+        width: 70vw;
+    }
+}
+
+@media screen and (max-width: 1900px) {
+
+    .back-button-link {
+        display: flex;
+        justify-content: flex-start;
+        width: 70vw;
+    }
+
+}
