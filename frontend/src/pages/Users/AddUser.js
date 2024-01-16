@@ -107,10 +107,10 @@ const AddUser = () => {
     const roles = ["User", "Servicer"];
 
     return (
-        <div className="add-user-container">
+        <div className="add-update-user-container">
             <Link to='/users' className='back-button-link'><button className='back-button'><ArrowBackIcon /></button></Link>
-            <form className="add-user-form" onSubmit={handleSubmit}>
-                <h1 className="add-user-title">Add User</h1>
+            <form className="add-update-user-form" onSubmit={handleSubmit}>
+                <h1 className="add-update-user-title">Add User</h1>
                 <div className='top'>
                     <div className="label-input">
                         <label>First Name:</label>
