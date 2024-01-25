@@ -1,0 +1,218 @@
+/* Users Page */
+.assets {
+    height: 100%;
+    width: 100%;
+}
+
+.assets-container {
+    height: 100%;
+    width: 100%;
+}
+
+.assets-title {
+    margin-left: 1%;
+}
+
+.assets-header {
+    display: flex;
+    flex-direction: row;
+}
+
+.add-update-asset-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    row-gap: 40px
+}
+
+.add-update-asset-container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.add-update-asset-title {
+    font-size: 30px
+}
+
+.label-input {
+    display: flex;
+    flex-direction: column;
+}
+
+#description {
+    width: 350px;
+    height: 50px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-sizing: border-box;
+    font-size: 17px
+}
+
+.asset-type-container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    row-gap: 20px
+}
+
+.images {
+    display: flex;
+    flex-direction: row;
+    column-gap: 160px
+}
+
+.image {
+    background-color: transparent;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    row-gap: 20px;
+    box-sizing: border-box;
+    border: 10px solid transparent;
+    transition: border 0.3s ease;
+    /* Add a transition for a smooth effect */
+}
+
+.image:hover {
+    border: 10px solid rgb(201, 201, 201);
+    border-radius: 10px;
+}
+
+.imageText {
+    font-size: 35px;
+    color: rgb(51, 51, 51);
+    font-family: 'Arial', sans-serif;
+}
+
+.equipmentIcon {
+    height: 300px;
+    width: 300px;
+}
+
+.locationIcon {
+    height: 300px;
+    width: 300px;
+}
+
+/* Delete Assets Modal */
+
+.delete-asset-conf-div {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #ddd;
+    width: 100%;
+    height: 100%;
+}
+
+.delete-asset-conf-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 400px;
+    width: 700px;
+    background-color: #f5f5f5;
+    border-radius: 20px;
+    box-shadow: 0 0 10px rgba(46, 46, 46, 0.1);
+    row-gap: 30px;
+}
+
+.delete-conf-message {
+    font-size: 20px;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.delete-conf-buttons {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    column-gap: 100px;
+}
+
+.delete-conf-btn {
+    width: 90px;
+    height: 45px;
+    font-size: 16px;
+    background-color: red;
+    color: white
+}
+
+.delete-conf-btn:hover {
+    background-color: rgb(185, 4, 4);
+    color: rgb(255, 255, 255)
+}
+
+.cancel-conf-btn {
+    width: 90px;
+    height: 45px;
+    font-size: 16px;
+}
+
+.cancel-conf-btn:hover {
+    background-color: rgb(190, 190, 190);
+}
+
+/* Media Queries */
+@media screen and (max-width: 1900px) {
+
+    .back-button-link-asset-type {
+        display: flex;
+        justify-content: flex-start;
+        width: 70vw;
+    }
+
+    .equipmentIcon {
+        height: 250px;
+        width: 250px;
+    }
+
+    .locationIcon {
+        height: 250px;
+        width: 250px;
+    }
+
+}
+
+@media screen and (max-width: 1400px) {
+
+    .back-button-link-asset-type {
+        display: flex;
+        align-items: center;
+        row-gap: 20px
+    }
+
+    .add-update-asset-container {
+        margin-top: 150px;
+    }
+
+    .back-button-link {
+        display: flex;
+        justify-content: flex-start;
+        width: 70vw;
+    }
+
+    .add-update-asset-form {
+        row-gap: 20px;
+    }
+
+    .equipmentIcon {
+        height: 200px;
+        width: 200px;
+    }
+
+    .locationIcon {
+        height: 200px;
+        width: 200px;
+    }
+}
