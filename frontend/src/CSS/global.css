@@ -93,6 +93,23 @@ body {
     box-sizing: border-box;
 }
 
+.react-dropdown-select {
+    height: 50px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+.react-dropdown-select-content {
+    width: 318px;
+    overflow-y: auto;
+}
+
+.dropdown {
+    border: 1px solid #ddd;
+}
+
 .input {
     width: 350px;
     height: 50px;
@@ -117,12 +134,19 @@ input {
 /* Errors */
 
 .error {
+    display: flex;
+    justify-content: center;
+    align-items: center;
     padding: 10px;
     background: #ffefef;
     border: 1px solid var(--error);
     color: var(--error);
     border-radius: 4px;
     margin: 20px 0;
+}
+
+.error-div {
+    height: 30px
 }
 
 .dropdown-error {
