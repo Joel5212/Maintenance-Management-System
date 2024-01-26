@@ -82,7 +82,12 @@ body {
     width: 75px;
 }
 
-/* Global dropdown and input sizes */
+/* Global dropdown and input*/
+
+.label-input {
+    display: flex;
+    flex-direction: column;
+}
 
 .Dropdown-control {
     width: 350px;
