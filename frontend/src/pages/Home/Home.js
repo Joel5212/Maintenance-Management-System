@@ -2,6 +2,8 @@ import { BrowserRouter, Routes, Route, Link } from 'react-router-dom'
 // components
 import Sidebar from "../../components/Sidebar"
 import Assets from '../Assets/Assets'
+import AddAsset from '../Assets/AddAsset'
+import AssetType from '../Assets/AssetType'
 import Dashboard from '../Dashboard/Dashboard'
 import Repairs from '../Repairs/Repairs'
 import PreventiveMaintenance from '../PreventiveMaintenance/PreventiveMaintenance'
@@ -9,6 +11,7 @@ import Users from '../Users/Users'
 import AddUser from '../Users/AddUser'
 import ViewOrUpdateUser from '../Users/ViewOrUpdateUser'
 import { UsersContextProvider } from '../../context/UsersContext';
+import { AssetsContextProvider } from '../../context/AssetsContext';
 
 const Home = () => {
   return (
@@ -25,7 +28,27 @@ const Home = () => {
             />
             <Route
               path="/assets"
-              element={<Assets />}
+              element={
+                <AssetsContextProvider>
+                  <Assets />
+                </AssetsContextProvider>
+              }
+            />
+            <Route
+              path="/assets/assetType"
+              element={
+                <AssetsContextProvider>
+                  <AssetType />
+                </AssetsContextProvider>
+              }
+            />
+            <Route
+              path="/assets/add"
+              element={
+                <AssetsContextProvider>
+                  <AddAsset />
+                </AssetsContextProvider>
+              }
             />
             <Route
               path="/repairs"
