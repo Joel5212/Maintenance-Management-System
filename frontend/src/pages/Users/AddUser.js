@@ -175,7 +175,9 @@ const AddUser = () => {
                 </div>
                 <div className='bottom'>
                     <button className='btn btn-effect' type='submit'>Add</button>
-                    {error && <div className='error'>{error}</div>}
+                    <div className="error-div">
+                        {error && <div className='error'>{error}</div>}
+                    </div>
                 </div>
             </form>
         </div>
