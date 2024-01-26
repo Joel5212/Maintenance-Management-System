@@ -198,7 +198,9 @@ const ViewOrUpdateUser = (props) => {
                 </div>
                 <div className='bottom'>
                     <button className='btn btn-effect' type='submit'>Update</button>
-                    {error && <div className='error'>{error}</div>}
+                    <div className="error-div">
+                        {error && <div className='error'>{error}</div>}
+                    </div>
                 </div>
             </form>
         </div>
