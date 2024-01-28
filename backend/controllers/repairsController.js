@@ -3,11 +3,11 @@ const mongoose = require('mongoose')
 
 // CREATE new repair
 const createRepair = async (req, res) => {
-    const {title, asset, startDate, dueDate, priority, servicers, status} = req.body
+    const {title, asset, dueDate, priority, servicers, status} = req.body
     
     // adding doc to db
     try {
-        const repair = await Repair.create({title: title, asset: asset, startDate: startDate, dueDate: dueDate, priority: priority, servicers: [], status: status})
+        const repair = await Repair.create({title: title, asset: asset, dueDate: dueDate, priority: priority, servicers: servicers, status: status})
         res.status(200).json(repair)
     } catch (error) {
         res.status(400).json({error: error.message})
@@ -26,7 +26,7 @@ const getRepair = async (req, res) => {
     const { id } = req.params
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
-        return res.status(404).json({error: 'No such workout'})
+        return res.status(404).json({error: 'No such repair'})
     }
 
     const repair = await Repair.findById(id)

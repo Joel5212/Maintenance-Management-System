@@ -8,16 +8,18 @@ const repairSchema = new Schema({
         required: true
     },
     asset: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Asset',
+        type: String,
         required: false
     },
     
     //will change to date type when front end is set
+    /*
     startDate: { 
         type: String,
         required: false
     },
+    */
+
     dueDate: {
         type: String,
         required: false
@@ -27,11 +29,17 @@ const repairSchema = new Schema({
         type: String,
         required: false
     },
+    /*
     servicers: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
         required: false
     }],
+    */
+    servicers: {
+        type: String,
+        required: false
+    },
     status: {
         type: String,
         required: false

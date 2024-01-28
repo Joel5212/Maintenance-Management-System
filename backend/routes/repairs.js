@@ -1,14 +1,9 @@
 const express = require('express')
-const{
-    createRepair,
-    getRepairs,
-    getRepair,
-    updateRepair,
-    deleteRepair
-} = require('../controllers/repairsController')
-const { update } = require('../models/userModel')
+const{createRepair,getRepairs,getRepair,updateRepair,deleteRepair} = require('../controllers/repairsController')
+const requireAuth = require('../middleware/requiredAuth')
 
 const router = express.Router()
+
 
 // CREATE new repair
 router.post('/', createRepair)
