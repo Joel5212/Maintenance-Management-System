@@ -17,20 +17,20 @@ const Repairs = () => {
     const navigate = useNavigate()
     const location = useLocation()
     const [showDeleteRepairModal, setShowDeleteRepairModal] = useState(false)
-  const [repairToDelete, setRepairToDelete] = useState()
+    const [repairToDelete, setRepairToDelete] = useState()
 
-  const onCancel = function () {
-    setShowDeleteRepairModal(false)
-  }
-
-  const deleteRepair = function (repair) {
-    if (!user) {
-      return
+    const onCancel = function () {
+        setShowDeleteRepairModal(false)
     }
 
-    setShowDeleteRepairModal(true)
-    setRepairToDelete(repair)
-  }
+    const deleteRepair = function (repair) {
+        if (!user) {
+            return
+        }
+
+        setShowDeleteRepairModal(true)
+        setRepairToDelete(repair)
+    }
 
     const onDelete = async (id) => {
 
@@ -51,14 +51,17 @@ const Repairs = () => {
             repairsDispatch({ type: 'DELETE_REPAIR', payload: json })
         }
 
+        setShowDeleteRepairModal(false)
+        setRepairToDelete()
+
     }
 
-    
+
     const onViewUpdate = async (repair) => {
         navigate('viewOrUpdate', { state: { repair } })
     }
 
-    
+
     const columnDefs = [
         {
             field: 'title',
@@ -103,7 +106,7 @@ const Repairs = () => {
 
 
     useEffect(() => {
-        console.log(prevRoute)
+        console.log("prevRoute", prevRoute)
         if (prevRoute !== '/repairs/add' && prevRoute !== '/repairs/viewOrUpdate') {
             fetchRepairs()
             console.log(prevRoute, repairs)
@@ -116,7 +119,7 @@ const Repairs = () => {
     };
 
 
-    
+
     return (
         <div className="repairs">
             <div className="repairs-header">

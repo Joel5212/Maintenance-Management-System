@@ -34,9 +34,22 @@ const ViewOrUpdateRepair = (props) => {
 
     const { repair } = location.state
 
+    const fetchRepairs = async () => {
+        const response = await fetch('/api/repairs', {
+            headers: {
+                'Authorization': `Bearer ${user.token}`
+            }
+        })
+        const json = await response.json()
+
+        if (response.ok) {
+            repairsDispatch({ type: 'SET_REPAIRS', payload: json })
+        }
+    }
+
     useEffect(() => {
         setTitle(repair.title)
-        setAsset(repair.title)
+        setAsset(repair.asset)
         setDueDate(repair.dueDate)
         setPriority(repair.priority)
         setServicers(repair.servicers)
@@ -113,6 +126,7 @@ const ViewOrUpdateRepair = (props) => {
                 }
 
                 if (response.ok) {
+                    fetchRepairs()
                     repairsDispatch({ type: 'UPDATE_REPAIR', payload: json })
                     navigate(-1)
                 }

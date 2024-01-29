@@ -25,9 +25,25 @@ const AddRepair = () => {
     const location = useLocation()
     const { user } = useAuthContext()
 
+
+    const fetchRepairs = async () => {
+        const response = await fetch('/api/repairs', {
+            headers: {
+                'Authorization': `Bearer ${user.token}`
+            }
+        })
+        const json = await response.json()
+
+        if (response.ok) {
+            console.log('Fetched Repairs', json)
+            repairsDispatch({ type: 'SET_REPAIRS', payload: json })
+        }
+    }
+
     useEffect(() => {
         prevRouterDispatch({ type: 'SET_PREV_ROUTE', location: location.pathname })
-    }, [])
+
+    }, [repairsDispatch, user])
 
     const handleSubmit = async (e) => {
         e.preventDefault()
@@ -88,6 +104,7 @@ const AddRepair = () => {
             }
 
             if (response.ok) {
+                fetchRepairs()
                 repairsDispatch({ type: 'ADD_REPAIR', payload: json })
                 navigate(-1)
             }
