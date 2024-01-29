@@ -57,9 +57,9 @@ const Assets = () => {
     setAssetToDelete()
   }
 
-  // const onViewUpdate = async (user) => {
-  //   navigate('viewOrUpdate', { state: { user } })
-  // }
+  const onViewUpdate = async (asset) => {
+    navigate('viewOrUpdate', { state: { asset } })
+  }
 
   const fetchAssets = async () => {
     const response = await fetch('/api/assets', {
@@ -90,26 +90,34 @@ const Assets = () => {
 
   const columnDefs = [
     {
-      headerName: 'Asset Type',
+      headerName: 'Type',
       field: 'assetType',
+      width: 130,
     },
     {
-      headerName: 'Asset Name',
+      headerName: 'Name',
       field: 'name',
+      width: 130,
+    },
+    {
+      headerName: 'Category',
+      field: 'name',
+      width: 130,
     },
     {
       headerName: 'Actions',
+      width: 130,
       cellRenderer: UserActionEllipsis,
       cellRendererParams: (params) => ({
         onDelete: () => deleteAsset(params.data),
-        // onViewUpdate: () => onViewUpdate(params.data)
+        onViewUpdate: () => onViewUpdate(params.data)
       }),
     },
   ]
 
   const autoGroupColumnDef = useMemo(() => {
     return {
-      headerName: 'Asset ID',
+      headerName: 'ID',
       cellRendererParams: {
         suppressCount: true
       },
