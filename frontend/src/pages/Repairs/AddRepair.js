@@ -67,10 +67,10 @@ const AddRepair = () => {
         //Check if there are empty fields
         if (emptyFields.length === 0) {
             //Send Request
-            const newRepair = { title, asset, dueDate, priority, servicers, status }
+            const newRepair = { title: title, asset: asset, dueDate: dueDate, priority: priority, servicers: servicers, status: status }
 
             console.log("checkpoint 1", newRepair)
-            const response = await fetch('/api/repairs/addRepair', {
+            const response = await fetch('/api/repairs', {
                 method: 'POST',
                 body: JSON.stringify(newRepair),
                 headers: {

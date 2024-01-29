@@ -8,6 +8,7 @@ import { useEffect } from 'react';
 import { useLocation, Link } from 'react-router-dom';
 import { usePrevRouteContext } from "../../hooks/usePrevRouteContext";
 import { useAuthContext } from '../../hooks/useAuthContext'
+import { UsersContext } from '../../context/UsersContext';
 
 const validator = require('validator')
 
@@ -21,6 +22,7 @@ const ViewOrUpdateRepair = (props) => {
     const [status, setStatus] = useState('')
     const [error, setError] = useState(null)
     const [emptyFields, setEmptyFields] = useState('')
+    const { user } = useAuthContext()
     const { repair: repairContext } = useAuthContext()
 
 
@@ -40,7 +42,7 @@ const ViewOrUpdateRepair = (props) => {
         setServicers(repair.servicers)
         setStatus(repair.status)
         prevRouterDispatch({ type: 'SET_PREV_ROUTE', location: location.pathname })
-    }, [])
+    }, [repairsDispatch, user])
 
     //Check if form is changed
     const isFormUnchanged = () => {
@@ -57,7 +59,7 @@ const ViewOrUpdateRepair = (props) => {
     const handleSubmit = async (e) => {
         e.preventDefault()
 
-        if (!repairContext) {
+        if (!user) {
             return;
         }
 
@@ -94,18 +96,18 @@ const ViewOrUpdateRepair = (props) => {
                 const newRepair = { title, asset, dueDate, priority, servicers, status }
 
                 const _id = repair._id
-
+                console.log('check 1', newRepair)
                 const response = await fetch('/api/repairs/' + _id, {
                     method: 'PATCH',
                     body: JSON.stringify(newRepair),
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${repairContext.token}`
+                        'Authorization': `Bearer ${user.token}`
                     }
                 })
 
                 const json = await response.json()
-
+                console.log('check 2', json)
                 if (!response.ok) {
                     error = json.error
                 }
