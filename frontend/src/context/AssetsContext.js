@@ -55,17 +55,11 @@ const addAsset = function (assets, assetToAdd) {
     return [...assets, assetToAdd]
 }
 
-// const deleteAsset = function (assets, assetToDelete) {
-//     for (const asset of assets) {
-//         if (asset.assetPaths.includes(assetToDelete._id)) {
-//             //creating new path using parent's for asset to be added
-//             const newPaths = [...asset.assetPaths, assetToAdd._id]
-//             assetToAdd.assetPaths = newPaths
-//             break;
-//         }
-//     }
-//     return [assetToAdd, ...assets]
-// }
+const updateAsset = function (updatedAsset, assetPath) {
+    console.log(assetPath)
+    updatedAsset.assetPaths = assetPath
+    return updatedAsset;
+}
 
 export const assetsReducer = (state, action) => {
     switch (action.type) {
@@ -81,12 +75,12 @@ export const assetsReducer = (state, action) => {
             return {
                 assets: state.assets.filter(asset => !asset.assetPaths.includes(action.payload._id))
             }
-        // case 'UPDATE_ASSET':
-        //     return {
-        //         users: state.users.map(u =>
-        //             u._id === action.payload._id ? action.payload : u
-        //         )
-        //     }
+        case 'UPDATE_ASSET':
+            return {
+                assets: state.assets.map(asset =>
+                    asset._id === action.payload._id ? updateAsset(action.payload, action.assetPaths) : asset
+                )
+            }
         default:
             return state
     }
