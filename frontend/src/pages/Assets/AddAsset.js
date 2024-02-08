@@ -156,7 +156,7 @@ const AddAsset = () => {
         //Check if there are empty fields or if price is numeric
         if (emptyFields.length === 0) {
             //Check if price is numeric
-            if (!price || (price && validator.isNumeric(price))) {
+            if (!price || (price && validator.isNumeric(price.toString()))) {
 
                 let parentAssetId = null
 
@@ -215,17 +215,15 @@ const AddAsset = () => {
                             className={emptyFields.includes('name') ? 'input-error' : 'input'}
                         />
                     </div>
-                    {assetType === "equipment" ?
-                        <div className="label-input">
-                            <label>Price:</label>
-                            <input
-                                onChange={(e) => setPrice(e.target.value)}
-                                value={price}
-                                placeholder='Enter Price'
-                                className='input'
-                            />
-                        </div>
-                        : ""}
+                    <div className="label-input">
+                        <label>Price:</label>
+                        <input
+                            onChange={(e) => setPrice(e.target.value)}
+                            value={price}
+                            placeholder='Enter Price'
+                            className='input'
+                        />
+                    </div>
                     <div className="label-input">
                         <label>Description:</label>
                         <textarea
@@ -263,12 +261,11 @@ const AddAsset = () => {
                             />
                         </div>
                     </div>
-                    {assetType === "equipment" ? <div >
+                    <div >
                         <div
                             className={'invisible-input'}
                         />
-
-                    </div> : ""}
+                    </div>
                 </div>
                 <div className='bottom'>
                     <button className='btn btn-effect' type='submit'>Add</button>

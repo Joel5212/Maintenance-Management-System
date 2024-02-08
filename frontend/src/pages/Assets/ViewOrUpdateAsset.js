@@ -42,7 +42,7 @@ const ViewOrUpdateAsset = () => {
     const isFormUnchanged = () => {
         return (
             name === asset.name &&
-            price === asset.price &&
+            price.toString() === asset.price.toString() &&
             description === asset.description
         )
     }
@@ -50,7 +50,7 @@ const ViewOrUpdateAsset = () => {
     useEffect(() => {
         setName(asset.name)
         findAndSetParentAsset(asset.parentAsset)
-        setPrice(asset.price)
+        setPrice(asset.price.toString())
         setDescription(asset.description)
         prevRouterDispatch({ type: 'SET_PREV_ROUTE', location: location.pathname })
     }, [assetsDispatch, user])
@@ -76,7 +76,8 @@ const ViewOrUpdateAsset = () => {
             //Check if there are empty fields
             if (emptyFields.length === 0) {
                 //Check if there is a price and then check if it is numeric
-                if (!price || (price && validator.isNumeric(price))) {
+                console.log("Price Length", price)
+                if (!price || (price && validator.isNumeric(price.toString()))) {
                     const updatedAsset = { name: name, assetType: asset.assetType, price: price, description: description, parentAsset: user.parentAsset }
 
                     const id = asset._id
@@ -98,7 +99,6 @@ const ViewOrUpdateAsset = () => {
                     }
 
                     if (response.ok) {
-
                         assetsDispatch({ type: 'UPDATE_ASSET', payload: json, assetPaths: asset.assetPaths })
                         navigate('/assets')
                     }
@@ -145,17 +145,15 @@ const ViewOrUpdateAsset = () => {
                     </div>
                 </div>
                 <div className='middle'>
-                    {asset.assetType === "equipment" ?
-                        <div className="label-input">
-                            <label>Price:</label>
-                            <input
-                                onChange={(e) => setPrice(e.target.value)}
-                                value={price}
-                                placeholder='Enter Price'
-                                className='input'
-                            />
-                        </div>
-                        : ""}
+                    <div className="label-input">
+                        <label>Price:</label>
+                        <input
+                            onChange={(e) => setPrice(e.target.value)}
+                            value={price}
+                            placeholder='Enter Price'
+                            className='input'
+                        />
+                    </div>
                     <div className="label-input">
                         <label>Description:</label>
                         <textarea
@@ -170,12 +168,6 @@ const ViewOrUpdateAsset = () => {
 
                         />
                     </div>
-                    {asset.assetType === "location" ? <div >
-                        <div
-                            className='invisible-input'
-                        />
-
-                    </div> : ""}
                 </div>
                 <div className='bottom'>
                     <button className='btn btn-effect' type='submit'>Update</button>
