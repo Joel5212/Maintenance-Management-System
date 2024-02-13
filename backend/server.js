@@ -4,7 +4,7 @@ const express = require('express')
 const mongoose = require('mongoose')
 const userRoutes = require('./routes/users')
 const assetRoutes = require('./routes/assets')
-
+const organizationRoutes = require('./routes/organization')
 
 // express app
 const app = express()
@@ -22,6 +22,8 @@ app.use((req, res, next) => {
 app.use('/api/users', userRoutes)
 
 app.use('/api/assets', assetRoutes)
+
+app.use('/api/organization', organizationRoutes)
 
 // connect to db
 mongoose.connect(process.env.MONGO_URI)
