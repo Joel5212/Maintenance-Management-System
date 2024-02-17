@@ -152,41 +152,45 @@ const AddAsset = () => {
                 emptyFields.push('parentAsset')
             }
         }
-        //Check if there are empty fields
+
+        //Check if there are empty fields or if price is numeric
         if (emptyFields.length === 0) {
+            //Check if price is numeric
+            if (!price || (price && validator.isNumeric(price.toString()))) {
 
-            let parentAssetId = null
+                let parentAssetId = null
 
-            if (parentAsset[0].value !== 0) {
-                parentAssetId = parentAsset[0].value;
-            }
-
-            console.log("HELLO")
-
-
-            const newAsset = { name: name, assetType: assetType, price: price, description: description, parentAsset: parentAssetId }
-
-            const response = await fetch('/api/assets', {
-                method: 'POST',
-                body: JSON.stringify(newAsset),
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${user.token}`
+                if (parentAsset[0].value !== 0) {
+                    parentAssetId = parentAsset[0].value;
                 }
-            })
 
-            const json = await response.json()
+                const newAsset = { name: name, assetType: assetType, price: price, description: description, parentAsset: parentAssetId }
 
-            //Check for errors from express server
-            if (!response.ok) {
-                error = json.error
+                const response = await fetch('/api/assets', {
+                    method: 'POST',
+                    body: JSON.stringify(newAsset),
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${user.token}`
+                    }
+                })
+
+                const json = await response.json()
+
+                //Check for errors from express server
+                if (!response.ok) {
+                    error = json.error
+                }
+
+                if (response.ok) {
+                    assetsDispatch({ type: 'ADD_ASSET', payload: json })
+                    navigate('/assets')
+                }
+
             }
-
-            if (response.ok) {
-                assetsDispatch({ type: 'ADD_ASSET', payload: json })
-                navigate('/assets')
+            else {
+                error = 'Price has to be numeric'
             }
-
         }
         else {
             error = 'Fill in all the fields'
@@ -211,17 +215,15 @@ const AddAsset = () => {
                             className={emptyFields.includes('name') ? 'input-error' : 'input'}
                         />
                     </div>
-                    {assetType === "equipment" ?
-                        <div className="label-input">
-                            <label>Price:</label>
-                            <input
-                                onChange={(e) => setPrice(e.target.value)}
-                                value={price}
-                                placeholder='Enter Price'
-                                className={emptyFields.includes('price') ? 'input-error' : 'input'}
-                            />
-                        </div>
-                        : ""}
+                    <div className="label-input">
+                        <label>Price:</label>
+                        <input
+                            onChange={(e) => setPrice(e.target.value)}
+                            value={price}
+                            placeholder='Enter Price'
+                            className='input'
+                        />
+                    </div>
                     <div className="label-input">
                         <label>Description:</label>
                         <textarea
@@ -232,7 +234,6 @@ const AddAsset = () => {
                             placeholder='Enter Description'
                             rows="20" // You can adjust the number of rows as needed
                             cols="43"
-                            className={emptyFields.includes('description') ? 'input-error' : 'label-input-description'}
 
                         />
                     </div>
@@ -260,12 +261,11 @@ const AddAsset = () => {
                             />
                         </div>
                     </div>
-                    {assetType === "equipment" ? <div >
+                    <div >
                         <div
                             className={'invisible-input'}
                         />
-
-                    </div> : ""}
+                    </div>
                 </div>
                 <div className='bottom'>
                     <button className='btn btn-effect' type='submit'>Add</button>

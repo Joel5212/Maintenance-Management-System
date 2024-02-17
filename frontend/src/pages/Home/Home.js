@@ -12,7 +12,7 @@ import PreventiveMaintenance from '../PreventiveMaintenance/PreventiveMaintenanc
 import Users from '../Users/Users'
 import AddUser from '../Users/AddUser'
 import ViewOrUpdateUser from '../Users/ViewOrUpdateUser'
-
+import ViewOrUpdateAsset from '../Assets/ViewOrUpdateAsset'
 import { UsersContextProvider } from '../../context/UsersContext';
 import { AssetsContextProvider } from '../../context/AssetsContext';
 import { RepairsContextProvider } from '../../context/RepairsContext';
@@ -43,6 +43,14 @@ const Home = () => {
               element={
                 <AssetsContextProvider>
                   <AssetType />
+                </AssetsContextProvider>
+              }
+            />
+            <Route
+              path="/assets/viewOrUpdate"
+              element={
+                <AssetsContextProvider>
+                  <ViewOrUpdateAsset />
                 </AssetsContextProvider>
               }
             />

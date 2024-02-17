@@ -4,9 +4,9 @@ const { MongoClient, ObjectId } = require('mongodb');
 
 const getAssets = async (req, res) => {
 
-    const users = await Asset.find({}).sort({ createdAt: -1 })
+    const assets = await Asset.find({}).sort({ createdAt: -1 })
 
-    res.status(200).json(users)
+    res.status(200).json(assets)
 }
 
 const addAsset = async (req, res) => {
@@ -90,21 +90,21 @@ const updateAsset = async (req, res) => {
 
         const { id } = req.params
 
-        const { name, assetType, code, price, description, parentAsset } = req.body;
+        const { name, assetType, price, description, parentAsset } = req.body;
 
         if (!mongoose.Types.ObjectId.isValid(id)) {
             return res.status(400).json({ error: 'No Such Asset' })
         }
 
-        const newAsset = { name: name, assetType: assetType, code: code, price: price, description: description, parentAsset: parentAsset }
+        const asset = { name: name, assetType: assetType, price: price, description: description, parentAsset: parentAsset }
 
-        const asset = await Asset.findOneAndUpdate({ _id: id }, { ...newAsset }, { new: true })
+        const updatedAsset = await Asset.findOneAndUpdate({ _id: id }, { ...asset }, { new: true })
 
-        if (!asset) {
+        if (!updatedAsset) {
             return res.status(404).json({ error: 'No Such Asset' })
         }
 
-        res.status(200).json(asset)
+        res.status(200).json(updatedAsset)
 
     }
     catch (error) {

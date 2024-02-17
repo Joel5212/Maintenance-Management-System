@@ -20,6 +20,32 @@ const userSchema = mongoose.Schema({
     role: {
         type: String,
         required: true
+    },
+    organization: {
+        orgName: {
+            type: String,
+            required: false
+        },
+        orgCity: {
+            type: String,
+            required: false,
+        },
+        orgState: {
+            type: String,
+            required: false,
+        },
+        orgZipCode: {
+            type: String,
+            required: false,
+        },
+        orgCountry: {
+            type: String,
+            required: false,
+        },
+        orgPhoneNumber: {
+            type: String,
+            required: false,
+        },
     }
 })
 

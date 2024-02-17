@@ -1,29 +1,58 @@
-/* Users Page */
-.assets {
+/* Registration Page */
+.registration {
     height: 100%;
     width: 100%;
 }
 
-.assets-container {
+.registration-bg {
     height: 100%;
     width: 100%;
+    background-color: #424242;
 }
 
-.assets-title {
-    margin-left: 1%;
-}
-
-.assets-header {
-    display: flex;
-    flex-direction: row;
-}
-
-.add-update-asset-form {
+.registration-container {
+    height: 100%;
+    width: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    row-gap: 40px
+}
+
+.registration-header {
+    color: white;
+    gap: 0px;
+    width: 75%
+}
+
+.registration-title {
+    color: white;
+}
+
+hr {
+    width: 100%;
+    border-color: rgb(223, 202, 20);
+}
+
+.admin-header {
+    color: white
+}
+
+.organization-input-label {
+    color: white
+}
+
+.registration-form {
+    background-color: #3a3a3aa2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 65%;
+    height: 70%;
+    row-gap: 50px;
+    border-radius: 15px;
+    box-shadow: 5px;
 }
 
 .add-update-asset-container {
@@ -166,6 +195,11 @@
 /* Media Queries */
 @media screen and (max-width: 1900px) {
 
+    .registration-form {
+        width: 90%;
+        height: 65%;
+    }
+
     .back-button-link-asset-type {
         display: flex;
         justify-content: flex-start;
@@ -185,6 +219,11 @@
 }
 
 @media screen and (max-width: 1400px) {
+
+    .registration-form {
+        width: 40%;
+        height: 100%;
+    }
 
     .back-button-link-asset-type {
         display: flex;
@@ -215,4 +254,18 @@
         height: 200px;
         width: 200px;
     }
+
+    .input {
+        width: 250px;
+        height: 25px;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        box-sizing: border-box;
+    }
+
+    .registration-form {
+        row-gap: 25px
+    }
+
 }
