@@ -11,9 +11,9 @@ const getAssets = async (req, res) => {
 
 const addAsset = async (req, res) => {
     try {
-        const { name, assetType, price, description, parentAsset } = req.body
+        const { name, price, description, parentAsset } = req.body
 
-        const asset = await Asset.create({ name: name, assetType: assetType, price: price, description: description, parentAsset: parentAsset, repairs: [], preventiveMaintenances: [], repairDetails: [], preventiveMaintenanceDetails: [] })
+        const asset = await Asset.create({ name: name, price: price, description: description, parentAsset: parentAsset })
 
         res.status(200).json(asset);
     }
@@ -22,16 +22,23 @@ const addAsset = async (req, res) => {
     }
 }
 
-const recusivelyDeleteChildAssets = async (parentAsset, assetsCollection) => {
+const recursivelyDeleteChildAssets = async (parentAssetId, assetsCollection) => {
     // const session = await mongoose.startSession
-    const assetsToDelete = await assetsCollection.find({ parentAsset: ObjectId(parentAsset) }).toArray()
+    const deletedAssets = []
 
-    console.log("CHILD", assetsToDelete)
+    const assetsToDelete = await assetsCollection.find({ parentAsset: ObjectId(parentAssetId) }).toArray()
 
     for (const assetToDelete of assetsToDelete) {
-        await assetsCollection.findOneAndDelete({ _id: ObjectId(assetToDelete._id) })
-        await recusivelyDeleteChildAssets(assetToDelete._id, assetsCollection)
+
+        const deletedAsset = await assetsCollection.findOneAndDelete({ _id: ObjectId(assetToDelete._id) })
+
+        deletedAssets.push(deletedAsset.value._id)
+
+        const deletedChildAssets = await recursivelyDeleteChildAssets(assetToDelete._id, assetsCollection)
+
+        deletedAssets.push(...deletedChildAssets)
     }
+    return deletedAssets
 }
 
 const deleteAsset = async (req, res) => {
@@ -49,39 +56,27 @@ const deleteAsset = async (req, res) => {
         await session.withTransaction(async () => {
 
             if (!mongoose.Types.ObjectId.isValid(id)) {
-                console.log("HELLO")
-                return res.status(400).json({ error: 'idNotValid' })
+                return res.status(400).json({ error: 'No Such Asset' })
             }
 
-            console.log(id)
             const assetToDelete = await assetsCollection.findOne({ _id: ObjectId(id) })
 
-            console.log("FOUND?", assetToDelete)
-
             if (!assetToDelete) {
-                throw new Error('assetNotFound')
+                return res.status(404).json({ error: "No Such Asset" })
             }
 
-            console.log("HELLO")
-            await recusivelyDeleteChildAssets(id, assetsCollection)
+            const deletedAssets = await recursivelyDeleteChildAssets(id, assetsCollection)
 
-            await assetsCollection.findOneAndDelete({ _id: ObjectId(id) })
+            const deletedAsset = await assetsCollection.findOneAndDelete({ _id: ObjectId(id) })
 
-            console.log("DELETEDD", assetToDelete)
-            res.status(200).json(assetToDelete)
+            deletedAssets.push(deletedAsset.value._id)
+
+            res.status(200).json(deletedAssets)
         });
     }
     catch (err) {
         console.log(err.message)
-        if (err.message === 'idNotValid') {
-            return res.status(404).json({ error: "No Such Asset" })
-        }
-        else if (err.message === 'assetNotFound') {
-            return res.status(404).json({ error: "No Such Asset" })
-        }
-        else {
-            return res.status(404).json({ error: err.message })
-        }
+        return res.status(404).json({ error: err.message })
     }
 }
 
@@ -90,13 +85,13 @@ const updateAsset = async (req, res) => {
 
         const { id } = req.params
 
-        const { name, assetType, price, description, parentAsset } = req.body;
+        const { name, price, description, parentAsset } = req.body;
 
         if (!mongoose.Types.ObjectId.isValid(id)) {
             return res.status(400).json({ error: 'No Such Asset' })
         }
 
-        const asset = { name: name, assetType: assetType, price: price, description: description, parentAsset: parentAsset }
+        const asset = { name: name, price: price, description: description, parentAsset: parentAsset }
 
         const updatedAsset = await Asset.findOneAndUpdate({ _id: id }, { ...asset }, { new: true })
 

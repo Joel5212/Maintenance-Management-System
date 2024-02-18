@@ -18,6 +18,7 @@ const generateAssetPaths = (assets, parentAsset, pathHistory) => {
         const childPaths = generateAssetPaths(assets, asset._id, newPath);
         //Object.assign is used to copy the values of all enumerable properties from one or more source objects to a target object.
         //we need to copy all the paths from the recursive calls into the top most paths
+        //merging the current paths with childPaths as we recurse through so we can end up with an object that holds the lists to each path
         Object.assign(paths, childPaths);
     });
 
@@ -25,6 +26,7 @@ const generateAssetPaths = (assets, parentAsset, pathHistory) => {
 };
 
 const setAssets = function (assets) {
+
     const assetPaths = generateAssetPaths(assets, null, [])
     //iterates through asset paths and destructures the assetId and value for each asset pats
     for (const [assetId, value] of Object.entries(assetPaths)) {
@@ -52,7 +54,7 @@ const addAsset = function (assets, assetToAdd) {
     else {
         assetToAdd.assetPaths = [assetToAdd._id]
     }
-    return [...assets, assetToAdd]
+    return assets != null ? [...assets, assetToAdd] : [assetToAdd]
 }
 
 const updateAsset = function (updatedAsset, assetPath) {
@@ -73,7 +75,7 @@ export const assetsReducer = (state, action) => {
             }
         case 'DELETE_ASSET':
             return {
-                assets: state.assets.filter(asset => !asset.assetPaths.includes(action.payload._id))
+                assets: state.assets.filter(asset => !action.payload.includes(asset._id))
             }
         case 'UPDATE_ASSET':
             return {
