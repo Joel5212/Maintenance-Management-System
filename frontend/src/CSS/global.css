@@ -72,6 +72,8 @@ body {
 .bottom {
     display: flex;
     flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
 
 .back-button-link {
@@ -79,6 +81,10 @@ body {
 }
 
 .back-button {
+    width: 75px;
+}
+
+.invisible-back-button {
     width: 75px;
 }
 
@@ -258,6 +264,41 @@ input {
     justify-content: center;
     align-items: center;
     margin-bottom: 50px;
+}
+
+.select-asset-modal {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    background-color: #ddd;
+}
+
+.select-asset-modal-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    border-radius: 10px;
+    box-shadow: 5px;
+    height: 85%;
+    width: 65%;
+}
+
+.select-asset-modal-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    /* gap: 100px; */
+    flex-direction: row;
+    /* width: 100%;
+    height: 100%;
+    background-color: #ddd; */
+}
+
+.select-asset-save-btn {
+    margin-top: 100px;
 }
 
 @media screen and (max-width: 1400px) {

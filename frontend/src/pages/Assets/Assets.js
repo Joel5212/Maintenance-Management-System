@@ -77,7 +77,7 @@ const Assets = () => {
 
   useEffect(() => {
     console.log("prevRoute", prevRoute)
-    if (prevRoute !== '/assets/assetType' && prevRoute !== '/assets/viewOrUpdate' && prevRoute !== '/assets/add') {
+    if (prevRoute !== '/assets/viewOrUpdate' && prevRoute !== '/assets/add' || !assets) {
       fetchAssets()
       console.log(prevRoute, assets)
     }
@@ -85,20 +85,10 @@ const Assets = () => {
   }, [assetsDispatch, user])
 
   const defaultColDef = {
-    flex: 1 // or 'autoWidth'
+    flex: 1
   };
 
   const columnDefs = [
-    {
-      headerName: 'Type',
-      field: 'assetType',
-      width: 130,
-    },
-    {
-      headerName: 'Name',
-      field: 'name',
-      width: 130,
-    },
     {
       headerName: 'Category',
       field: 'name',
@@ -117,13 +107,12 @@ const Assets = () => {
 
   const autoGroupColumnDef = useMemo(() => {
     return {
-      headerName: 'ID',
+      headerName: 'Name',
       cellRendererParams: {
         suppressCount: true
       },
       valueGetter: function (params) {
-        // Modify the ID here, for example, take the first 3 characters
-        return params.data._id.toString().substring(0, 8);
+        return params.data.name
       },
     };
   }, []);
@@ -143,7 +132,7 @@ const Assets = () => {
           <div className="assets-header">
             <h1 className="assets-title">Assets</h1>
             <div className="div-empty-space"></div>
-            <Link to="/assets/assetType" className="new-item-nav-link"><button className="new-item-nav-btn btn-effect">+ New Asset</button></Link>
+            <Link to="/assets/add" className="new-item-nav-link"><button className="new-item-nav-btn btn-effect">+ New Asset</button></Link>
           </div>
           <div className="ag-theme-alpine users">
             <AgGridReact
