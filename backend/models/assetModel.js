@@ -5,10 +5,6 @@ const assetSchema = mongoose.Schema({
         type: String,
         required: true,
     },
-    assetType: {
-        type: String,
-        required: true
-    },
     price: {
         type: Number,
         required: false,

@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { useEffect } from 'react'
-import Select from 'react-dropdown-select';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { Link } from 'react-router-dom'
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -50,7 +49,7 @@ const ViewOrUpdateAsset = () => {
     useEffect(() => {
         setName(asset.name)
         findAndSetParentAsset(asset.parentAsset)
-        setPrice(asset.price.toString())
+        setPrice(asset.price ? asset.price.toString() : '')
         setDescription(asset.description)
         prevRouterDispatch({ type: 'SET_PREV_ROUTE', location: location.pathname })
     }, [assetsDispatch, user])
@@ -122,60 +121,62 @@ const ViewOrUpdateAsset = () => {
 
     return (
         <div className="add-update-asset-container">
-            <Link to='/assets' className='back-button-link'><button className='back-button'><ArrowBackIcon /></button></Link>
-            <form className="add-update-asset-form" onSubmit={handleSubmit}>
-                {asset.assetType === "equipment" ? <h1 className="add-update-asset-title">Update Equipment</h1> : <h1 className="add-update-asset-title">Update Location</h1>}
-                <div className='top'>
-                    <div className="label-input">
-                        {asset.assetType === "equipment" ? <label>Equipment Name:</label> : <label>Location Name:</label>}
-                        <input
-                            onChange={(e) => setName(e.target.value)}
-                            value={name}
-                            placeholder='Enter Name'
-                            className={emptyFields.includes('name') ? 'input-error' : 'input'}
-                        />
+            <div className="add-update-asset-form-container">
+                <Link to='/assets' className='back-button-link'><button className='back-button'><ArrowBackIcon /></button></Link>
+                <form className="add-update-asset-form" onSubmit={handleSubmit}>
+                    <h1 className="add-update-asset-title">Update Asset</h1>
+                    <div className='top'>
+                        <div className="label-input">
+                            <label>Asset Name:</label>
+                            <input
+                                onChange={(e) => setName(e.target.value)}
+                                value={name}
+                                placeholder='Enter Name'
+                                className={emptyFields.includes('name') ? 'input-error' : 'input'}
+                            />
+                        </div>
+                        <div className='label-input'>
+                            <label>Parent Asset:</label>
+                            <input
+                                value={parentAsset}
+                                disabled={true}
+                                className="input"
+                            />
+                        </div>
                     </div>
-                    <div className='label-input'>
-                        <label>Parent Asset:</label>
-                        <input
-                            value={parentAsset}
-                            disabled={true}
-                            className="input"
-                        />
-                    </div>
-                </div>
-                <div className='middle'>
-                    <div className="label-input">
-                        <label>Price:</label>
-                        <input
-                            onChange={(e) => setPrice(e.target.value)}
-                            value={price}
-                            placeholder='Enter Price'
-                            className='input'
-                        />
-                    </div>
-                    <div className="label-input">
-                        <label>Description:</label>
-                        <textarea
-                            id="description"
-                            name="description"
-                            onChange={(e) => setDescription(e.target.value)}
-                            value={description}
-                            placeholder='Enter Description'
-                            rows="20"
-                            cols="43"
-                            className='label-input-description'
+                    <div className='middle'>
+                        <div className="label-input">
+                            <label>Price:</label>
+                            <input
+                                onChange={(e) => setPrice(e.target.value)}
+                                value={price}
+                                placeholder='Enter Price'
+                                className='input'
+                            />
+                        </div>
+                        <div className="label-input">
+                            <label>Description:</label>
+                            <textarea
+                                id="description"
+                                name="description"
+                                onChange={(e) => setDescription(e.target.value)}
+                                value={description}
+                                placeholder='Enter Description'
+                                rows="20"
+                                cols="43"
+                                className='label-input-description'
 
-                        />
+                            />
+                        </div>
                     </div>
-                </div>
-                <div className='bottom'>
-                    <button className='btn btn-effect' type='submit'>Update</button>
-                    <div className="error-div">
-                        {error && <div className='error'>{error}</div>}
+                    <div className='bottom'>
+                        <button className='btn btn-effect' type='submit'>Update</button>
+                        <div className="error-div">
+                            {error && <div className='error'>{error}</div>}
+                        </div>
                     </div>
-                </div>
-            </form >
+                </form >
+            </div>
         </div >
     )
 }
