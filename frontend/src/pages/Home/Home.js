@@ -11,8 +11,12 @@ import Users from '../Users/Users'
 import AddUser from '../Users/AddUser'
 import ViewOrUpdateUser from '../Users/ViewOrUpdateUser'
 import ViewOrUpdateAsset from '../Assets/ViewOrUpdateAsset'
+import Categories from '../Categories/Categories'
+import AddCategory from '../Categories/AddCategory'
+import ViewOrUpdateCategory from '../Categories/ViewOrUpdateCategory'
 import { UsersContextProvider } from '../../context/UsersContext';
 import { AssetsContextProvider } from '../../context/AssetsContext';
+import { CategoriesContextProvider } from '../../context/CategoriesContext';
 
 const Home = () => {
   return (
@@ -57,6 +61,30 @@ const Home = () => {
                 <AssetsContextProvider>
                   <AddAsset />
                 </AssetsContextProvider>
+              }
+            />
+            <Route
+              path="/categories"
+              element={
+                <CategoriesContextProvider>
+                  <Categories />
+                </CategoriesContextProvider>
+              }
+            />
+            <Route
+              path="/categories/add"
+              element={
+                <CategoriesContextProvider>
+                  <AddCategory />
+                </CategoriesContextProvider>
+              }
+            />
+            <Route
+              path="/categories/viewOrUpdate"
+              element={
+                <CategoriesContextProvider>
+                  <ViewOrUpdateCategory />
+                </CategoriesContextProvider>
               }
             />
             <Route
