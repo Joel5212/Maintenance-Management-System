@@ -33,6 +33,7 @@ function Sidebar() {
                 <li><Link to="/repairs" className="sidebarRoute">Repairs</Link></li>
                 <li><Link to="/preventiveMaintenance" className="sidebarRoute">Preventive Maintenance</Link></li>
                 <li><Link to="/users" className="sidebarRoute">Users</Link></li>
+                <li><Link to="/locations" className="sidebarRoute">Locations</Link></li>
             </ul>
             <div className="div-empty-space"></div>
             <button className="sidebarLogoutIconButton" onClick={logoutClick}><FontAwesomeIcon icon={faSignOutAlt} className="sidebarLogoutIcon" /></button>

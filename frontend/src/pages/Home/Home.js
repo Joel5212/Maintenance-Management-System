@@ -13,9 +13,13 @@ import Users from '../Users/Users'
 import AddUser from '../Users/AddUser'
 import ViewOrUpdateUser from '../Users/ViewOrUpdateUser'
 import ViewOrUpdateAsset from '../Assets/ViewOrUpdateAsset'
+import Locations from '../Locations/Locations'
+import AddLocation from '../Locations/AddLocation'
+import ViewOrUpdateLocation from '../Locations/ViewOrUpdateLocation'
 import { UsersContextProvider } from '../../context/UsersContext';
 import { AssetsContextProvider } from '../../context/AssetsContext';
 import { RepairsContextProvider } from '../../context/RepairsContext';
+import { LocationsContextProvider } from '../../context/LocationsContext';
 
 const Home = () => {
   return (
@@ -114,6 +118,30 @@ const Home = () => {
                 <UsersContextProvider>
                   <ViewOrUpdateUser />
                 </UsersContextProvider>
+              }
+            />
+            <Route
+              path="/locations"
+              element={
+                <LocationsContextProvider>
+                  <Locations />
+                </LocationsContextProvider>
+              }
+            />
+            <Route
+              path="/locations/add"
+              element={
+                <LocationsContextProvider>
+                  <AddLocation />
+                </LocationsContextProvider>
+              }
+            />
+            <Route
+              path="/locations/viewOrUpdate"
+              element={
+                <LocationsContextProvider>
+                  <ViewOrUpdateLocation />
+                </LocationsContextProvider>
               }
             />
           </Routes>

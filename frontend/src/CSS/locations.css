@@ -1,0 +1,48 @@
+/* Locations Page */
+
+.locations {
+    height: 100%;
+    width: 100%;
+}
+
+.locations-title {
+    margin-left: 1%;
+}
+
+.locations-header {
+    display: flex;
+    flex-direction: row;
+}
+
+.add-update-location-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    row-gap: 40px
+}
+
+.add-update-location-container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.add-update-location-title {
+    font-size: 30px
+}
+
+@media screen and (max-width: 1400px) {
+    .add-update-location-form {
+        display: flex;
+        align-items: center;
+        row-gap: 20px
+    }
+
+    .add-update-location-container {
+        margin-top: 150px;
+    }
+}
