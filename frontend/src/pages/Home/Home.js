@@ -19,6 +19,9 @@ import ViewOrUpdateCategory from '../Categories/ViewOrUpdateCategory'
 import Locations from '../Locations/Locations'
 import AddLocation from '../Locations/AddLocation'
 import ViewOrUpdateLocation from '../Locations/ViewOrUpdateLocation'
+import AddProcedure from '../Procedures/AddProcedure'
+import ProceduresOfCategory from '../Procedures/ProceduresOfCategory'
+import ViewOrUpdateProcedure from '../Procedures/ViewOrUpdateProcedure'
 import { UsersContextProvider } from '../../context/UsersContext';
 import { AssetsContextProvider } from '../../context/AssetsContext';
 import { CategoriesContextProvider } from '../../context/CategoriesContext';
@@ -91,6 +94,30 @@ const Home = () => {
               element={
                 <CategoriesContextProvider>
                   <ViewOrUpdateCategory />
+                </CategoriesContextProvider>
+              }
+            />
+            <Route
+              path="/categories/procedures"
+              element={
+                <CategoriesContextProvider>
+                  <ProceduresOfCategory />
+                </CategoriesContextProvider>
+              }
+            />
+            <Route
+              path="/categories/procedures/add"
+              element={
+                <CategoriesContextProvider>
+                  <AddProcedure />
+                </CategoriesContextProvider>
+              }
+            />
+            <Route
+              path="/categories/procedures/viewOrUpdate"
+              element={
+                <CategoriesContextProvider>
+                  <ViewOrUpdateProcedure />
                 </CategoriesContextProvider>
               }
             />

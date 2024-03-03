@@ -301,6 +301,20 @@ input {
     margin-top: 100px;
 }
 
+.no-items-available-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    row-gap: 25px;
+    height: 100%;
+    width: 100%
+}
+
+.no-items-description {
+    font-size: 30px;
+}
+
 @media screen and (max-width: 1400px) {
     .add-user-form {
         display: flex;

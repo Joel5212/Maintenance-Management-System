@@ -18,8 +18,6 @@ function App() {
     const json = await response.json()
 
     if (response.ok) {
-
-      console.log("HELLOOOOO")
       if (json === true) {
         dispatch({ type: 'REGISTERED' })
       }

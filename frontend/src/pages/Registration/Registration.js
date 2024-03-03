@@ -113,7 +113,7 @@ function Registration() {
 
                         <div className='registration-header'>
                             <h1 className='registration-title'>Organization</h1>
-                            <hr className='hr' />
+                            <hr className='registration-hr' />
                         </div>
 
                         <div className="top">
@@ -177,7 +177,7 @@ function Registration() {
 
                         <div className='registration-header'>
                             <h1 className='registration-title'>Admin</h1>
-                            <hr className='hr' />
+                            <hr className='registration-hr' />
                         </div>
 
                         <div className="middle">
