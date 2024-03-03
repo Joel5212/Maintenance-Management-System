@@ -71,6 +71,7 @@ const AddUser = () => {
 
                 const newUser = { email, password, name, phoneNumber, role }
 
+                console.log("checkpoint 1", newUser)
                 const response = await fetch('/api/users/addUser', {
                     method: 'POST',
                     body: JSON.stringify(newUser),
@@ -79,7 +80,7 @@ const AddUser = () => {
                         'Authorization': `Bearer ${user.token}`
                     }
                 })
-
+                console.log("checkpoint 2", response)
                 const json = await response.json()
 
                 //Check for errors from express server
