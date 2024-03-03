@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './CSS/assets.css'
+import './CSS/categories.css'
 import './CSS/global.css'
 import './CSS/login.css'
 import './CSS/preventiveMaintenance.css'
