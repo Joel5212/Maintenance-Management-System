@@ -22,12 +22,6 @@ export const categoriesReducer = (state, action) => {
                     category._id === action.payload._id ? action.payload : category
                 )
             }
-        // case 'ADD_REPAIR_PROCEDURE':
-        //     return {
-        //         categories: state.categories.map(category =>
-        //             category._id === action.payload._id ? category.repairProcedures.push(action.payload.) : category
-        //         )
-        //     }
         default:
             return state
     }

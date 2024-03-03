@@ -9,7 +9,7 @@ import { usePrevRouteContext } from "../../hooks/usePrevRouteContext";
 import { useAuthContext } from '../../hooks/useAuthContext'
 const validator = require('validator')
 
-const ViewOrUpdateUser = (props) => {
+const ViewOrUpdateUser = () => {
     const [categoryName, setCategoryName] = useState('')
     const [categoryDescription, setCategoryDescription] = useState('')
     const [error, setError] = useState(null)
@@ -88,8 +88,6 @@ const ViewOrUpdateUser = (props) => {
         setError(error)
     }
 
-    const roles = ["User", "Servicer"];
-
     return (
         <div className="add-update-category-container">
             <Link to='/categories' className='back-button-link'><button className='back-button'><ArrowBackIcon /></button></Link>
@@ -113,7 +111,7 @@ const ViewOrUpdateUser = (props) => {
                             onChange={(e) => setCategoryDescription(e.target.value)}
                             value={categoryDescription}
                             placeholder='Enter Description'
-                            rows="20" // You can adjust the number of rows as needed
+                            rows="20"
                             cols="43"
                         />
                     </div>
