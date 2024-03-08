@@ -42,7 +42,7 @@ const AddUser = () => {
         //Check if there are empty fields
         if (emptyFields.length === 0) {
 
-            const newCategory = { categoryName, categoryDescription }
+            const newCategory = { name: categoryName, description: categoryDescription }
 
             const response = await fetch('/api/categories/', {
                 method: 'POST',

@@ -10,9 +10,9 @@ const getCategories = async (req, res) => {
 
 const addCategory = async (req, res) => {
     try {
-        const { categoryName, categoryDescription } = req.body
+        const { name, description } = req.body
 
-        const category = await Category.create({ categoryName: categoryName, categoryDescription: categoryDescription, createdAt: Date.now() })
+        const category = await Category.create({ name: name, description: description, createdAt: Date.now() })
 
         res.status(200).json(category);
     }
@@ -48,7 +48,7 @@ const updateCategory = async (req, res) => {
     try {
         const { id } = req.params
 
-        const { categoryName, categoryDescription } = req.body
+        const { name, description } = req.body
 
         const categoryExists = await Category.findOne({ _id: ObjectId(id) })
 
@@ -56,7 +56,7 @@ const updateCategory = async (req, res) => {
             return res.status(404).json({ error: 'No Such Category' })
         }
 
-        const category = { categoryName: categoryName, categoryDescription: categoryDescription }
+        const category = { name: name, description: description }
 
         const updatedCategory = await Category.findOneAndUpdate({ _id: id }, { ...category }, { new: true })
 
