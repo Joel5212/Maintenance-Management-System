@@ -62,7 +62,8 @@ const Categories = () => {
 
     const columnDefs = [
         {
-            field: 'categoryName',
+            headerName: 'Category Name',
+            field: 'name',
         },
         {
             headerName: 'Actions',

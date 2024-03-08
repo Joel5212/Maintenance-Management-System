@@ -1,19 +1,29 @@
 const mongoose = require('mongoose')
 const Asset = require('../models/assetModel')
+const Category = require('../models/categoryModel')
+const Location = require('../models/locationModel')
 const { MongoClient, ObjectId } = require('mongodb');
 
 const getAssets = async (req, res) => {
 
     const assets = await Asset.find({}).sort({ createdAt: -1 })
 
-    res.status(200).json(assets)
+    const populatedAssets = await Promise.all(
+        assets.map(async (asset) => {
+            await asset.populate({ path: 'category', select: 'name' });
+            await asset.populate({ path: 'location', select: 'name' });
+            return asset
+        })
+    );
+
+    res.status(200).json(populatedAssets)
 }
 
 const addAsset = async (req, res) => {
     try {
-        const { name, price, description, parentAsset } = req.body
+        const { name, price, description, parentAsset, categoryId, locationId } = req.body
 
-        const asset = await Asset.create({ name: name, price: price, description: description, parentAsset: parentAsset })
+        const asset = await Asset.create({ name: name, price: price, description: description, parentAsset: parentAsset, category: categoryId, location: locationId })
 
         res.status(200).json(asset);
     }
