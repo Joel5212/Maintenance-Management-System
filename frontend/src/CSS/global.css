@@ -222,7 +222,7 @@ input {
 
 .sidebarRoutes .sidebarRoute:hover {
     cursor: pointer;
-    background-color: #2e2d2d;
+    background-color: #1e1d1d;
 }
 
 .sidebarUserIcon {
@@ -313,6 +313,42 @@ input {
 
 .no-items-description {
     font-size: 30px;
+}
+
+@media screen and (max-width: 2500px) {
+    .sidebar {
+        height: 100%;
+        width: 15%;
+        margin: 0;
+        background: linear-gradient(#424242, #212121);
+    }
+
+    .sidebarRoutes {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .sidebarRoutes .sidebarRoute {
+        font-size: 18px;
+        height: 30px;
+    }
+
+    .sidebarLogoutIconButton {
+        margin-left: 40%;
+        font-size: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: none;
+        /* Remove background color if any */
+        border: none;
+        /* Remove border if any */
+        cursor: pointer;
+    }
+
+    .new-item-nav-link {
+        width: 10%
+    }
 }
 
 @media screen and (max-width: 1400px) {
