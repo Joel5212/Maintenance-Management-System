@@ -84,8 +84,8 @@ const ProceduresOfCategory = () => {
     <div className='procedures'>
       <div className='procedures-header'>
         <Link to='/categories' className='procedures-back-btn-link'><button className='procedures-back-btn'><ArrowBackIcon /></button></Link>
-        {procedureType === "repair" ? <h1 className='procedures-title'>Repair Procedures of Category {category ? category.categoryName : ''}</h1> :
-          <h1 className='procedures-title'>Preventive Maintenance Procedures of Category {category ? category.categoryName : ''}</h1>}
+        {procedureType === "repair" ? <h1 className='procedures-title'>Repair Procedures of Category {category ? category.name : ''}</h1> :
+          <h1 className='procedures-title'>Preventive Maintenance Procedures of Category {category ? category.name : ''}</h1>}
         <div className="div-empty-space"></div>
         <button className="procedure-add-btn btn-effect" onClick={goToAddProcedure}>{procedureType === "repair" ? '+ New Repair Procedure' : "+ New PM Procedure"}</button>
       </div>

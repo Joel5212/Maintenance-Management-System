@@ -105,7 +105,7 @@ const AddProcedure = () => {
                 <button className="add-update-procedure-back-btn" onClick={goBackToProcedures}><ArrowBackIcon /></button>
                 <div className="add-update-procedure-back-btn-invisible"></div>
             </div>
-            <h1 className="add-update-procedure-title">{procedureType === "repair" ? "Add Repair Procedure for Category " + category.categoryName : "Add Preventive Maintenance Procedure for Category " + category.categoryName}</h1>
+            <h1 className="add-update-procedure-title">{procedureType === "repair" ? "Add Repair Procedure for Category " + category.name : "Add Preventive Maintenance Procedure for Category " + category.name}</h1>
             <form className="add-update-procedure-form" onSubmit={handleSubmit}>
                 <div className='category-inputs'>
                     <div className="label-input">
