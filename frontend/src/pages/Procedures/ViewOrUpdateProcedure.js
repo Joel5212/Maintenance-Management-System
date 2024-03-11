@@ -117,8 +117,8 @@ const ViewOrUpdateProcedure = () => {
                 <div className="add-update-procedure-back-btn-invisible"></div>
             </div>
             <h1 className="add-update-procedure-title">{procedureType === "repair" ?
-                "Update Repair Procedure for Category " + category.categoryName :
-                "Update Preventive Maintenance Procedure for Category " + category.categoryName}</h1>
+                "Update Repair Procedure for Category " + category.name :
+                "Update Preventive Maintenance Procedure for Category " + category.name}</h1>
             <form className="add-update-procedure-form" onSubmit={handleSubmit}>
                 <div className='category-inputs'>
                     <div className="label-input">

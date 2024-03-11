@@ -186,7 +186,7 @@ input {
 
 .sidebar {
     height: 100%;
-    width: 12%;
+    width: 13.5%;
     margin: 0;
     background: linear-gradient(#424242, #212121);
 }
@@ -210,7 +210,7 @@ input {
     padding-bottom: 10%;
     font-size: 25px;
     width: 100%;
-    height: 30%;
+    height: 55px;
     text-decoration: none;
     align-content: space-between;
     display: flex;
@@ -315,7 +315,7 @@ input {
     font-size: 30px;
 }
 
-@media screen and (max-width: 2500px) {
+@media screen and (max-width: 2000px) {
     .sidebar {
         height: 100%;
         width: 15%;
