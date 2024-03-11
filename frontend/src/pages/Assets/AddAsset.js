@@ -1,26 +1,31 @@
 import { useState } from 'react'
 import { useEffect } from 'react'
+import Select from 'react-dropdown-select';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { Link } from 'react-router-dom'
 import { useNavigate, useLocation } from 'react-router-dom';
 import { usePrevRouteContext } from "../../hooks/usePrevRouteContext";
 import { useAuthContext } from '../../hooks/useAuthContext'
 import { useAssetsContext } from "../../hooks/useAssetsContext";
+import { useCategoriesContext } from "../../hooks/useCategoriesContext";
+import { useLocationsContext } from "../../hooks/useLocationsContext";
 import { SelectAssetModal } from '../../components/SelectAssetModal'
 const validator = require('validator')
 
 
 const AddAsset = () => {
     const { assets, dispatch: assetsDispatch } = useAssetsContext()
+    // const { categories: categoriesContext, dispatch: categoriesDispatch } = useCategoriesContext()
+    // const { locations: locationsContext, dispatch: locationsDispatch } = useLocationsContext()
     const [name, setName] = useState('')
-    // const [assetType, setAssetType] = useState('')
     const [price, setPrice] = useState('')
     const [description, setDescription] = useState('')
     const [parentAsset, setParentAsset] = useState('')
     const [parentAssetName, setParentAssetName] = useState([])
-    const [parentAssetsToDisplay, setParentAssetsToDisplay] = useState([])
-    const [locations, setLocations] = useState('')
-    const [assetLocation, setAssetLocation] = useState([])
+    const [locations, setLocations] = useState([])
+    const [categories, setCategories] = useState([])
+    const [selectedCategory, setSelectedCategory] = useState([])
+    const [selectedAssetLocation, setSelectedAssetLocation] = useState([])
     const [error, setError] = useState(null)
     const [emptyFields, setEmptyFields] = useState('')
     const { prevRoute, dispatch: prevRouterDispatch } = usePrevRouteContext();
@@ -28,88 +33,57 @@ const AddAsset = () => {
     const location = useLocation()
     const { user } = useAuthContext()
     const [showSelectAssetModal, setShowSelectAssetModal] = useState(false)
-    // const { assetType } = location.state
 
+    useEffect(() => {
+        fetchAndSetLocations()
+        fecthAndSetCategories()
+        prevRouterDispatch({ type: 'SET_PREV_ROUTE', location: location.pathname })
+    }, [assetsDispatch, user])
 
+    const fecthAndSetCategories = async () => {
+        const response = await fetch('/api/categories', {
+            headers: {
+                'Authorization': `Bearer ${user.token}`
+            }
+        })
+        const json = await response.json()
+        if (response.ok) {
+            const categories = []
+            if (json) {
+                for (const category of json) {
+                    const value = category._id
+                    const label = category.name
+                    categories.push({ label, value })
 
-    // const getLocations = function () {
-    //     const locations = []
+                }
+                console.log("categories", categories)
+                setCategories(categories)
+            }
+        }
+    }
 
-    //     if (assets) {
-    //         const value = 0
-    //         const label = "root"
-    //         locations.push({ label, value })
-    //         for (const asset of assets) {
-    //             if (asset.assetType === "location") {
-    //                 const value = asset._id
-    //                 const label = asset.name
-    //                 locations.push({ label, value })
-    //             }
-    //         }
-    //         console.log("locations", locations)
-    //         return locations
-    //     }
-    // }
+    const fetchAndSetLocations = async () => {
+        const response = await fetch('/api/locations', {
+            headers: {
+                'Authorization': `Bearer ${user.token}`
+            }
+        })
+        const json = await response.json()
 
+        if (response.ok) {
+            const locations = []
+            if (json) {
+                for (const location of json) {
+                    const value = location._id
+                    const label = location.name
+                    locations.push({ label, value })
 
-    // const setAssetLocationAndLoadParentAssets = function (selectedLocation) {
-
-    //     setAssetLocation(location)
-
-    //     setParentAsset()
-
-    //     const locationId = selectedLocation[0].value
-
-    //     const parentAssets = []
-
-    //     if (assetType === "equipment") {
-    //         if (locationId === 0) {
-    //             const value = 0
-    //             const label = "root"
-    //             parentAssets.push({ label, value })
-    //             for (const asset of assets) {
-    //                 const value = asset._id
-    //                 const label = asset.name
-    //                 parentAssets.push({ label, value })
-    //             }
-    //         }
-    //         else {
-    //             for (const asset of assets) {
-    //                 if (asset.assetPaths.includes(locationId)) {
-    //                     const value = asset._id
-    //                     const label = asset.name
-    //                     parentAssets.push({ label, value })
-    //                 }
-    //             }
-    //         }
-    //     }
-    //     else if (assetType === "location") {
-    //         if (locationId === 0) {
-    //             const value = 0
-    //             const label = "root"
-    //             parentAssets.push({ label, value })
-    //             for (const asset of assets) {
-    //                 if (asset.assetType === "location") {
-    //                     const value = asset._id
-    //                     const label = asset.name
-    //                     parentAssets.push({ label, value })
-    //                 }
-    //             }
-    //         }
-    //         else {
-    //             for (const asset of assets) {
-    //                 if (asset.assetType === "location" && asset.assetPaths.includes(locationId)) {
-    //                     const value = asset._id
-    //                     const label = asset.name
-    //                     parentAssets.push({ label, value })
-    //                 }
-    //             }
-    //         }
-    //     }
-    //     setParentAssets(parentAssets)
-    // }
-
-
+                }
+                console.log("locations", locations)
+                setLocations(locations)
+            }
+        }
+    }
 
     const selectParentAsset = function () {
         setShowSelectAssetModal(true)
@@ -124,28 +98,6 @@ const AddAsset = () => {
         setParentAssetName(asset.name)
         setShowSelectAssetModal(false)
     }
-
-    // const fetchAssets = async () => {
-    //     const response = await fetch('/api/assets', {
-    //         headers: {
-    //             'Authorization': `Bearer ${user.token}`
-    //         }
-    //     })
-    //     const json = await response.json()
-
-    //     if (response.ok) {
-    //         console.log('Fetched Assets', json)
-    //         assetsDispatch({ type: 'SET_ASSETS', payload: json })
-    //     }
-    // }
-
-    useEffect(() => {
-        // if (prevRoute !== '/assets') {
-        //     fetchAssets()
-        //     console.log(prevRoute, assets)
-        // }
-        prevRouterDispatch({ type: 'SET_PREV_ROUTE', location: location.pathname })
-    }, [assetsDispatch, user])
 
     const handleSubmit = async (e) => {
         e.preventDefault()
@@ -172,9 +124,25 @@ const AddAsset = () => {
                     parentAssetId = parentAsset._id
                 }
 
+                let categoryId = null
+                let categoryName = ''
+
+                if (selectedCategory.length !== 0) {
+                    categoryId = selectedCategory[0].value
+                    categoryName = selectedCategory[0].label
+                }
+
+                let locationId = null
+                let locationName = ''
+
+                if (selectedAssetLocation.length !== 0) {
+                    locationId = selectedAssetLocation[0].value
+                    locationName = selectedAssetLocation[0].label
+                }
+
                 console.log("ParentAssetId", parentAsset)
 
-                const newAsset = { name: name, price: price, description: description, parentAsset: parentAssetId }
+                const newAsset = { name: name, price: price, description: description, parentAsset: parentAssetId, categoryId: categoryId, locationId: locationId }
 
                 const response = await fetch('/api/assets', {
                     method: 'POST',
@@ -193,7 +161,9 @@ const AddAsset = () => {
                 }
 
                 if (response.ok) {
-                    assetsDispatch({ type: 'ADD_ASSET', payload: json })
+                    console.log("CATEGORY NAME", categoryName)
+                    console.log("LOCATION NAME", locationName)
+                    assetsDispatch({ type: 'ADD_ASSET', payload: json, categoryName: categoryName, locationName: locationName })
                     navigate('/assets')
                 }
 
@@ -237,35 +207,6 @@ const AddAsset = () => {
                                     className='input'
                                 />
                             </div>
-                        </div>
-                        <div className='middle'>
-                            {/* <div className="label-input">
-                        <label>Location:</label>
-                        <div className={emptyFields.includes('location') ? 'dropdown-error' : 'dropdown'}>
-                            <Select
-                                options={getLocations()}
-                                values={assetLocation}
-                                onChange={(values) => setAssetLocationAndLoadParentAssets(values)}
-
-                            />
-                        </div>
-                    </div> */}
-                            <div className='label-input'>
-                                <div className="label-input">
-                                    <label>Parent Asset:</label>
-                                    <div className="add-parent-asset-container">
-                                        <input
-                                            value={parentAssetName}
-                                            placeholder='Select Parent Asset'
-                                            className='add-parent-asset-input'
-                                            disabeled={true}
-                                        />
-                                        <button className='add-parent-asset-btn' onClick={selectParentAsset}>
-                                            +
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
                             <div className="label-input">
                                 <label>Description:</label>
                                 <textarea
@@ -277,6 +218,44 @@ const AddAsset = () => {
                                     rows="20" // You can adjust the number of rows as needed
                                     cols="43"
                                 />
+                            </div>
+                        </div>
+                        <div className='middle'>
+                            <div className="label-input">
+                                <label>Parent Asset:</label>
+                                <div className="add-parent-asset-container">
+                                    <input
+                                        value={parentAssetName}
+                                        placeholder='Select Parent Asset'
+                                        className='add-parent-asset-input'
+                                        disabeled={true}
+                                    />
+                                    <button className='add-parent-asset-btn' onClick={selectParentAsset}>
+                                        +
+                                    </button>
+                                </div>
+                            </div>
+                            <div className="label-input">
+                                <label>Category:</label>
+                                <div className={emptyFields.includes('category') ? 'dropdown-error' : 'dropdown'}>
+                                    <Select
+                                        options={categories}
+                                        values={selectedCategory}
+                                        onChange={(category) => setSelectedCategory(category)}
+
+                                    />
+                                </div>
+                            </div>
+                            <div className="label-input">
+                                <label>Location:</label>
+                                <div className='dropdown'>
+                                    <Select
+                                        options={locations}
+                                        values={selectedAssetLocation}
+                                        onChange={(assetLocation) => setSelectedAssetLocation(assetLocation)}
+
+                                    />
+                                </div>
                             </div>
                             {/* <div >
                         <div

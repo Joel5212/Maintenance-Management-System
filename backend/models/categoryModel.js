@@ -33,11 +33,11 @@ const repairProcedureSchema = new mongoose.Schema({
 })
 
 const categorySchema = mongoose.Schema({
-    categoryName: {
+    name: {
         type: String,
         required: true
     },
-    categoryDescription: {
+    description: {
         type: String,
         required: false
     },

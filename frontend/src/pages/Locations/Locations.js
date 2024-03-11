@@ -95,7 +95,7 @@ const Locations = () => {
 
     useEffect(() => {
         console.log("prevRoute", prevRoute)
-        if (prevRoute !== '/locations/add' && prevRoute !== '/locations/viewOrUpdate') {
+        if (prevRoute !== '/locations/add' && prevRoute !== '/locations/viewOrUpdate' || !locations) {
             fetchLocations()
             console.log(prevRoute, locations)
         }
