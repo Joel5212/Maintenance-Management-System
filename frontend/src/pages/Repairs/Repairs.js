@@ -107,7 +107,7 @@ const Repairs = () => {
 
     useEffect(() => {
         console.log("prevRoute", prevRoute)
-        if (prevRoute !== '/repairs/add' && prevRoute !== '/repairs/viewOrUpdate') {
+        if (prevRoute !== '/repairs/add' && prevRoute !== '/repairs/viewOrUpdate' || !repairs) {
             fetchRepairs()
             console.log(prevRoute, repairs)
         }

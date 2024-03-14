@@ -18,24 +18,24 @@ const assetSchema = mongoose.Schema({
         ref: 'Asset',
         required: false
     },
-    repairs: [{
+    category: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Repair',
+        ref: 'Category',
         required: false
-    }],
-    preventiveMaintenances: [{
+    },
+    location: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'PreventiveMaintenance',
+        ref: 'Location',
         required: false
-    }],
-    repairDetails: [{
-        type: String,
-        required: false
-    }],
-    preventiveMaintenanceDetails: [{
-        type: String,
-        required: false
-    }],
+    }
+    // repairProceduresOfAsset: [{
+    //     type: String,
+    //     required: false
+    // }],
+    // preventiveMaintenanceProceduresOfAsset: [{
+    //     type: String,
+    //     required: false
+    // }],
 
 })
 

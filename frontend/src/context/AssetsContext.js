@@ -40,20 +40,27 @@ const setAssets = function (assets) {
     return assets
 }
 
-const addAsset = function (assets, assetToAdd) {
+const addAsset = function (assets, assetToAdd, categoryName, locationName) {
+    console.log("CATEGORY NAME", categoryName)
+    console.log("LOCATION NAME", locationName)
     if (assets !== null && assets.length !== 0 && assetToAdd.parentAsset != null) {
         for (const asset of assets) {
             if (asset._id === assetToAdd.parentAsset) {
                 //creating new path using parent's for asset to be added
                 const newPaths = [...asset.assetPaths, assetToAdd._id]
                 assetToAdd.assetPaths = newPaths
+                assetToAdd.category = { _id: assetToAdd.category, name: categoryName }
+                assetToAdd.location = { _id: assetToAdd.location, name: locationName }
                 break;
             }
         }
     }
     else {
         assetToAdd.assetPaths = [assetToAdd._id]
+        assetToAdd.category = { _id: assetToAdd.category, name: categoryName }
+        assetToAdd.location = { _id: assetToAdd.location, name: locationName }
     }
+    console.log("ASSET TO ADD", assetToAdd)
     return assets != null ? [...assets, assetToAdd] : [assetToAdd]
 }
 
@@ -71,7 +78,7 @@ export const assetsReducer = (state, action) => {
             }
         case 'ADD_ASSET':
             return {
-                assets: addAsset(state.assets, action.payload)
+                assets: addAsset(state.assets, action.payload, action.categoryName, action.locationName)
             }
         case 'DELETE_ASSET':
             return {
