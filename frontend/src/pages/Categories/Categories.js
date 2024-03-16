@@ -4,7 +4,7 @@ import { useCategoriesContext } from "../../hooks/useCategoriesContext";
 import { AgGridReact } from 'ag-grid-react';
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";
-import { UserActionEllipsis } from '../../components/UserActionEllipsis'
+import { CategoryActionEllipsis } from '../../components/CategoryActionEllipsis'
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Link } from 'react-router-dom'
 import { usePrevRouteContext } from "../../hooks/usePrevRouteContext";
@@ -16,6 +16,24 @@ const Categories = () => {
     const { user } = useAuthContext()
     const navigate = useNavigate()
     const location = useLocation()
+
+    const goToRepairProceduresOfCategory = async (category) => {
+
+        if (!user) {
+            return
+        }
+
+        navigate('procedures', { state: { categoryId: category._id, procedureType: "repair" } })
+    }
+
+    const goToPreventiveMaintenanceProceduresOfCategory = async (category) => {
+
+        if (!user) {
+            return
+        }
+
+        navigate('procedures', { state: { categoryId: category._id, procedureType: "preventiveMaintenance" } })
+    }
 
     const onDelete = async (id) => {
 
@@ -44,14 +62,17 @@ const Categories = () => {
 
     const columnDefs = [
         {
+            headerName: 'Category Name',
             field: 'name',
         },
         {
             headerName: 'Actions',
-            cellRenderer: UserActionEllipsis,
+            cellRenderer: CategoryActionEllipsis,
             cellRendererParams: (params) => ({
                 onDelete: () => onDelete(params.data._id),
-                onViewUpdate: () => onViewUpdate(params.data)
+                onViewUpdate: () => onViewUpdate(params.data),
+                goToRepairProceduresOfCategory: () => goToRepairProceduresOfCategory(params.data),
+                goToPreventiveMaintenanceProceduresOfCategory: () => goToPreventiveMaintenanceProceduresOfCategory(params.data)
             }),
         },
     ]
@@ -71,7 +92,7 @@ const Categories = () => {
 
 
     useEffect(() => {
-        if ((user && prevRoute !== '/categories/add' && prevRoute !== '/categories/viewOrUpdate') || (user && !categories)) {
+        if ((user && prevRoute !== '/categories/add' && prevRoute !== '/categories/viewOrUpdate' && prevRoute !== '/categories/procedures') || (user && !categories)) {
             fetchCategories()
             console.log(prevRoute, categories)
         }

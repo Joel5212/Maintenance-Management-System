@@ -30,9 +30,10 @@ function Sidebar() {
             <ul className="sidebarRoutes">
                 <li><Link to="/dashboard" className="sidebarRoute">Dashboard</Link></li>
                 <li><Link to="/assets" className="sidebarRoute">Assets</Link></li>
-                <li><Link to="/categories" className="sidebarRoute">Categories</Link></li>
                 <li><Link to="/repairs" className="sidebarRoute">Repairs</Link></li>
-                <li><Link to="/preventiveMaintenance" className="sidebarRoute">Preventive Maintenance</Link></li>
+                <li><Link to="/preventiveMaintenance" className="sidebarRoute">Preventive Maintenances</Link></li>
+                <li><Link to="/categories" className="sidebarRoute">Categories</Link></li>
+                <li><Link to="/locations" className="sidebarRoute">Locations</Link></li>
                 <li><Link to="/users" className="sidebarRoute">Users</Link></li>
             </ul>
             <div className="div-empty-space"></div>

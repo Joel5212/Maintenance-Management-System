@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useEffect } from "react"
 import Dropdown from 'react-dropdown';
 import 'react-dropdown/style.css';
-import { useCategoriesContext } from "../../hooks/useCategoriesContext";
+import { useLocationsContext } from "../../hooks/useLocationsContext";
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { Link } from 'react-router-dom'
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -10,20 +10,36 @@ import { usePrevRouteContext } from "../../hooks/usePrevRouteContext";
 import { useAuthContext } from '../../hooks/useAuthContext'
 const validator = require('validator')
 
-const AddUser = () => {
-    const [categoryName, setCategoryName] = useState('')
-    const [categoryDescription, setCategoryDescription] = useState('')
+const AddLocation = () => {
+    const [name, setName] = useState('')
+    const [description, setDescription] = useState('')
     const [error, setError] = useState(null)
     const [emptyFields, setEmptyFields] = useState('')
-    const { categories, dispatch: categoriesDispatch } = useCategoriesContext()
+    const { locations, dispatch: locationsDispatch } = useLocationsContext()
     const { prevRoute, dispatch: prevRouterDispatch } = usePrevRouteContext();
     const navigate = useNavigate()
     const location = useLocation()
     const { user } = useAuthContext()
 
+
+    const fetchLocations = async () => {
+        const response = await fetch('/api/locations', {
+            headers: {
+                'Authorization': `Bearer ${user.token}`
+            }
+        })
+        const json = await response.json()
+
+        if (response.ok) {
+            console.log('Fetched Locations', json)
+            locationsDispatch({ type: 'SET_LOCATIONS', payload: json })
+        }
+    }
+
     useEffect(() => {
         prevRouterDispatch({ type: 'SET_PREV_ROUTE', location: location.pathname })
-    }, [])
+
+    }, [locationsDispatch, user])
 
     const handleSubmit = async (e) => {
         e.preventDefault()
@@ -35,33 +51,36 @@ const AddUser = () => {
         const emptyFields = [];
         let error = '';
 
-        if (!categoryName) {
-            emptyFields.push('categoryName')
+        if (!name) {
+            emptyFields.push('name')
         }
 
         //Check if there are empty fields
         if (emptyFields.length === 0) {
+            //Send Request
+            const newLocation = { name: name, description: description }
 
-            const newCategory = { name: categoryName, description: categoryDescription }
-
-            const response = await fetch('/api/categories/', {
+            console.log("checkpoint 1", newLocation)
+            const response = await fetch('/api/locations', {
                 method: 'POST',
-                body: JSON.stringify(newCategory),
+                body: JSON.stringify(newLocation),
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${user.token}`
                 }
             })
-
+            console.log("checkpoint 2", response)
             const json = await response.json()
 
+            console.log("checkpoint 3", json)
             //Check for errors from express server
             if (!response.ok) {
                 error = json.error
             }
 
             if (response.ok) {
-                categoriesDispatch({ type: 'ADD_CATEGORY', payload: json })
+                fetchLocations()
+                locationsDispatch({ type: 'ADD_LOCATION', payload: json })
                 navigate(-1)
             }
         }
@@ -73,30 +92,28 @@ const AddUser = () => {
     }
 
     return (
-        <div className="add-update-category-container">
-            <Link to='/categories' className='back-button-link'><button className='back-button'><ArrowBackIcon /></button></Link>
-            <form className="add-update-category-form" onSubmit={handleSubmit}>
-                <h1 className="add-update-category-title">Add Category</h1>
-                <div className='category-inputs'>
+        <div className="add-update-location-container">
+            <Link to='/locations' className='back-button-link'><button className='back-button'><ArrowBackIcon /></button></Link>
+            <form className="add-update-location-form" onSubmit={handleSubmit}>
+                <h1 className="add-update-location-title">Add Location</h1>
+                <div className='top'>
                     <div className="label-input">
-                        <label>Category Name:</label>
+                        <label>Name:</label>
                         <input
-                            onChange={(e) => setCategoryName(e.target.value)}
-                            value={categoryName}
-                            placeholder='Enter Category'
-                            className={emptyFields.includes('categoryName') ? 'input-error' : 'input'}
+                            onChange={(e) => setName(e.target.value)}
+                            value={name}
+                            placeholder='Enter name'
+                            className={emptyFields.includes('name') ? 'input-error' : 'input'}
                         />
                     </div>
                     <div className="label-input">
-                        <label>Category Description:</label>
-                        <textarea
-                            id="description"
-                            name="description"
-                            onChange={(e) => setCategoryDescription(e.target.value)}
-                            value={categoryDescription}
-                            placeholder='Enter Description'
-                            rows="20" // You can adjust the number of rows as needed
-                            cols="43"
+                        <label>Description:</label>
+                        <input
+                            onChange={(e) => setDescription(e.target.value)}
+                            value={description}
+                            placeholder='Enter description'
+                            className={emptyFields.includes('description') ? 'input-error' : 'input'}
+
                         />
                     </div>
                 </div>
@@ -111,4 +128,4 @@ const AddUser = () => {
     )
 }
 
-export default AddUser
+export default AddLocation

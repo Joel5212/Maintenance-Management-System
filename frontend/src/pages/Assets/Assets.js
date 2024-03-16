@@ -91,7 +91,12 @@ const Assets = () => {
   const columnDefs = [
     {
       headerName: 'Category',
-      field: 'name',
+      field: 'category.name',
+      width: 130,
+    },
+    {
+      headerName: 'Location',
+      field: 'location.name',
       width: 130,
     },
     {
@@ -107,7 +112,7 @@ const Assets = () => {
 
   const autoGroupColumnDef = useMemo(() => {
     return {
-      headerName: 'Name',
+      headerName: 'Asset Name',
       cellRendererParams: {
         suppressCount: true
       },

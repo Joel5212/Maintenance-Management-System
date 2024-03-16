@@ -6,6 +6,8 @@ import AddAsset from '../Assets/AddAsset'
 import AssetType from '../Assets/AssetType'
 import Dashboard from '../Dashboard/Dashboard'
 import Repairs from '../Repairs/Repairs'
+import AddRepair from '../Repairs/AddRepair'
+import ViewOrUpdateRepair from '../Repairs/ViewOrUpdateRepair'
 import PreventiveMaintenance from '../PreventiveMaintenance/PreventiveMaintenance'
 import Users from '../Users/Users'
 import AddUser from '../Users/AddUser'
@@ -14,9 +16,17 @@ import ViewOrUpdateAsset from '../Assets/ViewOrUpdateAsset'
 import Categories from '../Categories/Categories'
 import AddCategory from '../Categories/AddCategory'
 import ViewOrUpdateCategory from '../Categories/ViewOrUpdateCategory'
+import Locations from '../Locations/Locations'
+import AddLocation from '../Locations/AddLocation'
+import ViewOrUpdateLocation from '../Locations/ViewOrUpdateLocation'
+import AddProcedure from '../Procedures/AddProcedure'
+import ProceduresOfCategory from '../Procedures/ProceduresOfCategory'
+import ViewOrUpdateProcedure from '../Procedures/ViewOrUpdateProcedure'
 import { UsersContextProvider } from '../../context/UsersContext';
 import { AssetsContextProvider } from '../../context/AssetsContext';
 import { CategoriesContextProvider } from '../../context/CategoriesContext';
+import { RepairsContextProvider } from '../../context/RepairsContext';
+import { LocationsContextProvider } from '../../context/LocationsContext';
 
 const Home = () => {
   return (
@@ -88,8 +98,52 @@ const Home = () => {
               }
             />
             <Route
+              path="/categories/procedures"
+              element={
+                <CategoriesContextProvider>
+                  <ProceduresOfCategory />
+                </CategoriesContextProvider>
+              }
+            />
+            <Route
+              path="/categories/procedures/add"
+              element={
+                <CategoriesContextProvider>
+                  <AddProcedure />
+                </CategoriesContextProvider>
+              }
+            />
+            <Route
+              path="/categories/procedures/viewOrUpdate"
+              element={
+                <CategoriesContextProvider>
+                  <ViewOrUpdateProcedure />
+                </CategoriesContextProvider>
+              }
+            />
+            <Route
               path="/repairs"
-              element={<Repairs />}
+              element={
+                <RepairsContextProvider>
+                  <Repairs />
+                </RepairsContextProvider>
+              }
+            />
+            <Route
+              path="/repairs/add"
+              element={
+                <RepairsContextProvider>
+                  <AddRepair />
+                </RepairsContextProvider>
+              }
+            />
+            <Route
+              path="/repairs/viewOrUpdate"
+              element={
+                <RepairsContextProvider>
+                  <ViewOrUpdateRepair />
+                </RepairsContextProvider>
+              }
             />
             <Route
               path="/preventiveMaintenance"
@@ -119,6 +173,30 @@ const Home = () => {
                 <UsersContextProvider>
                   <ViewOrUpdateUser />
                 </UsersContextProvider>
+              }
+            />
+            <Route
+              path="/locations"
+              element={
+                <LocationsContextProvider>
+                  <Locations />
+                </LocationsContextProvider>
+              }
+            />
+            <Route
+              path="/locations/add"
+              element={
+                <LocationsContextProvider>
+                  <AddLocation />
+                </LocationsContextProvider>
+              }
+            />
+            <Route
+              path="/locations/viewOrUpdate"
+              element={
+                <LocationsContextProvider>
+                  <ViewOrUpdateLocation />
+                </LocationsContextProvider>
               }
             />
           </Routes>

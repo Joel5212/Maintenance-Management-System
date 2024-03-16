@@ -1,11 +1,11 @@
 const mongoose = require('mongoose')
 
 const preventiveMaintenanceProcedureSchema = new mongoose.Schema({
-    preventiveProcedureName: {
+    preventiveMaintenanceProcedureTitle: {
         type: String,
         required: true
     },
-    preventiveProcedureDescription: {
+    preventiveMaintenanceProcedureDescription: {
         type: String,
         required: true
     },
@@ -17,7 +17,7 @@ const preventiveMaintenanceProcedureSchema = new mongoose.Schema({
 })
 
 const repairProcedureSchema = new mongoose.Schema({
-    name: {
+    repairProcedureTitle: {
         type: String,
         required: true
     },
