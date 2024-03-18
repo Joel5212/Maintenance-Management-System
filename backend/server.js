@@ -5,6 +5,8 @@ const mongoose = require('mongoose')
 const userRoutes = require('./routes/users')
 const assetRoutes = require('./routes/assets')
 const categoryRoutes = require('./routes/categories')
+const repairProcedureRoutes = require('./routes/repairProcedures')
+const preventiveMaintenanceProcedureRoutes = require('./routes/preventiveMaintenanceProcedures')
 const organizationRoutes = require('./routes/organization')
 const repairRoutes = require('./routes/repairs')
 const locationRoutes = require('./routes/locations')
@@ -31,6 +33,10 @@ app.use('/api/assets', assetRoutes)
 app.use('/api/organization', organizationRoutes)
 
 app.use('/api/categories', categoryRoutes)
+
+app.use('/api/repairProcedures', repairProcedureRoutes)
+
+app.use('/api/preventiveMaintenanceProcedures', preventiveMaintenanceProcedureRoutes)
 
 app.use('/api/repairs', repairRoutes)
 

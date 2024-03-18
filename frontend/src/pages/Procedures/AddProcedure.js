@@ -1,8 +1,9 @@
 import { useState } from 'react'
 import { useEffect } from "react"
 import 'react-dropdown/style.css';
-import { useCategoriesContext } from "../../hooks/useCategoriesContext";
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import { useCategoriesContext } from "../../hooks/useCategoriesContext";
+import { useProceduresContext } from "../../hooks/useProceduresContext";
 import { useNavigate, useLocation } from 'react-router-dom';
 import { usePrevRouteContext } from "../../hooks/usePrevRouteContext";
 import { useAuthContext } from '../../hooks/useAuthContext'
@@ -14,6 +15,7 @@ const AddProcedure = () => {
     const [error, setError] = useState(null)
     const [emptyFields, setEmptyFields] = useState('')
     const { categories, dispatch: categoriesDispatch } = useCategoriesContext()
+    const { procedures, dispatch: proceduresDispatch } = useProceduresContext()
     const { prevRoute, dispatch: prevRouterDispatch } = usePrevRouteContext();
     const navigate = useNavigate()
     const location = useLocation()
@@ -21,28 +23,16 @@ const AddProcedure = () => {
     const { category, procedureType } = location.state
 
     const goBackToProcedures = async () => {
-        navigate('/categories/procedures', { state: { categoryId: category._id, procedureType } })
-    }
-
-    const fetchCategories = async () => {
-        const response = await fetch('/api/categories', {
-            headers: {
-                'Authorization': `Bearer ${user.token}`
-            }
-        })
-        const json = await response.json()
-
-        if (response.ok) {
-            categoriesDispatch({ type: 'SET_CATEGORIES', payload: json })
-        }
+        navigate('/categories/procedures', { state: { category: category, procedureType } })
     }
 
     useEffect(() => {
-        if ((user && prevRoute !== '/categories/procedures') || (user && !categories)) {
+        if (user && prevRoute !== '/categories/procedures' || (user && (!categories || !procedures))) {
             fetchCategories()
+            fetchProceduresOfCategory()
         }
         prevRouterDispatch({ type: 'SET_PREV_ROUTE', location: location.pathname })
-    }, [categoriesDispatch, user])
+    }, [proceduresDispatch, user])
 
     const handleSubmit = async (e) => {
         e.preventDefault()
@@ -65,13 +55,11 @@ const AddProcedure = () => {
         //Check if there are empty fields
         if (emptyFields.length === 0) {
 
-            const apiPath = procedureType === "repair" ? '/api/categories/addRepairProcedure/' + category._id :
-                '/api/categories/addPreventiveMaintenanceProcedure/' + category._id
-
-            const response = await fetch(apiPath, {
-                method: 'PATCH',
-                body: JSON.stringify(procedureType === "repair" ? { repairProcedureTitle: procedureTitle, repairProcedureDescription: procedureDescription } :
-                    { preventiveMaintenanceProcedureTitle: procedureTitle, preventiveMaintenanceProcedureDescription: procedureDescription }),
+            const response = await fetch(procedureType === "repair" ? '/api/repairProcedures/' :
+                '/api/preventiveMaintenanceProcedures/', {
+                method: 'POST',
+                body: JSON.stringify(procedureType === "repair" ? { category: category._id, title: procedureTitle, description: procedureDescription } :
+                    { category: category._id, title: procedureTitle, description: procedureDescription }),
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${user.token}`
@@ -80,16 +68,14 @@ const AddProcedure = () => {
 
             const json = await response.json()
 
-            console.log(json)
-
             //Check for errors from express server
             if (!response.ok) {
                 error = json.error
             }
 
             if (response.ok) {
-                categoriesDispatch({ type: 'UPDATE_CATEGORY', payload: json })
-                navigate('/categories/procedures', { state: { categoryId: json._id, procedureType } })
+                proceduresDispatch({ type: 'ADD_PROCEDURE', payload: json })
+                navigate('/categories/procedures', { state: { category: category, procedureType } })
             }
         }
         else {
@@ -97,6 +83,32 @@ const AddProcedure = () => {
         }
         setEmptyFields(emptyFields)
         setError(error)
+    }
+
+    const fetchProceduresOfCategory = async () => {
+        const response = await fetch(procedureType === "repair" ? '/api/repairProcedures/' + category._id : '/api/preventiveMaintenanceProcedures/' + category._id, {
+            headers: {
+                'Authorization': `Bearer ${user.token}`
+            }
+        })
+        const json = await response.json()
+
+        if (response.ok) {
+            proceduresDispatch({ type: 'SET_PROCEDURES', payload: json })
+        }
+    }
+
+    const fetchCategories = async () => {
+        const response = await fetch('/api/categories', {
+            headers: {
+                'Authorization': `Bearer ${user.token}`
+            }
+        })
+        const json = await response.json()
+
+        if (response.ok) {
+            categoriesDispatch({ type: 'SET_CATEGORIES', payload: json })
+        }
     }
 
     return (
