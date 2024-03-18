@@ -3,6 +3,7 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { UserActionEllipsis } from '../../components/UserActionEllipsis'
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { useCategoriesContext } from "../../hooks/useCategoriesContext";
+import { useProceduresContext } from "../../hooks/useProceduresContext";
 import { usePrevRouteContext } from "../../hooks/usePrevRouteContext";
 import { useAuthContext } from '../../hooks/useAuthContext'
 import { NoItemsAvailable } from '../../components/NoItemsAvailable'
@@ -10,9 +11,9 @@ import { NoItemsAvailable } from '../../components/NoItemsAvailable'
 const ProceduresOfCategory = () => {
   const location = useLocation()
   const navigate = useNavigate()
-  const [category, setCategory] = useState('')
-  const { categoryId, procedureType } = location.state
+  const { category, procedureType } = location.state
   const { categories, dispatch: categoriesDispatch } = useCategoriesContext()
+  const { procedures, dispatch: proceduresDispatch } = useProceduresContext()
   const { prevRoute, dispatch: prevRouterDispatch } = usePrevRouteContext();
   const { user } = useAuthContext()
 
@@ -20,18 +21,16 @@ const ProceduresOfCategory = () => {
     if ((user && prevRoute !== '/categories' && prevRoute !== '/categories/procedures/add' && prevRoute !== '/categories/procedures/viewOrUpdate') || (user && !categories)) {
       fetchCategories()
     }
-    else {
-      setCategory(categories.find((category) => category._id === categoryId))
+
+    if (user && prevRoute !== '/categories/procedures/add' && prevRoute !== '/categories/procedures/viewOrUpdate' || (user && !procedures)) {
+      fetchProceduresOfCategory()
     }
+
     prevRouterDispatch({ type: 'SET_PREV_ROUTE', location: location.pathname })
-  }, [categoriesDispatch, user])
+  }, [proceduresDispatch, user])
 
   const onViewUpdate = async (procedureId) => {
-    const procedure = procedureType === "repair" ?
-      category.repairProcedures.find((repairProcedure) => repairProcedure._id === procedureId)
-      : category.preventiveMaintenanceProcedures.find((preventiveMaintenanceProcedure) => preventiveMaintenanceProcedure._id === procedureId)
-
-    console.log("PROCEDURE FOUNDDD", procedure)
+    const procedure = procedures.find((repairProcedure) => repairProcedure._id === procedureId)
     navigate('viewOrUpdate', { state: { category, procedure, procedureType } })
   }
 
@@ -41,12 +40,9 @@ const ProceduresOfCategory = () => {
       return
     }
 
-    const apiPath = procedureType === "repair" ? '/api/categories/deleteRepairProcedure/' + categoryId :
-      '/api/categories/deletePreventiveMaintenanceProcedure/' + categoryId
-
-    const response = await fetch(apiPath, {
-      method: 'PATCH',
-      body: JSON.stringify({ procedureId }),
+    const response = await fetch(procedureType === "repair" ? '/api/repairProcedures/' + procedureId :
+      '/api/preventiveMaintenanceProcedures/' + procedureId, {
+      method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${user.token}`
@@ -56,10 +52,8 @@ const ProceduresOfCategory = () => {
     const json = await response.json()
 
     if (response.ok) {
-      categoriesDispatch({ type: 'UPDATE_CATEGORY', payload: json })
-      setCategory(json)
+      proceduresDispatch({ type: 'DELETE_PROCEDURE', payload: json })
     }
-    console.log(categories)
   }
 
   const goToAddProcedure = async () => {
@@ -75,8 +69,20 @@ const ProceduresOfCategory = () => {
     const json = await response.json()
 
     if (response.ok) {
-      setCategory(json.find((category) => category._id === categoryId))
       categoriesDispatch({ type: 'SET_CATEGORIES', payload: json })
+    }
+  }
+
+  const fetchProceduresOfCategory = async () => {
+    const response = await fetch(procedureType === "repair" ? '/api/repairProcedures/' + category._id : '/api/preventiveMaintenanceProcedures/' + category._id, {
+      headers: {
+        'Authorization': `Bearer ${user.token}`
+      }
+    })
+    const json = await response.json()
+
+    if (response.ok) {
+      proceduresDispatch({ type: 'SET_PROCEDURES', payload: json })
     }
   }
 
@@ -91,32 +97,20 @@ const ProceduresOfCategory = () => {
       </div>
       <hr className='procedures-divider' />
       <div className='procedures-list'>
-        {category && ((procedureType === "repair" && category.repairProcedures.length > 0) || (procedureType === "preventiveMaintenance" && category.preventiveMaintenanceProcedures.length > 0)) ?
-          (procedureType === "repair" ? category.repairProcedures.map((repairProcedure) => (
-            <div className='procedure-container' key={repairProcedure._id}>
+        {category && ((procedures && procedures.length > 0)) ?
+          procedures.map((procedure) => (
+            <div className='procedure-container' key={procedure._id}>
               <div className="procedure-top">
                 <div className='procedure-title'>
-                  {repairProcedure.repairProcedureTitle}
+                  {procedure.title}
                 </div>
-                <UserActionEllipsis onDelete={() => onDelete(repairProcedure._id)} onViewUpdate={() => onViewUpdate(repairProcedure._id)} />
+                <UserActionEllipsis onDelete={() => onDelete(procedure._id)} onViewUpdate={() => onViewUpdate(procedure._id)} />
               </div>
               <div className='procedure-description'>
-                {repairProcedure.repairProcedureDescription}
+                {procedure.description}
               </div>
             </div>
-          )) : category.preventiveMaintenanceProcedures.map((preventiveMaintenanceProcedure) => (
-            <div className='procedure-container' key={preventiveMaintenanceProcedure._id}>
-              <div className="procedure-top">
-                <div className='procedure-title'>
-                  {preventiveMaintenanceProcedure.preventiveMaintenanceProcedureTitle}
-                </div>
-                <UserActionEllipsis onDelete={() => onDelete(preventiveMaintenanceProcedure._id)} onViewUpdate={() => onViewUpdate(preventiveMaintenanceProcedure._id)} />
-              </div>
-              <div className='procedure-description'>
-                {preventiveMaintenanceProcedure.preventiveMaintenanceProcedureDescription}
-              </div>
-            </div>
-          ))) : <NoItemsAvailable itemName={"Procedures"} />}
+          )) : <NoItemsAvailable itemName={"Procedures"} />}
       </div>
     </div>
   )
