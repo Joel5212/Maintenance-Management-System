@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useEffect } from "react"
 import 'react-dropdown/style.css';
 import { useCategoriesContext } from "../../hooks/useCategoriesContext";
+import { useProceduresContext } from "../../hooks/useProceduresContext";
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { usePrevRouteContext } from "../../hooks/usePrevRouteContext";
@@ -13,6 +14,7 @@ const ViewOrUpdateProcedure = () => {
     const [error, setError] = useState(null)
     const [emptyFields, setEmptyFields] = useState('')
     const { categories, dispatch: categoriesDispatch } = useCategoriesContext()
+    const { procedures, dispatch: proceduresDispatch } = useProceduresContext()
     const { prevRoute, dispatch: prevRouterDispatch } = usePrevRouteContext();
     const navigate = useNavigate()
     const location = useLocation()
@@ -20,19 +22,18 @@ const ViewOrUpdateProcedure = () => {
     const { category, procedure, procedureType } = location.state
 
     useEffect(() => {
-        setProcedureTitle(procedureType == "repair" ? procedure.repairProcedureTitle : procedure.preventiveMaintenanceProcedureTitle)
-        setProcedureDescription(procedureType == "repair" ? procedure.repairProcedureDescription : procedure.preventiveMaintenanceProcedureDescription)
-        prevRouterDispatch({ type: 'SET_PREV_ROUTE', location: location.pathname })
-        if ((user && prevRoute !== '/categories/procedures') || (user && !categories)) {
+        setProcedureTitle(procedure.title)
+        setProcedureDescription(procedure.description)
+        if ((user && prevRoute !== '/categories/procedures') || (user && (!categories || !procedures))) {
             fetchCategories()
+            fetchProceduresOfCategory()
         }
         prevRouterDispatch({ type: 'SET_PREV_ROUTE', location: location.pathname })
     }, [categoriesDispatch, user])
 
     const isFormUnchanged = () => {
         return (
-            procedureType == "repair" ? procedure.repairProcedureTitle === procedureTitle && procedure.repairProcedureDescription === procedureDescription
-                : procedure.preventiveMaintenanceProcedureTitle === procedureTitle && procedure.repairProcedureDescription === procedureDescription
+            procedure.title === procedureTitle && procedure.description === procedureDescription
         )
     }
 
@@ -50,6 +51,19 @@ const ViewOrUpdateProcedure = () => {
 
         if (response.ok) {
             categoriesDispatch({ type: 'SET_CATEGORIES', payload: json })
+        }
+    }
+
+    const fetchProceduresOfCategory = async () => {
+        const response = await fetch(procedureType === "repair" ? '/api/repairProcedures/' + category._id : '/api/preventiveMaintenanceProcedures/' + category._id, {
+            headers: {
+                'Authorization': `Bearer ${user.token}`
+            }
+        })
+        const json = await response.json()
+
+        if (response.ok) {
+            proceduresDispatch({ type: 'SET_PROCEDURES', payload: json })
         }
     }
 
@@ -74,13 +88,11 @@ const ViewOrUpdateProcedure = () => {
         if (!isFormUnchanged()) {
             if (emptyFields.length === 0) {
 
-                const apiPath = procedureType === "repair" ? '/api/categories/updateRepairProcedure/' + category._id :
-                    '/api/categories/updatePreventiveMaintenanceProcedure/' + category._id
-
-                const response = await fetch(apiPath, {
+                const response = await fetch(procedureType === "repair" ? '/api/repairProcedures/' + procedure._id :
+                    '/api/preventiveMaintenanceProcedures/' + procedure._id, {
                     method: 'PATCH',
-                    body: JSON.stringify(procedureType === "repair" ? { repairProcedureId: procedure._id, repairProcedureTitle: procedureTitle, repairProcedureDescription: procedureDescription } :
-                        { preventiveMaintenanceProcedureId: procedure._id, preventiveMaintenanceProcedureTitle: procedureTitle, preventiveMaintenanceProcedureDescription: procedureDescription }),
+                    body: JSON.stringify(procedureType === "repair" ? { category: category._id, title: procedureTitle, description: procedureDescription } :
+                        { category: category._id, title: procedureTitle, description: procedureDescription }),
                     headers: {
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${user.token}`
@@ -94,8 +106,8 @@ const ViewOrUpdateProcedure = () => {
                 }
 
                 if (response.ok) {
-                    categoriesDispatch({ type: 'UPDATE_CATEGORY', payload: json })
-                    navigate('/categories/procedures', { state: { categoryId: json._id, procedureType } })
+                    proceduresDispatch({ type: 'UPDATE_PROCEDURE', payload: json })
+                    navigate('/categories/procedures', { state: { category: category, procedureType } })
                 }
             }
             else {
