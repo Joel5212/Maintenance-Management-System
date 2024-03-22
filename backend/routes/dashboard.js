@@ -1,16 +1,16 @@
 const express = require('express')
-const { getUpcomingRepairs, getRepairStats } = require('../controllers/dashboardController')
+const { getRepairStatusStats, getRepairPriorityStats, getRepairFailureReport } = require('../controllers/dashboardController')
 const requireAuth = require('../middleware/requiredAuth')
 
 const router = express.Router()
 
 router.use(requireAuth)
 
-router.get('/getUpcomingRepairs', getUpcomingRepairs)
+router.get('/getRepairStatusStats', getRepairStatusStats)
 
-// router.get('/getUpcomingPreventiveMaintenances', getUpcomingPreventiveMaintenances)
+router.get('/getRepairPriorityStats', getRepairPriorityStats)
 
-router.get('/getRepairStats', getRepairStats)
+router.get('/getRepairFailureReport', getRepairFailureReport)
 
 // router.patch('/ getPreventiveMaintenanceStats', getPreventiveMaintenanceStats)
 
