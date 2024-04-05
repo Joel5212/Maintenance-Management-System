@@ -19,6 +19,30 @@ const Repairs = () => {
     const [showDeleteRepairModal, setShowDeleteRepairModal] = useState(false)
     const [repairToDelete, setRepairToDelete] = useState()
 
+    const markAsComplete = async (repair) => {
+        const repairId = repair._id;
+        const updatedRepair = { status: "Complete" };
+    
+        const response = await fetch(`/api/repairs/${repairId}`, {
+            method: 'PATCH',
+            body: JSON.stringify(updatedRepair),
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${user.Token}`
+            }
+        });
+    
+        if (response.ok) {
+            const json = await response.json();
+            // Reload the page after successful completion
+            window.location.reload();
+            return json;
+        } else {
+            const json = await response.json();
+            throw new Error(json.error || 'Failed to complete repair');
+        }
+    };
+    
     const onCancel = function () {
         setShowDeleteRepairModal(false)
     }
@@ -86,7 +110,8 @@ const Repairs = () => {
             cellRenderer: RepairActionEllipsis,
             cellRendererParams: (params) => ({
                 onDelete: () => onDelete(params.data._id),
-                onViewUpdate: () => onViewUpdate(params.data)
+                onViewUpdate: () => onViewUpdate(params.data),
+                markAsComplete: () => markAsComplete(params.data)
             }),
         },
     ]

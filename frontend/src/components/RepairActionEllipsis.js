@@ -7,7 +7,7 @@ export const RepairActionEllipsis = (props) => {
 
     const [anchorEl, setAnchorEl] = useState(null);
 
-    const { onDelete, onViewUpdate } = props;
+    const { onDelete, onViewUpdate, markAsComplete } = props;
 
     const handleActionClick = (event) => {
         setAnchorEl(event.currentTarget);
@@ -25,6 +25,10 @@ export const RepairActionEllipsis = (props) => {
                 break;
             case 'viewUpdate':
                 onViewUpdate();
+                break;
+            case 'markAsComplete':
+                console.log('In switch case')
+                await markAsComplete();
                 break;
             // Add more cases for other actions
             default:
@@ -51,6 +55,8 @@ export const RepairActionEllipsis = (props) => {
             >
                 <MenuItem onClick={() => handleMenuItemClick('delete')}>Delete</MenuItem>
                 <MenuItem onClick={() => handleMenuItemClick('viewUpdate')}>View/Update</MenuItem>
+                <MenuItem onClick={() => handleMenuItemClick('markAsComplete')}>Mark as Complete</MenuItem>
+
                 {/* Add more menu items for other actions */}
             </Menu>
         </div>

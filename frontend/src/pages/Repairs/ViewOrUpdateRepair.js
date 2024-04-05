@@ -149,7 +149,7 @@ const ViewOrUpdateRepair = (props) => {
         navigate(-1)
     }
 
-    const priorities = ["Low", "Medium", "High"];
+    const priorities = ["low", "medium", "high"];
     const statuses = ["Incomplete", "In-Progress", "Complete"]
 
 

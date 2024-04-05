@@ -116,7 +116,7 @@ const AddRepair = () => {
         setError(error)
     }
 
-    const priorities = ["Low", "Medium", "High"];
+    const priorities = ["low", "medium", "high"];
     const statuses = ["Incomplete", "In-Progress", "Complete"]
 
     return (
