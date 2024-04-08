@@ -59,7 +59,7 @@
 }
 
 .failure-report-title {
-    font-size: 25px;
+    font-size: 20px;
 }
 
 .failure-report-container {
@@ -190,4 +190,32 @@
     .chart-title {
         font-size: 20px;
     }
+}
+
+@media (500px < height < 1000px) {
+    .dashboard-item {
+        height: 350px;
+    }
+
+    .workorder-stats-chart {
+        margin-top: 10px;
+        height: 350px;
+    }
+
+    .chart-title {
+        font-size: 17px;
+    }
+
+    .failure-report-container {
+        height: 350px;
+        width: 47%;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .failure-report-title {
+        font-size: 18px;
+    }
+
+
 }

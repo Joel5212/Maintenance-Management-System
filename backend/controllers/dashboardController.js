@@ -60,16 +60,58 @@ const getRepairPriorityStats = async (req, res) => {
 }
 
 const getRepairFailureReport = async (req, res) => {
-    const repairFailureReport = await Repair.aggregate([
+    // const totalFailuresForEachAsset = await Repair.aggregate([
+    //     {
+    //         $match: {
+    //             isFailure: true
+    //         },
+    //     },
+    //     {
+    //         $group: {
+    //             _id: "$asset",
+    //             totalFailures: { $sum: 1 }
+    //         }
+    //     },
+    //     {
+    //         $lookup: {
+    //             from: 'assets',
+    //             localField: '_id',
+    //             foreignField: '_id',
+    //             as: 'asset'
+    //         }
+    //     },
+    //     {
+    //         $project: {
+    //             _id: 1,
+    //             totalFailures: 1,
+    //             asset: "$asset.name"
+    //         }
+    //     }
+    // ])
+
+    const completedFailureReportForEachAsset = await Repair.aggregate([
         {
             $match: {
-                isFailure: true
-            },
+                isFailure: true,
+                status: "Complete"
+            }
+        },
+        {
+            $sort: {
+                startDate: 1
+            }
         },
         {
             $group: {
                 _id: "$asset",
-                totalFailures: { $sum: 1 }
+                totalFailures: { $sum: 1 },
+                startAndEndDates: {
+                    $push:
+                    {
+                        startDate: "$startDate",
+                        completedDate: "$completedDate",
+                    }
+                }
             }
         },
         {
@@ -84,12 +126,37 @@ const getRepairFailureReport = async (req, res) => {
             $project: {
                 _id: 1,
                 totalFailures: 1,
+                startAndEndDates: 1,
                 asset: "$asset.name"
             }
         }
-
     ])
-    res.status(200).json(repairFailureReport)
+
+    let totalTimeBetweenFailures = 0
+    let overlap = false;
+    let overlapCount = 0;
+    let i = 0
+
+    for (const completedFailureReportForAsset of completedFailureReportForEachAsset) {
+        if (completedFailureReportForAsset.length != 1) {
+            while (i < completedFailureReportForAsset.startAndEndDates.length - 1) {
+                let completedDate = completedFailureReportForAsset.startAndEndDates[i].completedDate
+                let startDateOfNextFailure = completedFailureReportForAsset.startAndEndDates[i + 1].startDate;
+                if (completedDate < startDateOfNextFailure) {
+                    totalTimeBetweenFailures += startDateOfNextFailure - completedDate;
+                }
+                else {
+                    overlapCount++
+                }
+                i += 1
+            }
+        }
+        const mtbf = (totalTimeBetweenFailures / 3600000) / (completedFailureReportForAsset.totalFailures - overlapCount);
+
+        completedFailureReportForAsset.mtbf = mtbf;
+    }
+
+    res.status(200).json(completedFailureReportForEachAsset);
 }
 
 // const getPreventiveMaintenanceStats = async (req, res) => {

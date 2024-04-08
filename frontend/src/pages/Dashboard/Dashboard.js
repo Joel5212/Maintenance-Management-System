@@ -101,6 +101,10 @@ const Dashboard = () => {
     {
       headerName: 'Total Failures',
       field: 'totalFailures'
+    },
+    {
+      headerName: 'MTBF (In Hours)',
+      field: 'mtbf'
     }
 
   ]
