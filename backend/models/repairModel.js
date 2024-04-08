@@ -23,13 +23,12 @@ const repairSchema = new Schema({
         required: false
     },
     
-    //will change to date type when front end is set
-    /*
+    
     startDate: { 
         type: String,
         required: false
     },
-    */
+    
 
     dueDate: {
         type: String,

@@ -16,6 +16,7 @@ const validator = require('validator')
 const ViewOrUpdateRepair = (props) => {
     const [title, setTitle] = useState('')
     const [asset, setAsset] = useState('')
+    const [startDate, setStartDate] = useState('')
     const [dueDate, setDueDate] = useState('')
     const [priority, setPriority] = useState('')
     const [servicers, setServicers] = useState('')
@@ -51,6 +52,7 @@ const ViewOrUpdateRepair = (props) => {
     useEffect(() => {
         setTitle(repair.title)
         setAsset(repair.asset)
+        setStartDate(repair.startDate)
         setDueDate(repair.dueDate)
         setPriority(repair.priority)
         setServicers(repair.servicers)
@@ -64,6 +66,7 @@ const ViewOrUpdateRepair = (props) => {
         return (
             title === repair.title &&
             asset === repair.asset &&
+            startDate === repair.startDate &&
             dueDate === repair.dueDate &&
             priority === repair.priority &&
             servicers === repair.servicers &&
@@ -91,6 +94,10 @@ const ViewOrUpdateRepair = (props) => {
                 emptyFields.push('asset')
             }
 
+            if (!startDate) {
+                emptyFields.push('startDate')
+            }
+
             if (!dueDate) {
                 emptyFields.push('dueDate')
             }
@@ -113,7 +120,7 @@ const ViewOrUpdateRepair = (props) => {
 
             if (emptyFields.length === 0) {
 
-                const newRepair = { title, asset, dueDate, priority, servicers, status, cost }
+                const newRepair = { title, asset, startDate, dueDate, priority, servicers, status, cost }
 
                 const _id = repair._id
                 console.log('check 1', newRepair)
@@ -183,7 +190,25 @@ const ViewOrUpdateRepair = (props) => {
                                 value={asset}
                                 placeholder='Enter asset'
                                 className={emptyFields.includes('asset') ? 'input-error' : 'input'}
-    
+
+                            />
+                        </div>
+                        <div className="label-input">
+                            <label>Cost ($):</label>
+                            <input
+                                onChange={(e) => {
+                                    const inputCost = e.target.value;
+                                    // Check if the input is a number
+                                    if (!isNaN(inputCost)) {
+                                        // If it's a number, update the state
+                                        setCost(inputCost);
+                                    }
+                                }}
+
+                                value={cost}
+                                placeholder='Enter Cost'
+                                className={emptyFields.includes('cost') ? 'input-error' : 'input'}
+
                             />
                         </div>
                         <div className="label-input">
@@ -199,8 +224,19 @@ const ViewOrUpdateRepair = (props) => {
                     </div>
                     <div className='middle'>
                         <div className='label-input'>
+                            <label>Start Date:</label>
+                            <input
+                                type='date'
+                                onChange={(e) => setStartDate(e.target.value)}
+                                value={startDate}
+                                placeholder='Enter Start Date'
+                                className={emptyFields.includes('startDate') ? 'input-error' : 'input'}
+                            />
+                        </div>
+                        <div className='label-input'>
                             <label>Due Date:</label>
                             <input
+                                type='date'
                                 onChange={(e) => setDueDate(e.target.value)}
                                 value={dueDate}
                                 placeholder='Enter Due Date'
@@ -214,7 +250,7 @@ const ViewOrUpdateRepair = (props) => {
                                 value={servicers}
                                 placeholder='Enter Servicers'
                                 className={emptyFields.includes('servicers') ? 'input-error' : 'input'}
-    
+
                             />
                         </div>
                         <div className='label-input'>
@@ -227,24 +263,7 @@ const ViewOrUpdateRepair = (props) => {
                                 className={emptyFields.includes('status') ? 'dropdown-error' : ''}
                             />
                         </div>
-                        <div className="label-input">
-                            <label>Cost ($):</label>
-                            <input
-                                onChange={(e) => {
-                                    const inputCost = e.target.value;
-                                    // Check if the input is a number
-                                    if (!isNaN(inputCost)) {
-                                        // If it's a number, update the state
-                                        setCost(inputCost);
-                                    }
-                                }}
-                        
-                                value={cost}
-                                placeholder='Enter Cost'
-                                className={emptyFields.includes('cost') ? 'input-error' : 'input'}
-    
-                            />
-                        </div>
+
                     </div>
                     <div className='bottom'>
                         <button className='btn btn-effect' type='submit'>Update</button>
@@ -256,7 +275,7 @@ const ViewOrUpdateRepair = (props) => {
             </div>
         </div>
     )
-    
-}    
+
+}
 
 export default ViewOrUpdateRepair

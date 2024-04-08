@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import { useEffect } from "react"
 import Dropdown from 'react-dropdown';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 import 'react-dropdown/style.css';
 import { useRepairsContext } from "../../hooks/useRepairsContext";
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
@@ -13,6 +15,7 @@ const validator = require('validator')
 const AddRepair = () => {
     const [title, setTitle] = useState('')
     const [asset, setAsset] = useState('')
+    const [startDate, setStartDate] = useState('')
     const [dueDate, setDueDate] = useState('')
     const [priority, setPriority] = useState('')
     const [servicers, setServicers] = useState('')
@@ -84,7 +87,7 @@ const AddRepair = () => {
         //Check if there are empty fields
         if (emptyFields.length === 0) {
             //Send Request
-            const newRepair = { title: title, asset: asset, dueDate: dueDate, priority: priority, servicers: servicers, status: status, cost: cost }
+            const newRepair = { title: title, asset: asset, dueDate: dueDate, priority: priority, servicers: servicers, status: status, cost: cost, startDate: startDate }
 
             console.log("checkpoint 1", newRepair)
             const response = await fetch('/api/repairs', {
@@ -121,7 +124,9 @@ const AddRepair = () => {
     const statuses = ["Incomplete", "In-Progress", "Complete"]
 
     return (
+
         <div className="add-update-repair-container">
+
             <Link to='/repairs' className='back-button-link'><button className='back-button'><ArrowBackIcon /></button></Link>
             <form className="add-update-repair-form" onSubmit={handleSubmit}>
                 <h1 className="add-update-repair-title">Add Repair</h1>
@@ -145,6 +150,22 @@ const AddRepair = () => {
 
                         />
                     </div>
+                    <div className='label-input'>
+                        <label>Cost ($):</label>
+                        <input
+                            onChange={(e) => {
+                                const inputCost = e.target.value;
+                                // Check if the input is a number
+                                if (!isNaN(inputCost)) {
+                                    // If it's a number, update the state
+                                    setCost(inputCost);
+                                }
+                            }}
+                            value={cost}
+                            placeholder='Enter Cost'
+                            className={emptyFields.includes('cost') ? 'input-error' : 'input'}
+                        />
+                    </div>
                     <div className="label-input">
                         <label>Priority:</label>
                         <Dropdown
@@ -158,8 +179,19 @@ const AddRepair = () => {
                 </div>
                 <div className='middle'>
                     <div className='label-input'>
+                        <label>Start Date:</label>
+                        <input
+                            type="date"
+                            onChange={(e) => setStartDate(e.target.value)}
+                            value={startDate}
+                            placeholder='Enter Start Date'
+                            className={emptyFields.includes('startDate') ? 'input-error' : 'input'}
+                        />
+                    </div>
+                    <div className='label-input'>
                         <label>Due Date:</label>
                         <input
+                            type="date"
                             onChange={(e) => setDueDate(e.target.value)}
                             value={dueDate}
                             placeholder='Enter Due Date'
@@ -186,22 +218,7 @@ const AddRepair = () => {
                             className={emptyFields.includes('status') ? 'dropdown-error' : ''}
                         />
                     </div>
-                    <div className='label-input'>
-                        <label>Cost ($):</label>
-                        <input
-                            onChange={(e) => {
-                                const inputCost = e.target.value;
-                                // Check if the input is a number
-                                if (!isNaN(inputCost)) {
-                                    // If it's a number, update the state
-                                    setCost(inputCost);
-                                }
-                            }}
-                            value={cost}
-                            placeholder='Enter Cost'
-                            className={emptyFields.includes('cost') ? 'input-error' : 'input'}
-                        />
-                    </div>
+
                 </div>
                 <div className='bottom'>
                     <button className='btn btn-effect' type='submit'>Add</button>
@@ -211,6 +228,8 @@ const AddRepair = () => {
                 </div>
             </form>
         </div>
+
+
     )
 }
 
