@@ -58,6 +58,10 @@ const repairSchema = new Schema({
         type: Number,
         required: false,
         set: formatCost
+    }, 
+    description: {
+        type: String,
+        required: false
     }
 }, {timestamps: true})
 

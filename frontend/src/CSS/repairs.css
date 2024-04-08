@@ -30,7 +30,7 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    overflow-y: scroll;
+    overflow-y: auto;
 }
 
 .add-update-repair-title {
@@ -46,6 +46,12 @@
     width: 100%; /* Adjust as needed */
     max-width: 200px; /* Set a maximum width if necessary */
 }
+
+.textarea {
+    width: '100%';
+    height: '100px';
+}
+
 
 
 @media screen and (max-width: 1400px) {

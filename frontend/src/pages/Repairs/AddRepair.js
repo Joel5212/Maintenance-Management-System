@@ -21,6 +21,7 @@ const AddRepair = () => {
     const [servicers, setServicers] = useState('')
     const [status, setStatus] = useState('')
     const [cost, setCost] = useState('')
+    const [description, setDescription] = useState('')
     const [error, setError] = useState(null)
     const [emptyFields, setEmptyFields] = useState('')
     const { repairs, dispatch: repairsDispatch } = useRepairsContext()
@@ -87,7 +88,7 @@ const AddRepair = () => {
         //Check if there are empty fields
         if (emptyFields.length === 0) {
             //Send Request
-            const newRepair = { title: title, asset: asset, dueDate: dueDate, priority: priority, servicers: servicers, status: status, cost: cost, startDate: startDate }
+            const newRepair = { title, asset, startDate, dueDate, priority, servicers, status, cost, description }
 
             console.log("checkpoint 1", newRepair)
             const response = await fetch('/api/repairs', {
@@ -124,9 +125,7 @@ const AddRepair = () => {
     const statuses = ["Incomplete", "In-Progress", "Complete"]
 
     return (
-
         <div className="add-update-repair-container">
-
             <Link to='/repairs' className='back-button-link'><button className='back-button'><ArrowBackIcon /></button></Link>
             <form className="add-update-repair-form" onSubmit={handleSubmit}>
                 <h1 className="add-update-repair-title">Add Repair</h1>
@@ -220,12 +219,23 @@ const AddRepair = () => {
                     </div>
 
                 </div>
+                <div className='description'>
+                    <label>Description:</label>
+                    <textarea
+                        onChange={(e) => setDescription(e.target.value)}
+                        value={description}
+                        placeholder='Enter Description'
+                        className={emptyFields.includes('description') ? 'input-error' : 'input'}
+                        style={{ width: '100%', height: '200px' }}
+                    />
+                </div>
                 <div className='bottom'>
                     <button className='btn btn-effect' type='submit'>Add</button>
                     <div className="error-div">
                         {error && <div className='error'>{error}</div>}
                     </div>
                 </div>
+
             </form>
         </div>
 
