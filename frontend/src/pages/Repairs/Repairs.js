@@ -106,6 +106,9 @@ const Repairs = () => {
             field: 'status',
         },
         {
+            field: 'cost',
+        },
+        {
             headerName: 'Actions',
             cellRenderer: RepairActionEllipsis,
             cellRendererParams: (params) => ({

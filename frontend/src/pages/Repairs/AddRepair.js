@@ -17,6 +17,7 @@ const AddRepair = () => {
     const [priority, setPriority] = useState('')
     const [servicers, setServicers] = useState('')
     const [status, setStatus] = useState('')
+    const [cost, setCost] = useState('')
     const [error, setError] = useState(null)
     const [emptyFields, setEmptyFields] = useState('')
     const { repairs, dispatch: repairsDispatch } = useRepairsContext()
@@ -59,7 +60,7 @@ const AddRepair = () => {
             emptyFields.push('title')
         }
 
-        /*
+        /* fields not required commented out
         if (!asset) {
             emptyFields.push('asset')
         }
@@ -83,7 +84,7 @@ const AddRepair = () => {
         //Check if there are empty fields
         if (emptyFields.length === 0) {
             //Send Request
-            const newRepair = { title: title, asset: asset, dueDate: dueDate, priority: priority, servicers: servicers, status: status }
+            const newRepair = { title: title, asset: asset, dueDate: dueDate, priority: priority, servicers: servicers, status: status, cost: cost }
 
             console.log("checkpoint 1", newRepair)
             const response = await fetch('/api/repairs', {
@@ -183,6 +184,22 @@ const AddRepair = () => {
                             value={status}
                             placeholder='Select a Status'
                             className={emptyFields.includes('status') ? 'dropdown-error' : ''}
+                        />
+                    </div>
+                    <div className='label-input'>
+                        <label>Cost ($):</label>
+                        <input
+                            onChange={(e) => {
+                                const inputCost = e.target.value;
+                                // Check if the input is a number
+                                if (!isNaN(inputCost)) {
+                                    // If it's a number, update the state
+                                    setCost(inputCost);
+                                }
+                            }}
+                            value={cost}
+                            placeholder='Enter Cost'
+                            className={emptyFields.includes('cost') ? 'input-error' : 'input'}
                         />
                     </div>
                 </div>

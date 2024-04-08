@@ -35,6 +35,17 @@
     font-size: 30px
 }
 
+.scrollable-container {
+    height: 400px; /* Adjust the height as per your requirement */
+    overflow-y: auto;
+}
+
+.input {
+    width: 100%; /* Adjust as needed */
+    max-width: 200px; /* Set a maximum width if necessary */
+}
+
+
 @media screen and (max-width: 1400px) {
     .add-update-repair-form {
         display: flex;
