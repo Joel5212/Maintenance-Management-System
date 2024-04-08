@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useEffect } from "react"
 import Dropdown from 'react-dropdown';
+import Select from 'react-dropdown-select';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import 'react-dropdown/style.css';
@@ -14,7 +15,8 @@ const validator = require('validator')
 
 const AddRepair = () => {
     const [title, setTitle] = useState('')
-    const [asset, setAsset] = useState('')
+    const [assets, setAssets] = useState('')
+    const [selectedRepairAsset, setSelectedRepairAsset] = useState([])
     const [startDate, setStartDate] = useState('')
     const [dueDate, setDueDate] = useState('')
     const [priority, setPriority] = useState('')
@@ -46,9 +48,33 @@ const AddRepair = () => {
     }
 
     useEffect(() => {
+        fetchAndSetAssets()
         prevRouterDispatch({ type: 'SET_PREV_ROUTE', location: location.pathname })
 
     }, [repairsDispatch, user])
+
+    const fetchAndSetAssets = async () => {
+        const response = await fetch('/api/Assets', {
+            headers: {
+                'Authorization': `Bearer ${user.token}`
+            }
+        })
+        const json = await response.json()
+
+        if (response.ok) {
+            const assets = []
+            if (json) {
+                for (const asset of json) {
+                    const value = asset._id
+                    const label = asset.name
+                    assets.push({ label, value })
+
+                }
+                console.log("assets", assets)
+                setAssets(assets)
+            }
+        }
+    }
 
     const handleSubmit = async (e) => {
         e.preventDefault()
@@ -63,6 +89,7 @@ const AddRepair = () => {
         if (!title) {
             emptyFields.push('title')
         }
+
 
         /* fields not required commented out
         if (!asset) {
@@ -87,8 +114,16 @@ const AddRepair = () => {
         */
         //Check if there are empty fields
         if (emptyFields.length === 0) {
+
+            let assetId = null
+            let assetName = ''
+
+            if (selectedRepairAsset.length !== 0) {
+                assetId = selectedRepairAsset[0].value
+                assetName = selectedRepairAsset[0].label
+            }
             //Send Request
-            const newRepair = { title, asset, startDate, dueDate, priority, servicers, status, cost, description }
+            const newRepair = { title, assetId, startDate, dueDate, priority, servicers, status, cost, description }
 
             console.log("checkpoint 1", newRepair)
             const response = await fetch('/api/repairs', {
@@ -110,7 +145,8 @@ const AddRepair = () => {
 
             if (response.ok) {
                 fetchRepairs()
-                repairsDispatch({ type: 'ADD_REPAIR', payload: json })
+                console.log("ASSET NAME", assetName)
+                repairsDispatch({ type: 'ADD_REPAIR', payload: json, assetname: assetName })
                 navigate(-1)
             }
         }
@@ -141,13 +177,14 @@ const AddRepair = () => {
                     </div>
                     <div className="label-input">
                         <label>Asset:</label>
-                        <input
-                            onChange={(e) => setAsset(e.target.value)}
-                            value={asset}
-                            placeholder='Enter asset'
-                            className={emptyFields.includes('asset') ? 'input-error' : 'input'}
+                        <div className='dropdown'>
+                            <Select
+                                options={assets}
+                                values={selectedRepairAsset}
+                                onChange={(repairAsset) => setSelectedRepairAsset(repairAsset)}
 
-                        />
+                            />
+                        </div>
                     </div>
                     <div className='label-input'>
                         <label>Cost ($):</label>

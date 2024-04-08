@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 import Dropdown from 'react-dropdown';
+import Select from 'react-dropdown-select';
 import 'react-dropdown/style.css';
 import { useRepairsContext } from "../../hooks/useRepairsContext";
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
@@ -15,7 +16,8 @@ const validator = require('validator')
 
 const ViewOrUpdateRepair = (props) => {
     const [title, setTitle] = useState('')
-    const [asset, setAsset] = useState('')
+    const [assets, setAssets] = useState('')
+    const [selectedRepairAsset, setSelectedRepairAsset] = useState([])
     const [startDate, setStartDate] = useState('')
     const [dueDate, setDueDate] = useState('')
     const [priority, setPriority] = useState('')
@@ -52,7 +54,8 @@ const ViewOrUpdateRepair = (props) => {
 
     useEffect(() => {
         setTitle(repair.title)
-        setAsset(repair.asset)
+        fetchAndSetAssets()
+        setAssets(repair.assets)
         setStartDate(repair.startDate)
         setDueDate(repair.dueDate)
         setPriority(repair.priority)
@@ -63,11 +66,35 @@ const ViewOrUpdateRepair = (props) => {
         prevRouterDispatch({ type: 'SET_PREV_ROUTE', location: location.pathname })
     }, [repairsDispatch, user])
 
+    const fetchAndSetAssets = async () => {
+        const response = await fetch('/api/Assets', {
+            headers: {
+                'Authorization': `Bearer ${user.token}`
+            }
+        })
+        const json = await response.json()
+
+        if (response.ok) {
+            const assets = []
+            if (json) {
+                for (const asset of json) {
+                    const value = asset._id
+                    const label = asset.name
+                    assets.push({ label, value })
+
+                }
+                console.log("assets", assets)
+                setAssets(assets)
+            }
+        }
+    }
+
+
     //Check if form is changed
     const isFormUnchanged = () => {
         return (
             title === repair.title &&
-            asset === repair.asset &&
+            assets === repair.assets &&
             startDate === repair.startDate &&
             dueDate === repair.dueDate &&
             priority === repair.priority &&
@@ -129,7 +156,15 @@ const ViewOrUpdateRepair = (props) => {
             */
             if (emptyFields.length === 0) {
 
-                const newRepair = { title, asset, startDate, dueDate, priority, servicers, status, cost, description }
+                let assetId = null
+                let assetName = ''
+
+                if (selectedRepairAsset.length !== 0) {
+                    assetId = selectedRepairAsset[0].value
+                    assetName = selectedRepairAsset[0].label
+                }
+
+                const newRepair = { title, assetId, startDate, dueDate, priority, servicers, status, cost, description }
 
                 const _id = repair._id
                 console.log('check 1', newRepair)
@@ -194,13 +229,14 @@ const ViewOrUpdateRepair = (props) => {
                     </div>
                     <div className="label-input">
                         <label>Asset:</label>
-                        <input
-                            onChange={(e) => setAsset(e.target.value)}
-                            value={asset}
-                            placeholder='Enter asset'
-                            className={emptyFields.includes('asset') ? 'input-error' : 'input'}
+                        <div className='dropdown'>
+                            <Select
+                                options={assets}
+                                values={selectedRepairAsset}
+                                onChange={(repairAsset) => setSelectedRepairAsset(repairAsset)}
 
-                        />
+                            />
+                        </div>
                     </div>
                     <div className="label-input">
                         <label>Cost ($):</label>
