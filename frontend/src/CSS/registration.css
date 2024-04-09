@@ -49,7 +49,7 @@
     align-items: center;
     justify-content: center;
     width: 65%;
-    height: 70%;
+    height: 80%;
     row-gap: 50px;
     border-radius: 15px;
     box-shadow: 5px;
@@ -184,7 +184,7 @@
 
     .registration-form {
         width: 90%;
-        height: 65%;
+        height: 88%;
     }
 
     .back-button-link-asset-type {

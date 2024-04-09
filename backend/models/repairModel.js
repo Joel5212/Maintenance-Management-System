@@ -1,4 +1,4 @@
-const mongoose = require ('mongoose')
+const mongoose = require('mongoose')
 
 const Schema = mongoose.Schema
 
@@ -8,20 +8,28 @@ const repairSchema = new Schema({
         required: true
     },
     asset: {
-        type: String,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Asset',
         required: false
     },
-    
-    //will change to date type when front end is set
-    /*
-    startDate: { 
-        type: String,
-        required: false
+
+    isFailure: {
+        type: Boolean,
+        required: true
     },
-    */
+
+    startDate: {
+        type: Date,
+        required: true
+    },
+
+    completedDate: {
+        type: Date,
+        required: true
+    },
 
     dueDate: {
-        type: String,
+        type: Date,
         required: false
     },
 
@@ -29,13 +37,7 @@ const repairSchema = new Schema({
         type: String,
         required: false
     },
-    /*
-    servicers: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-        required: false
-    }],
-    */
+
     servicers: {
         type: String,
         required: false
@@ -44,7 +46,7 @@ const repairSchema = new Schema({
         type: String,
         required: false
     }
-}, {timestamps: true})
+}, { timestamps: true })
 
 module.exports = mongoose.model('Repair', repairSchema)
 

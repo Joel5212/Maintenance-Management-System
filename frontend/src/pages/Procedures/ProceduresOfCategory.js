@@ -97,7 +97,7 @@ const ProceduresOfCategory = () => {
       </div>
       <hr className='procedures-divider' />
       <div className='procedures-list'>
-        {category && ((procedures && procedures.length > 0)) ?
+        {(procedures && procedures.length > 0) ?
           procedures.map((procedure) => (
             <div className='procedure-container' key={procedure._id}>
               <div className="procedure-top">

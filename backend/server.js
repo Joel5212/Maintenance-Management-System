@@ -10,6 +10,7 @@ const preventiveMaintenanceProcedureRoutes = require('./routes/preventiveMainten
 const organizationRoutes = require('./routes/organization')
 const repairRoutes = require('./routes/repairs')
 const locationRoutes = require('./routes/locations')
+const dashboardRoutes = require('./routes/dashboard')
 
 
 // express app
@@ -40,6 +41,9 @@ app.use('/api/preventiveMaintenanceProcedures', preventiveMaintenanceProcedureRo
 app.use('/api/repairs', repairRoutes)
 
 app.use('/api/locations', locationRoutes)
+
+app.use('/api/dashboard', dashboardRoutes)
+
 
 // connect to db
 mongoose.connect(process.env.MONGO_URI)

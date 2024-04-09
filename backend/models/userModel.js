@@ -15,7 +15,7 @@ const userSchema = mongoose.Schema({
     },
     phoneNumber: {
         type: String,
-        required: true
+        required: false
     },
     role: {
         type: String,
@@ -24,23 +24,23 @@ const userSchema = mongoose.Schema({
     organization: {
         orgName: {
             type: String,
-            required: false
+            required: true
         },
         orgCity: {
             type: String,
-            required: false,
+            required: true,
         },
         orgState: {
             type: String,
-            required: false,
+            required: true,
         },
         orgZipCode: {
             type: String,
-            required: false,
+            required: true,
         },
         orgCountry: {
             type: String,
-            required: false,
+            required: true,
         },
         orgPhoneNumber: {
             type: String,

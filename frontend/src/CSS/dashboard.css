@@ -1,0 +1,221 @@
+.dashboard {
+    width: 100%;
+    height: 100%;
+}
+
+.dashboard-title {
+    margin-left: 1%;
+    margin-top: 1%;
+}
+
+.dashboard-divider {
+    color: black;
+    margin: 0;
+}
+
+.dashboard-header {
+    width: 100%;
+    height: 4%
+}
+
+.dashboard-container {
+    width: 100%;
+    height: 95%;
+    display: flex;
+    flex-direction: column;
+    row-gap: 70px;
+    justify-content: center;
+}
+
+.row {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+}
+
+.dashboard-item {
+    width: 45%;
+    height: 500px;
+    background-color: rgb(236, 236, 236);
+    border-radius: 15px;
+    box-shadow: 0 0 5px rgb(133, 133, 133);
+}
+
+.workorder-stats-charts-container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    /* align-items: center; */
+}
+
+.workorder-stats-chart {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 400px;
+    height: 400px;
+}
+
+.failure-report-title {
+    font-size: 20px;
+}
+
+.failure-report-container {
+    display: flex;
+    flex-direction: column;
+    width: 45%;
+    height: 500px;
+    justify-content: center;
+    align-items: center;
+}
+
+.failure-report {
+    /* border-radius: 15px; */
+    width: 100%;
+    height: 100%;
+    box-shadow: 0 0 5px rgb(133, 133, 133);
+}
+
+
+@media (width < 2000px) {
+
+
+    .workorder-stats-chart {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 350px;
+    }
+
+    .workorder-stats-charts-container {
+        /* margin-top: 20px; */
+    }
+}
+
+@media (width < 1700px) {
+    /* .dashboard-item {
+        width: 600px;
+        height: 250px;
+    } */
+
+    .workorder-stats-chart {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 300px;
+    }
+
+    .workorder-stats-charts-container {
+        /* margin-top: 50px; */
+    }
+}
+
+@media (height < 900px) {
+    .dashboard-item {
+        height: 300px;
+    }
+
+    .workorder-stats-charts-container {
+        /* margin-top: 0px; */
+        height: 100%;
+    }
+
+    .workorder-stats-chart {
+        margin-top: 50px;
+        height: 225px;
+    }
+
+    .chart-title {
+        font-size: 20px;
+    }
+}
+
+@media (900px < height < 1100px) {
+    .dashboard-item {
+        height: 400px;
+    }
+
+    .workorder-stats-charts-container {
+        /* margin-top: 0px; */
+        height: 100%;
+    }
+
+    .workorder-stats-chart {
+        margin-top: 50px;
+        height: 250px;
+    }
+
+    .chart-title {
+        font-size: 20px;
+    }
+}
+
+@media (1100px < height < 1300px) {
+    .dashboard-item {
+        height: 450px;
+    }
+
+    .workorder-stats-charts-container {
+        /* margin-top: 0px; */
+        height: 100%;
+    }
+
+    .workorder-stats-chart {
+        margin-top: 50px;
+        height: 250px;
+    }
+
+    .chart-title {
+        font-size: 20px;
+    }
+}
+
+
+@media (width < 1700px) {
+    .dashboard-item {
+        width: 47%;
+    }
+
+    .workorder-stats-charts-container {
+        /* margin-top: 75px; */
+        width: 100%;
+    }
+
+    .workorder-stats-chart {
+        width: 250px;
+    }
+
+    .chart-title {
+        font-size: 20px;
+    }
+}
+
+@media (500px < height < 1000px) {
+    .dashboard-item {
+        height: 350px;
+    }
+
+    .workorder-stats-chart {
+        margin-top: 10px;
+        height: 350px;
+    }
+
+    .chart-title {
+        font-size: 17px;
+    }
+
+    .failure-report-container {
+        height: 350px;
+        width: 47%;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .failure-report-title {
+        font-size: 18px;
+    }
+
+
+}
