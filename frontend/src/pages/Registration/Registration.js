@@ -1,12 +1,14 @@
 import React from 'react'
 import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react'
+import { useAuthContext } from '../../hooks/useAuthContext'
 import 'react-dropdown/style.css';
 import { useOrgRegisterContext } from "../../hooks/useOrgRegisterContext";
 const validator = require('validator')
 
 function Registration() {
     const { isRegistered, dispatch } = useOrgRegisterContext()
+    const { dispatch: authContextDispatch } = useAuthContext()
     const [orgName, setOrgName] = useState('')
     const [orgCity, setOrgCity] = useState('')
     const [orgState, setOrgState] = useState('')
@@ -42,10 +44,6 @@ function Registration() {
 
         if (!orgCountry) {
             emptyFields.push('orgCountry')
-        }
-
-        if (!orgPhoneNumber) {
-            emptyFields.push('orgPhoneNumber')
         }
 
         if (!firstName) {
@@ -90,6 +88,8 @@ function Registration() {
 
                 if (response.ok) {
                     dispatch({ type: 'REGISTERED', payload: true })
+                    localStorage.setItem('user', JSON.stringify(json))
+                    authContextDispatch({ type: 'LOGIN', payload: json })
                     console.log("isRegistered", isRegistered)
                 }
 

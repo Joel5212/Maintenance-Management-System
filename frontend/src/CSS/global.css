@@ -225,7 +225,7 @@ input {
     background-color: #1e1d1d;
 }
 
-.sidebarUserIcon {
+.sidebar-user-icon {
     margin: 0;
     font-size: 80px;
     display: flex;
@@ -233,7 +233,6 @@ input {
     justify-content: center;
     align-items: center;
 }
-
 
 .sidebarItems .sidebarLogoutIconButton {
     margin-left: 40%;
@@ -256,14 +255,30 @@ input {
     color: white;
 }
 
-.sidebarUserInfo {
-    font-size: 23px;
+.sidebar-user {
     display: flex;
     flex-direction: column;
-    color: white;
     justify-content: center;
     align-items: center;
-    margin-bottom: 50px;
+    margin-top: 20px;
+    margin-bottom: 40px;
+}
+
+.sidebar-user-name {
+    font-size: 20px;
+    color: white;
+    font-weight: bold;
+}
+
+.sidebar-user-role {
+    font-size: 15px;
+    color: white;
+    font-weight: bold;
+}
+
+.org-name {
+    font-size: 18px;
+    color: rgb(183, 183, 183);
 }
 
 .select-asset-modal {

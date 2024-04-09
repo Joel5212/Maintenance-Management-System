@@ -30,7 +30,15 @@ const loginUser = async (req, res) => {
 
         const token = createToken(user._id)
 
-        res.status(200).json({ email, name, role, token });
+        const admin = await User.findOne({ role: 'Admin' })
+
+        const organizationName = admin.organization.orgName
+
+        console.log("ORGANIZATION NAME", organizationName)
+
+        console.log("ORGANIZATION:", organizationName);
+
+        res.status(200).json({ email, name, role, organizationName, token });
     }
     catch (error) {
         res.status(400).json({ error: error.message });
