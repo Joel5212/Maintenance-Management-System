@@ -232,7 +232,7 @@ const ViewOrUpdateRepair = (props) => {
                         <div className='dropdown'>
                             <Select
                                 options={assets}
-                                values={selectedRepairAsset}
+                                value={selectedRepairAsset}
                                 onChange={(repairAsset) => setSelectedRepairAsset(repairAsset)}
 
                             />

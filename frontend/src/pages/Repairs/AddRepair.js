@@ -1,17 +1,13 @@
-import { useState } from 'react'
-import { useEffect } from "react"
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import { useEffect, useState } from 'react';
+import 'react-datepicker/dist/react-datepicker.css';
 import Dropdown from 'react-dropdown';
 import Select from 'react-dropdown-select';
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
 import 'react-dropdown/style.css';
-import { useRepairsContext } from "../../hooks/useRepairsContext";
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import { Link } from 'react-router-dom'
-import { useNavigate, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useAuthContext } from '../../hooks/useAuthContext';
 import { usePrevRouteContext } from "../../hooks/usePrevRouteContext";
-import { useAuthContext } from '../../hooks/useAuthContext'
-const validator = require('validator')
+import { useRepairsContext } from "../../hooks/useRepairsContext";
 
 const AddRepair = () => {
     const [title, setTitle] = useState('')
@@ -26,8 +22,8 @@ const AddRepair = () => {
     const [description, setDescription] = useState('')
     const [error, setError] = useState(null)
     const [emptyFields, setEmptyFields] = useState('')
-    const { repairs, dispatch: repairsDispatch } = useRepairsContext()
-    const { prevRoute, dispatch: prevRouterDispatch } = usePrevRouteContext();
+    const { dispatch: repairsDispatch } = useRepairsContext()
+    const { dispatch: prevRouterDispatch } = usePrevRouteContext();
     const navigate = useNavigate()
     const location = useLocation()
     const { user } = useAuthContext()
@@ -160,6 +156,21 @@ const AddRepair = () => {
     const priorities = ["low", "medium", "high"];
     const statuses = ["Incomplete", "In-Progress", "Complete"]
 
+    const handleFailureCheckbox = () => {
+
+        console.log("failure checkbox changed")
+    };
+
+    const handleSaveProcedureCheckbox = () => {
+        console.log("Save procedure checkbox changed")
+    }
+
+    const handleSelectProcedure = () => {
+        // Logic to select a procedure
+        console.log("Select a procedure checked")
+    };
+
+
     return (
         <div className="add-update-repair-container">
             <Link to='/repairs' className='back-button-link'><button className='back-button'><ArrowBackIcon /></button></Link>
@@ -180,7 +191,7 @@ const AddRepair = () => {
                         <div className='dropdown'>
                             <Select
                                 options={assets}
-                                values={selectedRepairAsset}
+                                value={selectedRepairAsset}
                                 onChange={(repairAsset) => setSelectedRepairAsset(repairAsset)}
 
                             />
@@ -256,6 +267,7 @@ const AddRepair = () => {
                     </div>
 
                 </div>
+
                 <div className='description'>
                     <label>Description:</label>
                     <textarea
@@ -266,6 +278,55 @@ const AddRepair = () => {
                         style={{ width: '100%', height: '200px' }}
                     />
                 </div>
+
+                <div className="failure-checkbox" style={{ display: 'flex', alignItems: 'center' }}>
+                    <input
+                        type="checkbox"
+                        onChange={(e) => handleFailureCheckbox(e.target.checked)}
+                    />
+                    <label style={{ marginLeft: '5px' }}>Did this asset fail?</label>
+                </div>
+
+                <div>
+                    <button
+                        className="procedure-button"
+                        type="button"
+                        onClick={handleSelectProcedure}>
+                        + Select a Procedure
+                    </button>
+                </div>
+
+
+                <div className='procedure-details' style={{ display: 'flex', alignItems: 'flex-start', flexWrap: 'wrap' }}>
+
+                    <div className="label-input">
+                        <label>Procedure Title:</label>
+                        <input
+                            onChange={(e) => setTitle(e.target.value)}
+                            //value={procedureTitle}
+                            placeholder='Enter procedure title'
+                        />
+                    </div>
+
+                    <div className='description'>
+                        <label>Procedure Description:</label>
+                        <textarea
+                            onChange={(e) => setDescription(e.target.value)}
+                            //value={procedureDescription}
+                            placeholder='Enter Procedure Description'
+                            //className={emptyFields.includes('procedureDescription') ? 'input-error' : 'input'}
+                            style={{ width: '100%', height: '200px' }}
+                        />
+                    </div>
+                </div>
+
+                <div className="saveProcedureCheckbox" style={{ display: 'flex', alignItems: 'center' }}>
+                    <input
+                        type="checkbox"
+                        onChange={(e) => handleSaveProcedureCheckbox(e.target.checked)}
+                    />
+                    <label style={{ marginLeft: '5px' }}>Save Procedure for Category?</label>
+                </div>
                 <div className='bottom'>
                     <button className='btn btn-effect' type='submit'>Add</button>
                     <div className="error-div">
@@ -275,9 +336,8 @@ const AddRepair = () => {
 
             </form>
         </div>
-
-
     )
+
 }
 
 export default AddRepair
