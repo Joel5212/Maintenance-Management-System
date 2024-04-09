@@ -22,7 +22,6 @@
     align-items: center;
     justify-content: center;
     row-gap: 40px;
-    overflow: auto;
 
 }
 
@@ -70,6 +69,7 @@
 
 @media screen and (max-width: 1400px) {
     .add-update-repair-form {
+        
         display: flex;
         align-items: center;
         row-gap: 20px;
@@ -79,4 +79,5 @@
     .add-update-repair-container {
         margin-top: 150px;
     }
+    
 }

@@ -3,11 +3,11 @@ const mongoose = require('mongoose')
 
 // CREATE new repair
 const createRepair = async (req, res) => {
-    const {title, asset, dueDate, priority, servicers, status, cost} = req.body
+    const {title, asset, startDate, dueDate, priority, servicers, status, cost, description} = req.body
     
     // adding doc to db
     try {
-        const repair = await Repair.create({title: title, asset: asset, dueDate: dueDate, priority: priority, servicers: servicers, status: status, cost: cost})
+        const repair = await Repair.create({title: title, asset: asset, cost: cost, priority: priority, startDate: startDate, dueDate: dueDate, servicers: servicers, status: status, description: description})
         res.status(200).json(repair)
     } catch (error) {
         res.status(400).json({error: error.message})
