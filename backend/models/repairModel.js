@@ -26,7 +26,7 @@ const repairSchema = new Schema({
 
     isFailure: {
         type: Boolean,
-        required: true
+        required: false
     },
 
     startDate: {
@@ -36,7 +36,7 @@ const repairSchema = new Schema({
 
     completedDate: {
         type: Date,
-        required: true
+        required: false
     },
 
     dueDate: {
