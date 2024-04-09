@@ -29,10 +29,13 @@
 .add-update-repair-container {
     width: 100%;
     height: 100%;
+    
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    overflow: auto;
+
 
 }
 
@@ -40,11 +43,6 @@
     font-size: 30px
 }
 
-.scrollable-container {
-    height: 500px;
-    /* Adjust the height as per your requirement */
-    overflow: auto;
-}
 
 .input {
     width: 100%;

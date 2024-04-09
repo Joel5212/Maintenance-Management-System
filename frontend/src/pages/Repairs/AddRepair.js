@@ -28,6 +28,13 @@ const AddRepair = () => {
     const location = useLocation()
     const { user } = useAuthContext()
 
+    const [isFailureCheckboxChecked, setIsCheckboxChecked] = useState('');
+    const [failureTitle, setFailureTitle] = useState('')
+    const [failureObservation, setFailureObservation] = useState('')
+    const [failureCause, setFailureCause] = useState()
+
+    const [procedureTitle, setProcedureTitle] = useState('')
+    const [procedureDescription, setProcedureDescription] = useState('')
 
     const fetchRepairs = async () => {
         const response = await fetch('/api/repairs', {
@@ -86,28 +93,6 @@ const AddRepair = () => {
             emptyFields.push('title')
         }
 
-
-        /* fields not required commented out
-        if (!asset) {
-            emptyFields.push('asset')
-        }
-
-        if (!dueDate) {
-            emptyFields.push('dueDate')
-        }
-
-        if (!priority) {
-            emptyFields.push('priority')
-        }
-
-        if (!servicers) {
-            emptyFields.push('servicers')
-        }
-        
-        if (!status) {
-            emptyFields.push('status')
-        }
-        */
         //Check if there are empty fields
         if (emptyFields.length === 0) {
 
@@ -156,9 +141,8 @@ const AddRepair = () => {
     const priorities = ["low", "medium", "high"];
     const statuses = ["Incomplete", "In-Progress", "Complete"]
 
-    const handleFailureCheckbox = () => {
-
-        console.log("failure checkbox changed")
+    const handleFailureCheckbox = (checked) => {
+        setIsCheckboxChecked(checked);
     };
 
     const handleSaveProcedureCheckbox = () => {
@@ -168,6 +152,16 @@ const AddRepair = () => {
     const handleSelectProcedure = () => {
         // Logic to select a procedure
         console.log("Select a procedure checked")
+    };
+
+    const handleSelectFailure = () => {
+        // Logic to select a procedure
+        console.log("Select a failure pressed")
+    };
+
+    const handleSelectFailureDiagnostic = () => {
+        // Logic to select a procedure
+        console.log("Select failure diagnostic pressed")
     };
 
 
@@ -201,11 +195,11 @@ const AddRepair = () => {
                         <label>Cost ($):</label>
                         <input
                             onChange={(e) => {
-                                const inputCost = e.target.value;
+                                const cost = e.target.value;
                                 // Check if the input is a number
-                                if (!isNaN(inputCost)) {
-                                    // If it's a number, update the state
-                                    setCost(inputCost);
+                                if (!isNaN(cost)) {
+                                    // If number, update the state
+                                    setCost(cost);
                                 }
                             }}
                             value={cost}
@@ -252,7 +246,6 @@ const AddRepair = () => {
                             value={servicers}
                             placeholder='Enter Servicers'
                             className={emptyFields.includes('servicers') ? 'input-error' : 'input'}
-
                         />
                     </div>
                     <div className='label-input'>
@@ -262,12 +255,9 @@ const AddRepair = () => {
                             onChange={(selectedStatus) => setStatus(selectedStatus.value)}
                             value={status}
                             placeholder='Select a Status'
-                            className={emptyFields.includes('status') ? 'dropdown-error' : ''}
-                        />
+                            className={emptyFields.includes('status') ? 'dropdown-error' : ''}/>
                     </div>
-
                 </div>
-
                 <div className='description'>
                     <label>Description:</label>
                     <textarea
@@ -275,17 +265,58 @@ const AddRepair = () => {
                         value={description}
                         placeholder='Enter Description'
                         className={emptyFields.includes('description') ? 'input-error' : 'input'}
-                        style={{ width: '100%', height: '200px' }}
-                    />
+                        style={{ width: '100%', height: '200px' }}/>
                 </div>
-
                 <div className="failure-checkbox" style={{ display: 'flex', alignItems: 'center' }}>
                     <input
                         type="checkbox"
-                        onChange={(e) => handleFailureCheckbox(e.target.checked)}
-                    />
+                        onChange={(e) => handleFailureCheckbox(e.target.checked)}/>
                     <label style={{ marginLeft: '5px' }}>Did this asset fail?</label>
                 </div>
+
+                {isFailureCheckboxChecked && (
+                    <div>
+                        {/* The elements you want to show when the checkbox is checked */}
+                        <div style={{ display: 'flex', gap: '20px' }}>
+                            <button
+                                className="procedure-button"
+                                type="button"
+                                onClick={handleSelectFailure}>
+                                + Select a Failure
+                            </button>
+                            <p>or</p>
+                            <button
+                                className="procedure-button"
+                                type="button"
+                                onClick={handleSelectFailureDiagnostic}>
+                                + Select a Failure using Diagnostics
+                            </button>
+                        </div>
+
+                        <div className="label-input">
+                            <label style={{ marginTop: '20px' }}>Failure Title:</label>
+                            <input
+                                onChange={(e) => setFailureTitle(e.target.value)}
+                                value={failureTitle}
+                                placeholder='Enter failure title'
+                            />
+                            <label style={{ marginTop: '10px' }}>Failure Observation:</label>
+                            <textarea
+                                onChange={(e) => setFailureObservation(e.target.value)}
+                                value={failureObservation}
+                                placeholder='Enter Failure Observations'
+                                style={{ width: '100%', height: '80px' }}
+                            />
+                            <label style={{ marginTop: '10px' }}>Failure Cause:</label>
+                            <textarea
+                                onChange={(e) => setFailureCause(e.target.value)}
+                                value={failureCause}
+                                placeholder='Enter Failure Cause'
+                                style={{ width: '100%', height: '80px' }}
+                            />
+                        </div>
+                    </div>
+                )}
 
                 <div>
                     <button
@@ -302,8 +333,8 @@ const AddRepair = () => {
                     <div className="label-input">
                         <label>Procedure Title:</label>
                         <input
-                            onChange={(e) => setTitle(e.target.value)}
-                            //value={procedureTitle}
+                            onChange={(e) => setProcedureTitle(e.target.value)}
+                            value={procedureTitle}
                             placeholder='Enter procedure title'
                         />
                     </div>
@@ -311,10 +342,10 @@ const AddRepair = () => {
                     <div className='description'>
                         <label>Procedure Description:</label>
                         <textarea
-                            onChange={(e) => setDescription(e.target.value)}
-                            //value={procedureDescription}
+                            onChange={(e) => setProcedureDescription(e.target.value)}
+                            value={procedureDescription}
                             placeholder='Enter Procedure Description'
-                            //className={emptyFields.includes('procedureDescription') ? 'input-error' : 'input'}
+                            className={emptyFields.includes('procedureDescription') ? 'input-error' : 'input'}
                             style={{ width: '100%', height: '200px' }}
                         />
                     </div>
@@ -327,6 +358,7 @@ const AddRepair = () => {
                     />
                     <label style={{ marginLeft: '5px' }}>Save Procedure for Category?</label>
                 </div>
+
                 <div className='bottom'>
                     <button className='btn btn-effect' type='submit'>Add</button>
                     <div className="error-div">
