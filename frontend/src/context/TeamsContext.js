@@ -4,22 +4,24 @@ export const TeamsContext = createContext()
 
 export const teamsReducer = (state, action) => {
     switch (action.type) {
-        case 'SET_TEAM':
+        case 'SET_TEAMS':
             return {
-                users: action.payload
+                teams: action.payload
             }
         case 'ADD_TEAM':
+            const newTeam = { _id: action.payload._id, name: action.payload.name, users: action.userIdsAndNames, description: action.payload.description }
             return {
-                users: [action.payload, ...state.teams]
+                teams: [newTeam, ...state.teams]
             }
         case 'DELETE_TEAM':
             return {
-                users: state.teams.filter(team => team._id !== action.payload._id)
+                teams: state.teams.filter(team => team._id !== action.payload._id)
             }
         case 'UPDATE_TEAM':
+            const updatedTeam = { _id: action.payload._id, name: action.payload.name, users: action.userIdsAndNames, description: action.payload.description }
             return {
                 teams: state.teams.map(team =>
-                    team._id === action.payload._id ? action.payload : team
+                    team._id === action.payload._id ? updatedTeam : team
                 )
             }
         default:
@@ -27,7 +29,7 @@ export const teamsReducer = (state, action) => {
     }
 }
 
-export const UsersContextProvider = ({ children }) => {
+export const TeamsContextProvider = ({ children }) => {
     const [state, dispatch] = useReducer(teamsReducer, {
         teams: null
     })

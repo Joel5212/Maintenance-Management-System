@@ -34,10 +34,6 @@ const loginUser = async (req, res) => {
 
         const organizationName = admin.organization.orgName
 
-        console.log("ORGANIZATION NAME", organizationName)
-
-        console.log("ORGANIZATION:", organizationName);
-
         res.status(200).json({ email, name, role, organizationName, token });
     }
     catch (error) {
@@ -46,12 +42,13 @@ const loginUser = async (req, res) => {
 }
 
 const getUsers = async (req, res) => {
-    const excludeCriteria = { role: { $ne: 'Admin' } }
+    // const excludeCriteria = { role: { $ne: 'Admin' } }
 
-    const users = await User.find(excludeCriteria).sort({ createdAt: -1 })
+    const users = await User.find({}).sort({ createdAt: -1 })
 
     res.status(200).json(users)
 }
+
 
 const addUser = async (req, res) => {
     try {

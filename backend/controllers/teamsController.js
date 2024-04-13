@@ -7,16 +7,20 @@ const { ObjectId } = require('mongodb');
 
 const getTeams = async (req, res) => {
     const teams = await Team.find({}).sort({ createdAt: -1 })
-    res.status(200).json(teams)
+    const populatedTeams = await Promise.all(
+        teams.map(async (team) => {
+            await team.populate({ path: 'users', select: 'name' });
+            return team
+        })
+    );
+    res.status(200).json(populatedTeams)
 }
 
 const addTeam = async (req, res) => {
     try {
-        const { name, assignTo, description } = req.body
+        const { name, users, description } = req.body
 
-        for (const user of assignTo) {
-            const userId = user._id
-
+        for (const userId of users) {
             const userExists = await User.findOne({ _id: ObjectId(userId) })
 
             if (!userExists) {
@@ -24,7 +28,9 @@ const addTeam = async (req, res) => {
             }
         }
 
-        const team = await Team.create({ name: name, assignedTo: assignTo, description: description })
+        const newTeam = { name, users, description }
+
+        const team = await Team.create(newTeam)
 
         res.status(200).json(team);
     }
@@ -58,17 +64,27 @@ const updateTeam = async (req, res) => {
     try {
         const { id } = req.params
 
-        const { name, assignTo } = req.body
+        const { name, users, description } = req.body
 
         const teamExists = await Team.findOne({ _id: ObjectId(id) })
+
+        console.log(teamExists)
 
         if (!teamExists) {
             return res.status(404).json({ error: 'No Team Exists' })
         }
 
-        const team = { name: name, assignedTo: assignTo }
+        for (const userId of users) {
+            const userExists = await User.findOne({ _id: Object(userId) })
 
-        const updatedTeam = await Team.findOneAndUpdate({ _id: id }, { ...team }, { new: true })
+            if (!userExists) {
+                return res.status(400).json({ error: 'One of the Users do not exist' })
+            }
+        }
+
+        const team = { name, users, description }
+
+        const updatedTeam = await Team.findOneAndUpdate({ _id: ObjectId(id) }, { ...team }, { new: true })
 
         if (!updatedTeam) {
             return res.status(500).json({ error: 'Error' })

@@ -74,7 +74,7 @@ const Users = () => {
 
 
     useEffect(() => {
-        if (prevRoute !== '/users/add' && prevRoute !== '/users/viewOrUpdate' && user) {
+        if (user && (prevRoute !== '/users/add' && prevRoute !== '/users/viewOrUpdate' || !users)) {
             fetchUsers()
             console.log(prevRoute, users)
         }
