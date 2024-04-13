@@ -3,6 +3,7 @@ require('dotenv').config()
 const express = require('express')
 const mongoose = require('mongoose')
 const userRoutes = require('./routes/users')
+const teamRoutes = require('./routes/teams')
 const assetRoutes = require('./routes/assets')
 const categoryRoutes = require('./routes/categories')
 const repairProcedureRoutes = require('./routes/repairProcedures')
@@ -27,6 +28,8 @@ app.use((req, res, next) => {
 //registering users routes
 //The app.use() function is used to mount the specified middleware function(s) at the path which is being specified. It is mostly used to set up middleware for your application. 
 app.use('/api/users', userRoutes)
+
+app.use('/api/teams', teamRoutes)
 
 app.use('/api/assets', assetRoutes)
 

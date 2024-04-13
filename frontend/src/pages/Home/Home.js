@@ -3,7 +3,7 @@ import { BrowserRouter, Routes, Route, Link } from 'react-router-dom'
 import Sidebar from "../../components/Sidebar"
 import Assets from '../Assets/Assets'
 import AddAsset from '../Assets/AddAsset'
-import AssetType from '../Assets/AssetType'
+import ViewOrUpdateAsset from '../Assets/ViewOrUpdateAsset'
 import Dashboard from '../Dashboard/Dashboard'
 import Repairs from '../Repairs/Repairs'
 import AddRepair from '../Repairs/AddRepair'
@@ -12,7 +12,9 @@ import PreventiveMaintenance from '../PreventiveMaintenance/PreventiveMaintenanc
 import Users from '../Users/Users'
 import AddUser from '../Users/AddUser'
 import ViewOrUpdateUser from '../Users/ViewOrUpdateUser'
-import ViewOrUpdateAsset from '../Assets/ViewOrUpdateAsset'
+import Teams from '../Teams/Teams'
+import AddTeam from '../Teams/AddTeam'
+import ViewOrUpdateTeam from '../Teams/ViewOrUpdateTeam'
 import Categories from '../Categories/Categories'
 import AddCategory from '../Categories/AddCategory'
 import ViewOrUpdateCategory from '../Categories/ViewOrUpdateCategory'
@@ -23,6 +25,7 @@ import AddProcedure from '../Procedures/AddProcedure'
 import ProceduresOfCategory from '../Procedures/ProceduresOfCategory'
 import ViewOrUpdateProcedure from '../Procedures/ViewOrUpdateProcedure'
 import { UsersContextProvider } from '../../context/UsersContext';
+import { TeamsContextProvider } from '../../context/TeamsContext';
 import { AssetsContextProvider } from '../../context/AssetsContext';
 import { CategoriesContextProvider } from '../../context/CategoriesContext';
 import { ProceduresContextProvider } from '../../context/ProceduresContext';
@@ -47,14 +50,6 @@ const Home = () => {
               element={
                 <AssetsContextProvider>
                   <Assets />
-                </AssetsContextProvider>
-              }
-            />
-            <Route
-              path="/assets/assetType"
-              element={
-                <AssetsContextProvider>
-                  <AssetType />
                 </AssetsContextProvider>
               }
             />
@@ -180,6 +175,33 @@ const Home = () => {
                 <UsersContextProvider>
                   <ViewOrUpdateUser />
                 </UsersContextProvider>
+              }
+            />
+            <Route
+              path="/teams"
+              element=
+              {
+                <TeamsContextProvider>
+                  <Teams />
+                </TeamsContextProvider>
+              }
+            />
+            <Route
+              path="/teams/add"
+              element=
+              {
+                <TeamsContextProvider>
+                  <AddTeam />
+                </TeamsContextProvider>
+              }
+            />
+            <Route
+              path="/teams/viewOrUpdate"
+              element=
+              {
+                <TeamsContextProvider>
+                  <ViewOrUpdateTeam />
+                </TeamsContextProvider>
               }
             />
             <Route
