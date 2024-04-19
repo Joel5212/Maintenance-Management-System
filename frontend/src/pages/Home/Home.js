@@ -30,6 +30,7 @@ import { AssetsContextProvider } from '../../context/AssetsContext';
 import { CategoriesContextProvider } from '../../context/CategoriesContext';
 import { ProceduresContextProvider } from '../../context/ProceduresContext';
 import { RepairsContextProvider } from '../../context/RepairsContext';
+import { CompletedRepairsContextProvider } from '../../context/CompletedRepairsContext';
 import { LocationsContextProvider } from '../../context/LocationsContext';
 
 const Home = () => {
@@ -127,7 +128,9 @@ const Home = () => {
               path="/repairs"
               element={
                 <RepairsContextProvider>
-                  <Repairs />
+                  <CompletedRepairsContextProvider>
+                    <Repairs />
+                  </CompletedRepairsContextProvider>
                 </RepairsContextProvider>
               }
             />

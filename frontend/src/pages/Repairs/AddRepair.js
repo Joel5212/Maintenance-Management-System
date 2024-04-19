@@ -12,7 +12,7 @@ import { useRepairsContext } from "../../hooks/useRepairsContext";
 const AddRepair = () => {
     const [title, setTitle] = useState('')
     const [assets, setAssets] = useState('')
-    const [selectedRepairAsset, setSelectedRepairAsset] = useState([])
+    const [selectedAsset, setSelectedAsset] = useState([])
     const [startDate, setStartDate] = useState('')
     const [dueDate, setDueDate] = useState('')
     const [priority, setPriority] = useState('')
@@ -99,14 +99,17 @@ const AddRepair = () => {
             let assetId = null
             let assetName = ''
 
-            if (selectedRepairAsset.length !== 0) {
-                assetId = selectedRepairAsset[0].value
-                assetName = selectedRepairAsset[0].label
+            if (selectedAsset.length !== 0) {
+                assetId = selectedAsset[0].value
+                assetName = selectedAsset[0].label
             }
             //Send Request
-            const newRepair = { title, assetId, startDate, dueDate, priority, servicers, status, cost, description }
+            const newRepair = { title: title, assetId: assetId, startDate: startDate, dueDate: dueDate, priority: priority, servicers: servicers, status: status, cost: cost, description: description }
+
 
             console.log("checkpoint 1", newRepair)
+            
+
             const response = await fetch('/api/repairs', {
                 method: 'POST',
                 body: JSON.stringify(newRepair),
@@ -127,7 +130,7 @@ const AddRepair = () => {
             if (response.ok) {
                 fetchRepairs()
                 console.log("ASSET NAME", assetName)
-                repairsDispatch({ type: 'ADD_REPAIR', payload: json, assetname: assetName })
+                repairsDispatch({ type: 'ADD_REPAIR', payload: json, asset: assetName })
                 navigate(-1)
             }
         }
@@ -139,7 +142,7 @@ const AddRepair = () => {
     }
 
     const priorities = ["low", "medium", "high"];
-    const statuses = ["Incomplete", "In-Progress", "Complete"]
+    const statuses = ["Incomplete", "In-Progress", "Completed"]
 
     const handleFailureCheckbox = (checked) => {
         setIsCheckboxChecked(checked);
@@ -185,8 +188,8 @@ const AddRepair = () => {
                         <div className='dropdown'>
                             <Select
                                 options={assets}
-                                value={selectedRepairAsset}
-                                onChange={(repairAsset) => setSelectedRepairAsset(repairAsset)}
+                                value={selectedAsset}
+                                onChange={(asset) => setSelectedAsset(asset)}
 
                             />
                         </div>

@@ -16,7 +16,8 @@ const createRepair = async (req, res) => {
 
 // READ all repairs
 const getRepairs = async (req, res) => {
-    const repairs = await Repair.find({}).sort({createdAt: -1})
+    const repairs = await Repair.find({ $or: [{ status: "Incomplete" }, { status: "Overdue" }] }).sort({ createdAt: -1 })
+
 
     res.status(200).json(repairs)
 }
@@ -36,6 +37,11 @@ const getRepair = async (req, res) => {
     }
 
     res.status(200).json(repair)
+}
+
+const getCompletedRepairs = async (req, res) => {
+    const repairs = await Repair.find({ status: "Complete" }).sort({ createdAt: -1 })
+    res.status(200).json(repairs)
 }
 
 // UPDATE a repair
@@ -78,6 +84,7 @@ module.exports = {
     createRepair,
     getRepairs,
     getRepair,
+    getCompletedRepairs,
     updateRepair,
     deleteRepair
 }

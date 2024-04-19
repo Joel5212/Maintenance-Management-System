@@ -13,6 +13,7 @@
 .repairs-header {
     display: flex;
     flex-direction: row;
+    height: 5.5%
 
 }
 
@@ -67,6 +68,106 @@
     margin-right: 20px;
 }
 
+
+.complete-incomplete-select-bar {
+    height: 3%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    /* margin-top: 10px;
+    margin-bottom: 10px */
+}
+
+.complete {
+    display: flex;
+    height: 100%;
+    width: 50%;
+    justify-content: center;
+    align-items: center;
+    font-family: "Arial", sans-serif;
+    font-weight: bold;
+    font-size: 15px;
+    border-bottom: 3px solid white;
+    border-top: 3px solid white;
+    box-sizing: border-box;
+}
+
+.complete-clicked {
+    display: flex;
+    height: 100%;
+    width: 50%;
+    justify-content: center;
+    align-items: center;
+    font-family: "Arial", sans-serif;
+    font-weight: bold;
+    font-size: 15px;
+    border-top: 3px solid white;
+    box-sizing: border-box;
+    border-bottom: 3px solid rgb(14, 14, 209);
+}
+
+.complete:hover {
+    background-color: rgb(245, 245, 245);
+    border-bottom: 3px solid rgb(245, 245, 245);
+    border-top: 3px solid rgb(245, 245, 245);
+}
+
+.complete-clicked:hover {
+    background-color: rgb(245, 245, 245);
+    border-top: 3px solid rgb(245, 245, 245);
+}
+
+.incomplete {
+    display: flex;
+    height: 100%;
+    width: 50%;
+    justify-content: center;
+    align-items: center;
+    font-family: "Arial", sans-serif;
+    font-weight: bold;
+    font-size: 15px;
+    border-top: 5px solid rgb(255, 255, 255);
+    border-bottom: 5px solid rgb(255, 255, 255);
+    box-sizing: border-box;
+}
+
+.incomplete-clicked {
+    display: flex;
+    height: 100%;
+    width: 50%;
+    justify-content: center;
+    align-items: center;
+    font-family: "Arial", sans-serif;
+    font-weight: bold;
+    font-size: 15px;
+    box-sizing: border-box;
+    border-top: 3px solid white;
+    border-bottom: 3px solid rgb(14, 14, 209);
+}
+
+.incomplete:hover {
+    background-color: rgb(245, 245, 245);
+    border-bottom: 3px solid rgb(245, 245, 245);
+    border-top: 3px solid rgb(245, 245, 245);
+}
+
+.incomplete-clicked:hover {
+    background-color: rgb(245, 245, 245);
+    border-top: 3px solid rgb(245, 245, 245);
+}
+
+.repairs-hr-divider {
+    color: black;
+    margin: 0;
+}
+
+.repairs-vr-divider {
+    height: 30px;
+    border: none;
+    border-left: 1px solid black;
+    margin: 0 auto;
+}
 
 
 @media screen and (max-width: 1400px) {

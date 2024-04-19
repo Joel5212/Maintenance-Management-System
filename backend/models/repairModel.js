@@ -31,7 +31,7 @@ const repairSchema = new Schema({
 
     startDate: {
         type: Date,
-        required: true
+        required: false
     },
 
     completedDate: {
