@@ -47,30 +47,6 @@ const Repairs = () => {
             throw new Error(json.error || 'Failed to complete repair');
         }
     };
-
-    const onMarkAsComplete1 = async (id) => {
-        console.log("completing repair: ", id)
-        const updatedRepair = { status: "Complete" };
-    
-        const response = await fetch('/api/repairs/' + id, {
-            method: 'PATCH',
-            body: JSON.stringify(updatedRepair),
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${user.Token}`
-            }
-        });
-    
-        if (response.ok) {
-            const json = await response.json();
-            // Reload the page after successful completion
-            window.location.reload();
-            return json;
-        } else {
-            const json = await response.json();
-            throw new Error(json.error || 'Failed to complete repair');
-        }
-    };
     
     const onCancel = function () {
         setShowDeleteRepairModal(false)

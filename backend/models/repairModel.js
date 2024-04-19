@@ -12,7 +12,6 @@ function formatCost(cost) {
     return cost; // Return unchanged if not a number
 }
 
-
 const repairSchema = new Schema({
     title: {
         type: String,
@@ -31,7 +30,11 @@ const repairSchema = new Schema({
 
     startDate: {
         type: Date,
-        required: false
+        required: false,
+        default: function() {
+            return this.createdAt;
+        }
+
     },
 
     completedDate: {
@@ -41,7 +44,7 @@ const repairSchema = new Schema({
 
     dueDate: {
         type: Date,
-        required: false
+        required: false, 
     },
 
     priority: {
@@ -55,7 +58,10 @@ const repairSchema = new Schema({
     },
     status: {
         type: String,
-        required: false
+        required: false,
+        default: function() {
+            return "Incomplete";
+        }
     },
     cost: {
         type: Number,

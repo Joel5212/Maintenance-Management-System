@@ -17,7 +17,7 @@ const AddRepair = () => {
     const [dueDate, setDueDate] = useState('')
     const [priority, setPriority] = useState('')
     const [servicers, setServicers] = useState('')
-    const [status, setStatus] = useState('')
+    const [status, setStatus] = useState('Incomplete')
     const [cost, setCost] = useState('')
     const [description, setDescription] = useState('')
     const [error, setError] = useState(null)
@@ -104,7 +104,7 @@ const AddRepair = () => {
                 assetName = selectedAsset[0].label
             }
             //Send Request
-            const newRepair = { title: title, assetId: assetId, startDate: startDate, dueDate: dueDate, priority: priority, servicers: servicers, status: status, cost: cost, description: description }
+            const newRepair = { title: title, assetId: assetId, dueDate: dueDate, priority: priority, servicers: servicers, status: status, cost: cost, description: description }
 
 
             console.log("checkpoint 1", newRepair)
@@ -142,7 +142,7 @@ const AddRepair = () => {
     }
 
     const priorities = ["low", "medium", "high"];
-    const statuses = ["Incomplete", "In-Progress", "Completed"]
+    const statuses = ["Incomplete", "Overdue", "Complete"]
 
     const handleFailureCheckbox = (checked) => {
         setIsCheckboxChecked(checked);
@@ -216,12 +216,13 @@ const AddRepair = () => {
                             options={priorities}
                             onChange={(selectedPriority) => setPriority(selectedPriority.value)}
                             value={priority}
-                            placeholder='Select a Priority'
+                            placeholder='Select Priority'
                             className={emptyFields.includes('priority') ? 'dropdown-error' : ''}
                         />
                     </div>
                 </div>
                 <div className='middle'>
+                {/*
                     <div className='label-input'>
                         <label>Start Date:</label>
                         <input
@@ -232,6 +233,7 @@ const AddRepair = () => {
                             className={emptyFields.includes('startDate') ? 'input-error' : 'input'}
                         />
                     </div>
+                */}
                     <div className='label-input'>
                         <label>Due Date:</label>
                         <input
@@ -257,7 +259,7 @@ const AddRepair = () => {
                             options={statuses}
                             onChange={(selectedStatus) => setStatus(selectedStatus.value)}
                             value={status}
-                            placeholder='Select a Status'
+                            placeholder= {'Select status'}
                             className={emptyFields.includes('status') ? 'dropdown-error' : ''}/>
                     </div>
                 </div>
