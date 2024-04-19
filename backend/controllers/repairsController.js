@@ -7,18 +7,37 @@ const createRepair = async (req, res) => {
     
     // adding doc to db
     try {
-        const repair = await Repair.create({title: title, asset: asset, cost: cost, priority: priority, startDate: startDate, dueDate: dueDate, servicers: servicers, status: status, description: description})
+        const repair = await Repair.create({title: title, asset: asset, cost: cost, priority: priority, startDate: new Date(), dueDate: dueDate, servicers: servicers, status: status, description: description})
         res.status(200).json(repair)
     } catch (error) {
         res.status(400).json({error: error.message})
     }
 }
 
-// READ all repairs
 const getRepairs = async (req, res) => {
-    const repairs = await Repair.find({ $or: [{ status: "Incomplete" }, { status: "Overdue" }] }).sort({ createdAt: -1 })
-
-
+    const repairs = await Repair.aggregate([
+        {
+            $match: {
+                $or: [
+                    { status: "Incomplete" },
+                    { status: "Overdue" }
+                ]
+            }
+        },
+        {
+            $sort: { createdAt: -1 }
+        },
+        {
+            $addFields: {
+                dueDate: {
+                    $dateToString: { format: "%Y-%m-%d", date: "$dueDate" }
+                },
+                startDate: {
+                    $dateToString: { format: "%Y-%m-%d", date: "$startDate" }
+                }
+            }
+        }
+    ]);
     res.status(200).json(repairs)
 }
 

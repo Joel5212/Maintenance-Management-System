@@ -13,7 +13,7 @@ const AddRepair = () => {
     const [title, setTitle] = useState('')
     const [assets, setAssets] = useState('')
     const [selectedAsset, setSelectedAsset] = useState([])
-    const [startDate, setStartDate] = useState('')
+    const [startDate, setStartDate] = useState(null)
     const [dueDate, setDueDate] = useState('')
     const [priority, setPriority] = useState('')
     const [servicers, setServicers] = useState('')
@@ -104,7 +104,7 @@ const AddRepair = () => {
                 assetName = selectedAsset[0].label
             }
             //Send Request
-            const newRepair = { title: title, assetId: assetId, dueDate: dueDate, priority: priority, servicers: servicers, status: status, cost: cost, description: description }
+            const newRepair = { title: title, assetId: assetId, startDate: startDate, dueDate: dueDate, priority: priority, servicers: servicers, status: status, cost: cost, description: description }
 
 
             console.log("checkpoint 1", newRepair)
@@ -222,7 +222,7 @@ const AddRepair = () => {
                     </div>
                 </div>
                 <div className='middle'>
-                {/*
+                {/* DEFAULT TO CREATE DATE: repairsController.js (new Date())
                     <div className='label-input'>
                         <label>Start Date:</label>
                         <input
@@ -233,7 +233,7 @@ const AddRepair = () => {
                             className={emptyFields.includes('startDate') ? 'input-error' : 'input'}
                         />
                     </div>
-                */}
+                        */}
                     <div className='label-input'>
                         <label>Due Date:</label>
                         <input
