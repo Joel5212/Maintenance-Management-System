@@ -31,9 +31,6 @@ const repairSchema = new Schema({
     startDate: {
         type: Date,
         required: false,
-        default: function() {
-            return this.createdAt;
-        }
 
     },
 
