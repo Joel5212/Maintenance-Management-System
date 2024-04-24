@@ -20,12 +20,11 @@ function Sidebar() {
 
     return (
         <div className="sidebarItems">
-            <div>
-                <div>
-                    <h1 className="sidebarUserIcon"><span><FontAwesomeIcon icon={faUserCircle} /></span></h1>
-                    <h2 className="sidebarUserInfo"> <div>{user.name}</div>  <div>{"(" + user.role + ")"}</div></h2>
-
-                </div>
+            <div className='sidebar-user'>
+                <h1 className="sidebar-user-icon"><FontAwesomeIcon icon={faUserCircle} /></h1>
+                <h3 className="org-name">{user.organizationName}</h3>
+                <div className='sidebar-user-name'>{user.name}</div>
+                <div className='sidebar-user-role'>{user.role}</div>
             </div>
             <ul className="sidebarRoutes">
                 <li><Link to="/dashboard" className="sidebarRoute">Dashboard</Link></li>
@@ -35,6 +34,7 @@ function Sidebar() {
                 <li><Link to="/categories" className="sidebarRoute">Categories</Link></li>
                 <li><Link to="/locations" className="sidebarRoute">Locations</Link></li>
                 <li><Link to="/users" className="sidebarRoute">Users</Link></li>
+                <li><Link to="/teams" className="sidebarRoute">Teams</Link></li>
             </ul>
             <div className="div-empty-space"></div>
             <button className="sidebarLogoutIconButton" onClick={logoutClick}><FontAwesomeIcon icon={faSignOutAlt} className="sidebarLogoutIcon" /></button>

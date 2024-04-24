@@ -30,7 +30,11 @@ const loginUser = async (req, res) => {
 
         const token = createToken(user._id)
 
-        res.status(200).json({ email, name, role, token });
+        const admin = await User.findOne({ role: 'Admin' })
+
+        const organizationName = admin.organization.orgName
+
+        res.status(200).json({ email, name, role, organizationName, token });
     }
     catch (error) {
         res.status(400).json({ error: error.message });
@@ -38,12 +42,13 @@ const loginUser = async (req, res) => {
 }
 
 const getUsers = async (req, res) => {
-    const excludeCriteria = { role: { $ne: 'Admin' } }
+    // const excludeCriteria = { role: { $ne: 'Admin' } }
 
-    const users = await User.find(excludeCriteria).sort({ createdAt: -1 })
+    const users = await User.find({}).sort({ createdAt: -1 })
 
     res.status(200).json(users)
 }
+
 
 const addUser = async (req, res) => {
     try {

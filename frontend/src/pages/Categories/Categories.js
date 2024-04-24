@@ -23,7 +23,7 @@ const Categories = () => {
             return
         }
 
-        navigate('procedures', { state: { categoryId: category._id, procedureType: "repair" } })
+        navigate('procedures', { state: { category: category, procedureType: "repair" } })
     }
 
     const goToPreventiveMaintenanceProceduresOfCategory = async (category) => {
@@ -32,7 +32,7 @@ const Categories = () => {
             return
         }
 
-        navigate('procedures', { state: { categoryId: category._id, procedureType: "preventiveMaintenance" } })
+        navigate('procedures', { state: { category: category, procedureType: "preventiveMaintenance" } })
     }
 
     const onDelete = async (id) => {
