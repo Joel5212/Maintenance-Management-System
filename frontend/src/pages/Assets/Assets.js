@@ -5,7 +5,7 @@ import { AgGridReact } from 'ag-grid-react';
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";
 import 'ag-grid-enterprise';
-import { UserActionEllipsis } from '../../components/UserActionEllipsis'
+import { AssetsActionEllipsis } from '../../components/AssetsActionEllipsis'
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Link } from 'react-router-dom'
 import { usePrevRouteContext } from "../../hooks/usePrevRouteContext";
@@ -20,6 +20,8 @@ const Assets = () => {
   const location = useLocation()
   const [showDeleteAssetModal, setShowDeleteAssetModal] = useState(false)
   const [assetToDelete, setAssetToDelete] = useState()
+  const [deleteOption, setDeleteOption] = useState('')
+  const [message, setMessage] = useState('')
 
   const onCancel = function () {
     setShowDeleteAssetModal(false)
@@ -30,6 +32,19 @@ const Assets = () => {
       return
     }
 
+    setDeleteOption("deleteAsset")
+    setMessage(`Are you sure you want to delete ${asset.name} along with its descending assets (if any)?`)
+    setShowDeleteAssetModal(true)
+    setAssetToDelete(asset)
+  }
+
+  const deleteAssetAndChildren = function (asset) {
+    if (!user) {
+      return
+    }
+
+    setDeleteOption("deleteAssetAndChildren")
+    setMessage(`Are you sure you want to delete ${asset.name} along with its work orders (if any))?`)
     setShowDeleteAssetModal(true)
     setAssetToDelete(asset)
   }
@@ -40,7 +55,7 @@ const Assets = () => {
       return
     }
 
-    const response = await fetch('/api/assets/' + id, {
+    const response = await fetch('/api/assets/delete-asset' + id, {
       method: 'DELETE',
       headers: {
         'Authorization': `Bearer ${user.token}`
@@ -51,6 +66,30 @@ const Assets = () => {
 
     if (response.ok) {
       assetsDispatch({ type: 'DELETE_ASSET', payload: json })
+    }
+
+    setMessage('')
+    setShowDeleteAssetModal(false)
+    setAssetToDelete()
+  }
+
+  const onDeleteAssetAndChildren = async (id) => {
+
+    if (!user) {
+      return
+    }
+
+    const response = await fetch('/api/assets/delete-asset-and-children' + id, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${user.token}`
+      }
+    })
+
+    const json = await response.json()
+
+    if (response.ok) {
+      assetsDispatch({ type: 'DELETE_ASSET_AND_CHILDREN', payload: json })
     }
 
     setShowDeleteAssetModal(false)
@@ -68,7 +107,7 @@ const Assets = () => {
       }
     })
     const json = await response.json()
-
+    console.log(json)
     if (response.ok) {
       assetsDispatch({ type: 'SET_ASSETS', payload: json })
     }
@@ -102,9 +141,10 @@ const Assets = () => {
     {
       headerName: 'Actions',
       width: 130,
-      cellRenderer: UserActionEllipsis,
+      cellRenderer: AssetsActionEllipsis,
       cellRendererParams: (params) => ({
         onDelete: () => deleteAsset(params.data),
+        onDeleteAssetAndChildren: () => deleteAssetAndChildren(params.data),
         onViewUpdate: () => onViewUpdate(params.data)
       }),
     },
@@ -152,7 +192,7 @@ const Assets = () => {
         </div> :
         <div className='delete-asset-conf-div'>
           {console.log(assetToDelete.name)}
-          <DeleteConfirmationModal assetToDelete={assetToDelete} message={`Are you sure you want to delete ${assetToDelete.name} along with its descending assets (if any)?`} onDelete={onDelete} onCancel={onCancel} />
+          <DeleteConfirmationModal assetToDelete={assetToDelete} message={`Are you sure you want to delete ${assetToDelete.name} along with its descending assets (if any)?`} onDelete={deleteOption == "deleteAsset" ? onDelete : onDeleteAssetAndChildren} onCancel={onCancel} />
         </div>}
     </div>
 

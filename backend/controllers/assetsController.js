@@ -32,6 +32,53 @@ const addAsset = async (req, res) => {
     }
 }
 
+const deleteAsset = async (req, res) => {
+    const { id } = req.params
+
+    const client = new MongoClient(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+
+    try {
+        await client.connect()
+
+        const session = client.startSession();
+        const db = client.db();
+        const AssetsCollection = db.collection('assets');
+
+        await session.withTransaction(async () => {
+
+            if (!mongoose.Types.ObjectId.isValid(id)) {
+                return res.status(400).json({ error: 'No Such Asset' })
+            }
+
+            const deletedAsset = await AssetsCollection.findOneAndDelete({ _id: ObjectId(id) })
+
+            const childAsset = AssetsCollection.findOneAndDelete({ parentAsset: ObjectId(id) })
+
+            if (!deletedAsset) {
+                return res.status(404).json({ error: "Error" })
+            }
+
+            const updateFields = {
+                $set: {
+                    parentAsset: null,
+                }
+            };
+
+            const updatedChildAsset = await AssetsCollection.findOneAndUpdate({ _id: childAsset._id }, { updateFields }, { new: true })
+
+            if (!updatedChildAsset) {
+                return res.status(404).json({ error: "Error" })
+            }
+
+            res.status(200).json()
+        });
+    }
+    catch (err) {
+        console.log(err.message)
+        return res.status(404).json({ error: err.message })
+    }
+}
+
 const recursivelyDeleteChildAssets = async (parentAssetId, assetsCollection) => {
     // const session = await mongoose.startSession
     const deletedAssets = []
@@ -51,7 +98,7 @@ const recursivelyDeleteChildAssets = async (parentAssetId, assetsCollection) => 
     return deletedAssets
 }
 
-const deleteAsset = async (req, res) => {
+const deleteAssetAndChildren = async (req, res) => {
     const { id } = req.params
 
     const client = new MongoClient(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
@@ -117,4 +164,4 @@ const updateAsset = async (req, res) => {
     }
 }
 
-module.exports = { getAssets, addAsset, deleteAsset, updateAsset }
+module.exports = { getAssets, addAsset, deleteAsset, deleteAssetAndChildren, updateAsset }

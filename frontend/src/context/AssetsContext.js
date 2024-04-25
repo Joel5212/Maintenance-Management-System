@@ -70,6 +70,25 @@ const updateAsset = function (updatedAsset, assetPath) {
     return updatedAsset;
 }
 
+const deleteAsset = function (assets, payload) {
+    const assetToDelete = payload.assetToDelete
+    const index = assetToDelete.assetPaths.length() - 1
+
+    //deleting asset 
+    const indexToDelete = assets.findIndex((asset => asset._id === assetToDelete._id))
+    if (indexToDelete != -1) {
+        assets = assets.splice(indexToDelete, 1)
+    }
+
+    //modifying assetPaths for assets that have deletedAsset in the assetPaths
+    for (const asset of assets) {
+        if ((asset.assetPaths.length() > index) && asset.assetPaths.indexOf(assetToDelete._id) != -1) {
+            asset.assetPaths = asset.assetPaths.splice(index - 1)
+        }
+    }
+    return assets
+}
+
 export const assetsReducer = (state, action) => {
     switch (action.type) {
         case 'SET_ASSETS':
@@ -81,6 +100,10 @@ export const assetsReducer = (state, action) => {
                 assets: addAsset(state.assets, action.payload, action.categoryName, action.locationName)
             }
         case 'DELETE_ASSET':
+            return {
+                assets: deleteAsset(state.assets, action.payload)
+            }
+        case 'DELETE_ASSET_AND_CHILDREN':
             return {
                 assets: state.assets.filter(asset => !action.payload.includes(asset._id))
             }
