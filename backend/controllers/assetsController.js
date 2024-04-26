@@ -52,25 +52,17 @@ const deleteAsset = async (req, res) => {
 
             const deletedAsset = await AssetsCollection.findOneAndDelete({ _id: ObjectId(id) })
 
-            const childAsset = AssetsCollection.findOneAndDelete({ parentAsset: ObjectId(id) })
-
             if (!deletedAsset) {
                 return res.status(404).json({ error: "Error" })
             }
 
-            const updateFields = {
-                $set: {
-                    parentAsset: null,
-                }
-            };
-
-            const updatedChildAsset = await AssetsCollection.findOneAndUpdate({ _id: childAsset._id }, { updateFields }, { new: true })
+            const updatedChildAsset = await AssetsCollection.findOneAndUpdate({ parentAsset: ObjectId(id) }, { $set: { parentAsset: null } }, { returnDocument: 'after' })
 
             if (!updatedChildAsset) {
                 return res.status(404).json({ error: "Error" })
             }
 
-            res.status(200).json()
+            res.status(200).json({})
         });
     }
     catch (err) {
@@ -101,10 +93,14 @@ const recursivelyDeleteChildAssets = async (parentAssetId, assetsCollection) => 
 const deleteAssetAndChildren = async (req, res) => {
     const { id } = req.params
 
+    console.log(id)
+
     const client = new MongoClient(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
 
     try {
         await client.connect()
+
+        console.log("HELLLLO")
 
         const session = client.startSession();
         const db = client.db();

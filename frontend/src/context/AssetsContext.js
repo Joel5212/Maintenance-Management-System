@@ -71,19 +71,18 @@ const updateAsset = function (updatedAsset, assetPath) {
 }
 
 const deleteAsset = function (assets, payload) {
-    const assetToDelete = payload.assetToDelete
-    const index = assetToDelete.assetPaths.length() - 1
 
     //deleting asset 
-    const indexToDelete = assets.findIndex((asset => asset._id === assetToDelete._id))
-    if (indexToDelete != -1) {
-        assets = assets.splice(indexToDelete, 1)
+    const indexToDelete = assets.findIndex((asset => asset._id === payload._id))
+    if (indexToDelete !== -1) {
+        assets.splice(indexToDelete, 1)
     }
 
     //modifying assetPaths for assets that have deletedAsset in the assetPaths
+    const index = payload.assetPaths.length - 1
     for (const asset of assets) {
-        if ((asset.assetPaths.length() > index) && asset.assetPaths.indexOf(assetToDelete._id) != -1) {
-            asset.assetPaths = asset.assetPaths.splice(index - 1)
+        if ((asset.assetPaths.length > index) && asset.assetPaths[index] === payload._id) {
+            asset.assetPaths.splice(0, index + 1)
         }
     }
     return assets

@@ -8,9 +8,9 @@ router.use(requireAuth)
 
 router.post('/', addAsset)
 
-router.delete('delete-asset/:id', deleteAsset)
+router.delete('/delete-asset/:id', deleteAsset)
 
-router.delete('delete-asset-and-children/:id', deleteAssetAndChildren)
+router.delete('/delete-asset-and-children/:id', deleteAssetAndChildren)
 
 router.patch('/:id', updateAsset)
 

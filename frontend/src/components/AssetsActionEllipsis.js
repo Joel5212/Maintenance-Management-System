@@ -51,7 +51,7 @@ export const AssetsActionEllipsis = (props) => {
                 open={Boolean(anchorEl)}
                 onClose={handleActionClose}
             >
-                <MenuItem onClick={() => handleMenuItemClick('delete')}>Delete</MenuItem>
+                <MenuItem onClick={() => handleMenuItemClick('deleteAsset')}>Delete</MenuItem>
                 <MenuItem onClick={() => handleMenuItemClick('deleteAssetAndChildren')}>Delete Asset + Children</MenuItem>
                 <MenuItem onClick={() => handleMenuItemClick('viewUpdate')}>View/Update</MenuItem>
                 {/* Add more menu items for other actions */}

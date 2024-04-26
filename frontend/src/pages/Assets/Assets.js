@@ -31,31 +31,26 @@ const Assets = () => {
     if (!user) {
       return
     }
-
     setDeleteOption("deleteAsset")
-    setMessage(`Are you sure you want to delete ${asset.name} along with its descending assets (if any)?`)
-    setShowDeleteAssetModal(true)
-    setAssetToDelete(asset)
-  }
-
-  const deleteAssetAndChildren = function (asset) {
-    if (!user) {
-      return
-    }
-
-    setDeleteOption("deleteAssetAndChildren")
     setMessage(`Are you sure you want to delete ${asset.name} along with its work orders (if any))?`)
     setShowDeleteAssetModal(true)
     setAssetToDelete(asset)
   }
 
-  const onDelete = async (id) => {
+  const deleteAssetAndChildren = function (asset) {
+    setDeleteOption("deleteAssetAndChildren")
+    setMessage(`Are you sure you want to delete ${asset.name} along with its descending assets (if any)?`)
+    setShowDeleteAssetModal(true)
+    setAssetToDelete(asset)
+  }
+
+  const onDelete = async (assetToDelete) => {
 
     if (!user) {
       return
     }
 
-    const response = await fetch('/api/assets/delete-asset' + id, {
+    const response = await fetch('/api/assets/delete-asset/' + assetToDelete._id, {
       method: 'DELETE',
       headers: {
         'Authorization': `Bearer ${user.token}`
@@ -65,7 +60,7 @@ const Assets = () => {
     const json = await response.json()
 
     if (response.ok) {
-      assetsDispatch({ type: 'DELETE_ASSET', payload: json })
+      assetsDispatch({ type: 'DELETE_ASSET', payload: assetToDelete })
     }
 
     setMessage('')
@@ -79,7 +74,9 @@ const Assets = () => {
       return
     }
 
-    const response = await fetch('/api/assets/delete-asset-and-children' + id, {
+    console.log(id)
+
+    const response = await fetch('/api/assets/delete-asset-and-children/' + id, {
       method: 'DELETE',
       headers: {
         'Authorization': `Bearer ${user.token}`
@@ -191,8 +188,7 @@ const Assets = () => {
           </div>
         </div> :
         <div className='delete-asset-conf-div'>
-          {console.log(assetToDelete.name)}
-          <DeleteConfirmationModal assetToDelete={assetToDelete} message={`Are you sure you want to delete ${assetToDelete.name} along with its descending assets (if any)?`} onDelete={deleteOption == "deleteAsset" ? onDelete : onDeleteAssetAndChildren} onCancel={onCancel} />
+          <DeleteConfirmationModal assetToDelete={assetToDelete} message={message} onDelete={deleteOption === "deleteAsset" ? onDelete : onDeleteAssetAndChildren} onCancel={onCancel} deleteOption={deleteOption} />
         </div>}
     </div>
 
