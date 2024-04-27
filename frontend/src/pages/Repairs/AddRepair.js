@@ -417,7 +417,9 @@ const AddRepair = () => {
                                     onChange={(selectedStatus) => setStatus(selectedStatus.value)}
                                     value={status}
                                     placeholder={'Select status'}
-                                    className={emptyFields.includes('status') ? 'dropdown-error' : ''} />
+                                    className={`dropdown-disabled ${emptyFields.includes('status') ? 'dropdown-error' : ''}`}
+                                    disabled={true}
+/>
                             </div>
                         </div>
                         <div className='description'>
