@@ -50,8 +50,8 @@ const repairSchema = new Schema({
     },
 
     servicers: {
-        type: String,
-        required: false
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
     },
     status: {
         type: String,
@@ -70,6 +70,7 @@ const repairSchema = new Schema({
         required: false
     }
 }, { timestamps: true })
+
 
 module.exports = mongoose.model('Repair', repairSchema)
 
