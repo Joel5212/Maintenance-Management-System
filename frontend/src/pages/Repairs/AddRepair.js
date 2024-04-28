@@ -15,19 +15,14 @@ import { SelectAssetModal } from '../../components/SelectAssetModal'
 const AddRepair = () => {
     const [title, setTitle] = useState('')
 
-
     const [parentAsset, setParentAsset] = useState('')
     const [parentAssetName, setParentAssetName] = useState([])
     const [showSelectAssetModal, setShowSelectAssetModal] = useState(false)
-
-    const [assets, setAssets] = useState('')
-    const [selectedAsset, setSelectedAsset] = useState([])
 
     const [servicers, setServicers] = useState('')
     const [selectedServicer, setSelectedServicer] = useState([])
     const [teams, setTeams] = useState('')
     const [selectedTeam, setSelectedTeam] = useState([])
-
     const [selectedOption, setSelectedOption] = useState(null);
 
     const [startDate, setStartDate] = useState(null)
@@ -37,6 +32,7 @@ const AddRepair = () => {
     const [status, setStatus] = useState('Incomplete')
     const [cost, setCost] = useState('')
     const [description, setDescription] = useState('')
+    
     const [error, setError] = useState(null)
     const [emptyFields, setEmptyFields] = useState('')
     const { dispatch: repairsDispatch } = useRepairsContext()
@@ -94,7 +90,7 @@ const AddRepair = () => {
 
                 }
                 console.log("assets", assets)
-                setAssets(assets)
+                setParentAsset(assets)
             }
         }
     }
@@ -192,23 +188,12 @@ const AddRepair = () => {
         //Check if there are empty fields
         if (emptyFields.length === 0) {
 
-            let assetId = null
-            let assetName = ''
-
-            let parentAssetId = null;
+            let assetId = null;
 
             if (parentAsset) {
-                parentAssetId = parentAsset._id
+                assetId = parentAsset._id
             }
-
-            console.log("ParentAssetId", parentAsset)
-
-
-
-            if (selectedAsset.length !== 0) {
-                assetId = selectedAsset[0].value
-                assetName = selectedAsset[0].label
-            }
+            console.log("assetId", assetId)
 
             let servicerId = null
             let servicerName = ''
@@ -224,7 +209,7 @@ const AddRepair = () => {
                 teamName = selectedTeam[0].label
             }
             //Send Request
-            const newRepair = { title: title, asset: parentAssetId, startDate: startDate, dueDate: dueDate, priority: priority, servicers: servicerId, status: status, cost: cost, description: description }
+            const newRepair = { title: title, asset: assetId, startDate: startDate, dueDate: dueDate, priority: priority, servicers: servicerId, status: status, cost: cost, description: description }
 
 
             console.log("checkpoint 1", newRepair)
@@ -249,8 +234,7 @@ const AddRepair = () => {
 
             if (response.ok) {
                 fetchRepairs()
-                console.log("ASSET NAME", assetName)
-                repairsDispatch({ type: 'ADD_REPAIR', payload: json, assetName: assetName, servicerName: servicerName })
+                repairsDispatch({ type: 'ADD_REPAIR', payload: json })
                 navigate(-1)
             }
         }
@@ -307,11 +291,11 @@ const AddRepair = () => {
                             </div>
 
                             <div className="label-input">
-                                <label>Parent Asset:</label>
+                                <label>Asset:</label>
                                 <div className="add-parent-asset-container">
                                     <input
                                         value={parentAssetName}
-                                        placeholder='Select Parent Asset'
+                                        placeholder='Select Asset'
                                         className='add-parent-asset-input'
                                         disabled={true}
                                     />
@@ -319,22 +303,6 @@ const AddRepair = () => {
                                         +
                                     </button>
                                 </div>
-                            </div>
-                            <div className='label-input'>
-                                <label>Cost ($):</label>
-                                <input
-                                    onChange={(e) => {
-                                        const cost = e.target.value;
-                                        // Check if the input is a number
-                                        if (!isNaN(cost)) {
-                                            // If number, update the state
-                                            setCost(cost);
-                                        }
-                                    }}
-                                    value={cost}
-                                    placeholder='Enter Cost'
-                                    className={emptyFields.includes('cost') ? 'input-error' : 'input'}
-                                />
                             </div>
                             <div className="label-input">
                                 <label>Priority:</label>
@@ -360,18 +328,6 @@ const AddRepair = () => {
                         />
                     </div>
                         */}
-                            <div className="label-input">
-
-                                <label>Asset:</label>
-                                <div className='dropdown'>
-                                    <Select
-                                        options={assets}
-                                        value={selectedAsset}
-                                        onChange={(asset) => setSelectedAsset(asset)}
-
-                                    />
-                                </div>
-                            </div>
                             <div className='label-input'>
                                 <label>Due Date:</label>
                                 <input
@@ -411,6 +367,22 @@ const AddRepair = () => {
                                 </div>
                             </div>
                             <div className='label-input'>
+                                <label>Cost ($):</label>
+                                <input
+                                    onChange={(e) => {
+                                        const cost = e.target.value;
+                                        // Check if the input is a number
+                                        if (!isNaN(cost)) {
+                                            // If number, update the state
+                                            setCost(cost);
+                                        }
+                                    }}
+                                    value={cost}
+                                    placeholder='Enter Cost'
+                                    className={emptyFields.includes('cost') ? 'input-error' : 'input'}
+                                />
+                            </div>
+                            <div className='label-input'>
                                 <label>Status:</label>
                                 <Dropdown
                                     options={statuses}
@@ -418,9 +390,9 @@ const AddRepair = () => {
                                     value={status}
                                     placeholder={'Select status'}
                                     className={`dropdown-disabled ${emptyFields.includes('status') ? 'dropdown-error' : ''}`}
-                                    disabled={true}
-/>
+                                    disabled={true}/>
                             </div>
+                            
                         </div>
                         <div className='description'>
                             <label>Description:</label>
@@ -435,7 +407,7 @@ const AddRepair = () => {
                             <input
                                 type="checkbox"
                                 onChange={(e) => handleFailureCheckbox(e.target.checked)} />
-                            <label style={{ marginLeft: '5px' }}>Did this asset fail?</label>
+                            <label style={{ marginLeft: '5px' }}>Repair is due to asset failure</label>
                         </div>
 
                         {isFailureCheckboxChecked && (

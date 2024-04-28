@@ -26,7 +26,8 @@ const Repairs = () => {
 
     const onMarkAsComplete = async (repair) => {
         const repairId = repair._id;
-        const updatedRepair = { status: "Complete" };
+        const currentDate = new Date().toISOString(); // Get current date in ISO format
+        const updatedRepair = { status: "Complete", completedDate: currentDate};
     
         const response = await fetch(`/api/repairs/${repairId}`, {
             method: 'PATCH',

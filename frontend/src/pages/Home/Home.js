@@ -148,7 +148,9 @@ const Home = () => {
               path="/repairs/viewOrUpdate"
               element={
                 <RepairsContextProvider>
-                  <ViewOrUpdateRepair />
+                  <AssetsContextProvider>
+                   <ViewOrUpdateRepair /> 
+                  </AssetsContextProvider>
                 </RepairsContextProvider>
               }
             />
