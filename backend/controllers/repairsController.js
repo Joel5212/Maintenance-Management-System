@@ -112,8 +112,79 @@ const getRepair = async (req, res) => {
 }
 
 const getCompletedRepairs = async (req, res) => {
+    /*
     const repairs = await Repair.find({ status: "Complete" }).sort({ createdAt: -1 })
     res.status(200).json(repairs)
+    */
+    try {
+        const repairs = await Repair.aggregate([
+            {
+                $match: {
+                    $or: [
+                        { status: "Complete" }
+                    ]
+                }
+            },
+            {
+                $sort: { createdAt: -1 }
+            },
+            {
+                $addFields: {
+                    dueDate: {
+                        $dateToString: { format: "%Y-%m-%d", date: "$dueDate" }
+                    },
+                    startDate: {
+                        $dateToString: { format: "%Y-%m-%d", date: "$startDate" }
+                    },
+                    completedDate: {
+                        $dateToString: { format: "%Y-%m-%d", date: "$completedDate" }
+                    },
+                }
+            },
+            {
+                $lookup: {
+                    from: "users", // Replace with the actual collection name of servicers
+                    localField: "servicers", // Field in the repairs collection
+                    foreignField: "_id", // Field in the servicers collection to match on
+                    as: "servicerDetails" // Where to put the resulting data
+                }
+            },
+            {
+                $unwind: {
+                    path: "$servicerDetails",
+                    preserveNullAndEmptyArrays: true // If no servicer is found, keep the repair without a servicer
+                }
+            },
+            {
+                $addFields: {
+                    "servicers": "$servicerDetails.name" // Assumes the servicer's name is stored under 'name'
+                }
+            },
+            {
+                $lookup: {
+                    from: "assets", // Replace with the actual collection name of assets
+                    localField: "asset", // Field in the repairs collection
+                    foreignField: "_id", // Field in the assets collection to match on
+                    as: "assetDetails" // Where to put the resulting data
+                }
+            },
+            {
+                $unwind: {
+                    path: "$assetDetails",
+                    preserveNullAndEmptyArrays: true // If no asset is found, keep the repair without an asset
+                }
+            },
+            {
+                $addFields: {
+                    "asset": "$assetDetails.name" // Assumes the asset's name is stored under 'name'
+                }
+            },
+
+        ]);
+        res.status(200).json(repairs);
+    } catch (error) {
+        res.status(500).json({ message: "An error occurred while fetching repairs", error: error.message });
+    }
 }
 
 // UPDATE a repair
