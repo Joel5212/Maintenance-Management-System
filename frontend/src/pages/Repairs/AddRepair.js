@@ -25,14 +25,14 @@ const AddRepair = () => {
     const [selectedTeam, setSelectedTeam] = useState([])
     const [selectedOption, setSelectedOption] = useState(null);
 
-    const [startDate, setStartDate] = useState(null)
+    const [startDate, setStartDate] = useState(new Date().toISOString().slice(0, 10))
     const [dueDate, setDueDate] = useState('')
     const [priority, setPriority] = useState('')
 
     const [status, setStatus] = useState('Incomplete')
     const [cost, setCost] = useState('')
     const [description, setDescription] = useState('')
-    
+
     const [error, setError] = useState(null)
     const [emptyFields, setEmptyFields] = useState('')
     const { dispatch: repairsDispatch } = useRepairsContext()
@@ -49,7 +49,7 @@ const AddRepair = () => {
     const [procedureTitle, setProcedureTitle] = useState('')
     const [procedureDescription, setProcedureDescription] = useState('')
 
-    
+
     const fetchRepairs = async () => {
         const response = await fetch('/api/repairs', {
             headers: {
@@ -178,16 +178,63 @@ const AddRepair = () => {
             return
         }
 
+
+
         const emptyFields = [];
         let error = '';
 
         if (!title) {
             emptyFields.push('title')
         }
+        if (parentAssetName.length === 0) {
+            emptyFields.push('parentAsset')
+        }
+        if (selectedServicer.length === 0) {
+            emptyFields.push('servicer');
+        }
+
+
+        if (emptyFields.length > 0) {
+            setError(`Please fill in all required fields: ${emptyFields.join(', ')}`);
+            setEmptyFields(emptyFields);
+            return; // Stop the form submission
+        }
+
+        /*
+        
+
+        if (!startDate) {
+            emptyFields.push('startDate')
+        }
+
+        if (!dueDate) {
+            emptyFields.push('dueDate')
+        }
+
+        if (!priority) {
+            emptyFields.push('priority')
+        }
+
+        
+
+        if (!status) {
+            emptyFields.push('status')
+        }
+
+        if (!cost) {
+            emptyFields.push('cost')
+        }
+
+        if (!description) {
+            emptyFields.push('description')
+        }
+
+        */
 
         //Check if there are empty fields
         if (emptyFields.length === 0) {
 
+            console.log("PARENT ASSSSET", parentAssetName)
             let assetId = null;
 
             if (parentAsset) {
@@ -245,7 +292,7 @@ const AddRepair = () => {
         setError(error)
     }
 
-    const priorities = ["low", "medium", "high"];
+    const priorities = ["Low", "Medium", "High"];
     const statuses = ["Incomplete", "Overdue", "Complete"]
 
     const handleFailureCheckbox = (checked) => {
@@ -279,6 +326,9 @@ const AddRepair = () => {
                     <Link to='/repairs' className='back-button-link'><button className='back-button'><ArrowBackIcon /></button></Link>
                     <form className="add-update-repair-form" onSubmit={handleSubmit}>
                         <h1 className="add-update-repair-title">Add Repair</h1>
+                        {error && <div className='error'>{error}</div>}
+
+
                         <div className='top'>
                             <div className="label-input">
                                 <label>Title:</label>
@@ -296,13 +346,29 @@ const AddRepair = () => {
                                     <input
                                         value={parentAssetName}
                                         placeholder='Select Asset'
-                                        className='add-parent-asset-input'
+                                        className={`add-parent-asset-input ${emptyFields.includes('parentAsset') ? 'input-error' : ''}`}
                                         disabled={true}
                                     />
                                     <button className='add-parent-asset-btn' onClick={selectParentAsset}>
                                         +
                                     </button>
                                 </div>
+                            </div>
+                            <div className='label-input'>
+                                <label>Cost ($):</label>
+                                <input
+                                    onChange={(e) => {
+                                        const cost = e.target.value;
+                                        // Check if the input is a number
+                                        if (!isNaN(cost)) {
+                                            // If number, update the state
+                                            setCost(cost);
+                                        }
+                                    }}
+                                    value={cost}
+                                    placeholder='Enter Cost'
+                                    className={emptyFields.includes('cost') ? 'input-error' : 'input'}
+                                />
                             </div>
                             <div className="label-input">
                                 <label>Priority:</label>
@@ -314,6 +380,7 @@ const AddRepair = () => {
                                     className={emptyFields.includes('priority') ? 'dropdown-error' : ''}
                                 />
                             </div>
+
                         </div>
                         <div className='middle'>
                             {/* DEFAULT TO CREATE DATE: repairsController.js (new Date())
@@ -329,13 +396,14 @@ const AddRepair = () => {
                     </div>
                         */}
                             <div className='label-input'>
-                                <label>Due Date:</label>
+                                <label>Start Date:</label>
                                 <input
-                                    type="date"
-                                    onChange={(e) => setDueDate(e.target.value)}
-                                    value={dueDate}
-                                    placeholder='Enter Due Date'
-                                    className={emptyFields.includes('dueDate') ? 'input-error' : 'input'}
+                                    type='date'
+                                    onChange={(e) => setStartDate(e.target.value)}
+                                    value={startDate}
+                                    placeholder='Enter Start Date'
+                                    className={emptyFields.includes('startDate') ? 'input-error' : 'input'}
+                                    disabled='true'
                                 />
                             </div>
                             <div className="label-input">
@@ -367,19 +435,13 @@ const AddRepair = () => {
                                 </div>
                             </div>
                             <div className='label-input'>
-                                <label>Cost ($):</label>
+                                <label>Due Date:</label>
                                 <input
-                                    onChange={(e) => {
-                                        const cost = e.target.value;
-                                        // Check if the input is a number
-                                        if (!isNaN(cost)) {
-                                            // If number, update the state
-                                            setCost(cost);
-                                        }
-                                    }}
-                                    value={cost}
-                                    placeholder='Enter Cost'
-                                    className={emptyFields.includes('cost') ? 'input-error' : 'input'}
+                                    type="date"
+                                    onChange={(e) => setDueDate(e.target.value)}
+                                    value={dueDate}
+                                    placeholder='Enter Due Date'
+                                    className={emptyFields.includes('dueDate') ? 'input-error' : 'input'}
                                 />
                             </div>
                             <div className='label-input'>
@@ -390,18 +452,20 @@ const AddRepair = () => {
                                     value={status}
                                     placeholder={'Select status'}
                                     className={`dropdown-disabled ${emptyFields.includes('status') ? 'dropdown-error' : ''}`}
-                                    disabled={true}/>
+                                    disabled={true} />
                             </div>
-                            
+
                         </div>
-                        <div className='description'>
-                            <label>Description:</label>
+                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%', fontFamily: 'Arial' }}>
+                            <label for="description" style={{ fontFamily: 'Times New Roman' }}>Description:</label>
                             <textarea
+                                id="description"
                                 onChange={(e) => setDescription(e.target.value)}
                                 value={description}
                                 placeholder='Enter Description'
-                                className={emptyFields.includes('description') ? 'input-error' : 'input'}
-                                style={{ width: '100%', height: '200px' }} />
+                                className={emptyFields.includes('description') ? 'input-error' : ''}
+                                style={{ width: '100%', height: '100px', fontFamily: 'Times New Roman' }}
+                            />
                         </div>
                         <div className="failure-checkbox" style={{ display: 'flex', alignItems: 'center' }}>
                             <input

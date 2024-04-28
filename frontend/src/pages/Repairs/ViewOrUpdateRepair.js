@@ -73,7 +73,7 @@ const ViewOrUpdateRepair = (props) => {
         setTitle(repair.title)
 
         setParentAsset(repair.asset)
-    
+
         setStartDate(repair.startDate)
         setDueDate(repair.dueDate)
         setPriority(repair.priority)
@@ -225,6 +225,7 @@ const ViewOrUpdateRepair = (props) => {
                 }
                 console.log("assetId", assetId)
 
+
                 let servicerId = null
                 let servicerName = ''
 
@@ -232,6 +233,9 @@ const ViewOrUpdateRepair = (props) => {
                     servicerId = selectedServicer[0].value
                     servicerName = selectedServicer[0].label
                 }
+
+
+
 
                 const newRepair = { title: title, asset: assetId, startDate: startDate, dueDate: dueDate, priority: priority, servicers: servicerId, status: status, cost: cost, description: description }
 
@@ -272,7 +276,7 @@ const ViewOrUpdateRepair = (props) => {
         setError(error)
     }
 
-    const priorities = ["low", "medium", "high"];
+    const priorities = ["Low", "Medium", "High"];
     const statuses = ["Incomplete", "Overdue", "Complete"]
 
 
@@ -349,16 +353,7 @@ const ViewOrUpdateRepair = (props) => {
                                     disabled='true'
                                 />
                             </div>
-                            <div className='label-input'>
-                                <label>Due Date:</label>
-                                <input
-                                    type='date'
-                                    onChange={(e) => setDueDate(e.target.value)}
-                                    value={dueDate}
-                                    placeholder='Enter Due Date'
-                                    className={emptyFields.includes('dueDate') ? 'input-error' : 'input'}
-                                />
-                            </div>
+                            
                             <div className="label-input">
                                 <label>Servicers:</label>
                                 <Select
@@ -370,6 +365,16 @@ const ViewOrUpdateRepair = (props) => {
                                 />
                             </div>
                             <div className='label-input'>
+                                <label>Due Date:</label>
+                                <input
+                                    type='date'
+                                    onChange={(e) => setDueDate(e.target.value)}
+                                    value={dueDate}
+                                    placeholder='Enter Due Date'
+                                    className={emptyFields.includes('dueDate') ? 'input-error' : 'input'}
+                                />
+                            </div>
+                            <div className='label-input'>
                                 <label>Status:</label>
                                 <Dropdown
                                     options={statuses}
@@ -377,18 +382,20 @@ const ViewOrUpdateRepair = (props) => {
                                     value={status}
                                     placeholder='Select a Status'
                                     className={emptyFields.includes('status') ? 'dropdown-error' : ''}
+                                    disabled
                                 />
                             </div>
 
                         </div>
-                        <div className='description'>
-                            <label>Description:</label>
+                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%', fontFamily: 'Arial' }}>
+                            <label for="description" style={{ fontFamily: 'Times New Roman' }}>Description:</label>
                             <textarea
+                                id="description"
                                 onChange={(e) => setDescription(e.target.value)}
                                 value={description}
                                 placeholder='Enter Description'
-                                className={emptyFields.includes('description') ? 'input-error' : 'input'}
-                                style={{ width: '100%', height: '200px' }}
+                                className={emptyFields.includes('description') ? 'input-error' : ''}
+                                style={{ width: '100%', height: '200px', fontFamily: 'Times New Roman' }}
                             />
                         </div>
                         <div className='bottom'>
