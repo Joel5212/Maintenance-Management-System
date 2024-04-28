@@ -168,6 +168,7 @@ const ViewOrUpdateRepair = (props) => {
     }
 
     const handleSubmit = async (e) => {
+        console.log("YOOOOOO parentAsset", parentAssetName)
         e.preventDefault()
 
         if (!user) {
@@ -181,11 +182,21 @@ const ViewOrUpdateRepair = (props) => {
             if (!title) {
                 emptyFields.push('title')
             }
-
-            /*
-            if (!asset) {
+            if (parentAssetName.length === 0) {
                 emptyFields.push('asset')
             }
+            if (!selectedServicer) {
+                emptyFields.push('servicer');
+            }
+
+            if (emptyFields.length > 0) {
+                setError(`Please fill in all required fields: ${emptyFields.join(', ')}`);
+                setEmptyFields(emptyFields);
+                return; // Stop the form submission
+            }
+
+            /*
+            
 
             if (!startDate) {
                 emptyFields.push('startDate')
@@ -199,10 +210,7 @@ const ViewOrUpdateRepair = (props) => {
                 emptyFields.push('priority')
             }
 
-            if (!servicers) {
-                emptyFields.push('servicers')
-            }
-
+            
             if (!status) {
                 emptyFields.push('status')
             }

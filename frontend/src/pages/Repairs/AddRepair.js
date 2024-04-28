@@ -187,7 +187,7 @@ const AddRepair = () => {
             emptyFields.push('title')
         }
         if (parentAssetName.length === 0) {
-            emptyFields.push('parentAsset')
+            emptyFields.push('asset')
         }
         if (selectedServicer.length === 0) {
             emptyFields.push('servicer');
