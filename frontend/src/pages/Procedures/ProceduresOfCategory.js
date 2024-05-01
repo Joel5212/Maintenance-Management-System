@@ -29,8 +29,7 @@ const ProceduresOfCategory = () => {
     prevRouterDispatch({ type: 'SET_PREV_ROUTE', location: location.pathname })
   }, [proceduresDispatch, user])
 
-  const onViewUpdate = async (procedureId) => {
-    const procedure = procedures.find((repairProcedure) => repairProcedure._id === procedureId)
+  const onViewUpdate = async (procedure) => {
     navigate('viewOrUpdate', { state: { category, procedure, procedureType } })
   }
 
@@ -40,8 +39,8 @@ const ProceduresOfCategory = () => {
       return
     }
 
-    const response = await fetch(procedureType === "repair" ? '/api/repairProcedures/' + procedureId :
-      '/api/preventiveMaintenanceProcedures/' + procedureId, {
+    const response = await fetch(procedureType === "repair" ? '/api/repair-procedures/' + procedureId :
+      '/api/preventive-maintenance-procedures/' + procedureId, {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
@@ -74,7 +73,7 @@ const ProceduresOfCategory = () => {
   }
 
   const fetchProceduresOfCategory = async () => {
-    const response = await fetch(procedureType === "repair" ? '/api/repairProcedures/' + category._id : '/api/preventiveMaintenanceProcedures/' + category._id, {
+    const response = await fetch(procedureType === "repair" ? '/api/repair-procedures/' + category._id : '/api/preventive-maintenance-procedures/' + category._id, {
       headers: {
         'Authorization': `Bearer ${user.token}`
       }
@@ -104,7 +103,7 @@ const ProceduresOfCategory = () => {
                 <div className='procedure-title'>
                   {procedure.title}
                 </div>
-                <UserActionEllipsis onDelete={() => onDelete(procedure._id)} onViewUpdate={() => onViewUpdate(procedure._id)} />
+                <UserActionEllipsis onDelete={() => onDelete(procedure._id)} onViewUpdate={() => onViewUpdate(procedure)} />
               </div>
               <div className='procedure-description'>
                 {procedure.description}
