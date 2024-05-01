@@ -33,6 +33,7 @@ import { AssetsContextProvider } from '../../context/AssetsContext';
 import { CategoriesContextProvider } from '../../context/CategoriesContext';
 import { ProceduresContextProvider } from '../../context/ProceduresContext';
 import { RepairsContextProvider } from '../../context/RepairsContext';
+import { CompletedRepairsContextProvider } from '../../context/CompletedRepairsContext';
 import { LocationsContextProvider } from '../../context/LocationsContext';
 import { FailuresContextProvider } from '../../context/FailuresContext';
 
@@ -161,7 +162,9 @@ const Home = () => {
               path="/repairs"
               element={
                 <RepairsContextProvider>
-                  <Repairs />
+                  <CompletedRepairsContextProvider>
+                    <Repairs />
+                  </CompletedRepairsContextProvider>
                 </RepairsContextProvider>
               }
             />
@@ -169,7 +172,9 @@ const Home = () => {
               path="/repairs/add"
               element={
                 <RepairsContextProvider>
-                  <AddRepair />
+                  <AssetsContextProvider>
+                    <AddRepair />
+                  </AssetsContextProvider>
                 </RepairsContextProvider>
               }
             />
@@ -177,7 +182,9 @@ const Home = () => {
               path="/repairs/viewOrUpdate"
               element={
                 <RepairsContextProvider>
-                  <ViewOrUpdateRepair />
+                  <AssetsContextProvider>
+                   <ViewOrUpdateRepair /> 
+                  </AssetsContextProvider>
                 </RepairsContextProvider>
               }
             />

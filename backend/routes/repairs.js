@@ -1,5 +1,5 @@
 const express = require('express')
-const{createRepair,getRepairs,getRepair,updateRepair,deleteRepair} = require('../controllers/repairsController')
+const{createRepair,getRepairs,getRepair,getCompletedRepairs, updateRepair,deleteRepair} = require('../controllers/repairsController')
 const requireAuth = require('../middleware/requiredAuth')
 
 const router = express.Router()
@@ -10,6 +10,8 @@ router.post('/', createRepair)
 
 // READ all repairs
 router.get('/', getRepairs)
+
+router.get('/completed', getCompletedRepairs)
 
 // READ single repair
 router.get('/:id', getRepair)
