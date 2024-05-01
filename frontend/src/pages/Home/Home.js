@@ -24,6 +24,9 @@ import ViewOrUpdateLocation from '../Locations/ViewOrUpdateLocation'
 import AddProcedure from '../Procedures/AddProcedure'
 import ProceduresOfCategory from '../Procedures/ProceduresOfCategory'
 import ViewOrUpdateProcedure from '../Procedures/ViewOrUpdateProcedure'
+import FailuresOfCategory from '../Failures/FailuresOfCategory'
+import AddFailure from '../Failures/AddFailure'
+import ViewOrUpdateFailure from '../Failures/ViewOrUpdateFailure'
 import { UsersContextProvider } from '../../context/UsersContext';
 import { TeamsContextProvider } from '../../context/TeamsContext';
 import { AssetsContextProvider } from '../../context/AssetsContext';
@@ -31,6 +34,7 @@ import { CategoriesContextProvider } from '../../context/CategoriesContext';
 import { ProceduresContextProvider } from '../../context/ProceduresContext';
 import { RepairsContextProvider } from '../../context/RepairsContext';
 import { LocationsContextProvider } from '../../context/LocationsContext';
+import { FailuresContextProvider } from '../../context/FailuresContext';
 
 const Home = () => {
   return (
@@ -120,6 +124,36 @@ const Home = () => {
                   <ProceduresContextProvider>
                     <ViewOrUpdateProcedure />
                   </ProceduresContextProvider>
+                </CategoriesContextProvider>
+              }
+            />
+            <Route
+              path="/categories/failures"
+              element={
+                <CategoriesContextProvider>
+                  <FailuresContextProvider>
+                    <FailuresOfCategory />
+                  </FailuresContextProvider>
+                </CategoriesContextProvider>
+              }
+            />
+            <Route
+              path="/categories/failures/add"
+              element={
+                <CategoriesContextProvider>
+                  <FailuresContextProvider>
+                    <AddFailure />
+                  </FailuresContextProvider>
+                </CategoriesContextProvider>
+              }
+            />
+            <Route
+              path="/categories/failures/viewOrUpdate"
+              element={
+                <CategoriesContextProvider>
+                  <FailuresContextProvider>
+                    <ViewOrUpdateFailure />
+                  </FailuresContextProvider>
                 </CategoriesContextProvider>
               }
             />
