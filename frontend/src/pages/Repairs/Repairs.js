@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { useEffect } from 'react';
 import { useRepairsContext } from "../../hooks/useRepairsContext";
+import { useCompletedRepairsContext } from "../../hooks/useCompletedRepairsContext";
 import { AgGridReact } from 'ag-grid-react';
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";
@@ -13,12 +14,41 @@ import { useAuthContext } from '../../hooks/useAuthContext'
 const Repairs = () => {
     const { prevRoute, dispatch: prevRouterDispatch } = usePrevRouteContext()
     const { repairs, dispatch: repairsDispatch } = useRepairsContext()
+    const { completedRepairs, dispatch: completedRepairsDispatch } = useCompletedRepairsContext([])
     const { user } = useAuthContext()
     const navigate = useNavigate()
     const location = useLocation()
     const [showDeleteRepairModal, setShowDeleteRepairModal] = useState(false)
     const [repairToDelete, setRepairToDelete] = useState()
+    const [incompleteClicked, setIncompleteClicked] = useState(true)
+    const [completedClicked, setCompletedClicked] = useState(false)
+    
 
+    const onMarkAsComplete = async (repair) => {
+        const repairId = repair._id;
+        const currentDate = new Date().toISOString(); // Get current date in ISO format
+        const updatedRepair = { status: "Complete", completedDate: currentDate};
+    
+        const response = await fetch(`/api/repairs/${repairId}`, {
+            method: 'PATCH',
+            body: JSON.stringify(updatedRepair),
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${user.Token}`
+            }
+        });
+    
+        if (response.ok) {
+            const json = await response.json();
+            // Reload the page after successful completion
+            window.location.reload();
+            return json;
+        } else {
+            const json = await response.json();
+            throw new Error(json.error || 'Failed to complete repair');
+        }
+    };
+    
     const onCancel = function () {
         setShowDeleteRepairModal(false)
     }
@@ -70,6 +100,9 @@ const Repairs = () => {
             field: 'asset',
         },
         {
+            field: 'startDate',
+        },
+        {
             field: 'dueDate',
         },
         {
@@ -80,6 +113,48 @@ const Repairs = () => {
         },
         {
             field: 'status',
+        },
+        {
+            field: 'cost',
+        },
+        {
+            headerName: 'Actions',
+            cellRenderer: RepairActionEllipsis,
+            cellRendererParams: (params) => ({
+                onDelete: () => onDelete(params.data._id),
+                onViewUpdate: () => onViewUpdate(params.data),
+                onMarkAsComplete: () => onMarkAsComplete(params.data),
+            }),
+        },
+    ]
+
+    const columnDefsForCompletedRepairs = [
+        {
+            field: 'title',
+        },
+        {
+            field: 'asset',
+        },
+        {
+            field: 'startDate',
+        },
+        {
+            field: 'dueDate',
+        },
+        {
+            field: 'completedDate',
+        },
+        {
+            field: 'priority',
+        },
+        {
+            field: 'servicers',
+        },
+        {
+            field: 'status',
+        },
+        {
+            field: 'cost',
         },
         {
             headerName: 'Actions',
@@ -118,6 +193,38 @@ const Repairs = () => {
         flex: 1 // or 'autoWidth'
     };
 
+    const fetchCompletedRepairs = async () => {
+        const response = await fetch('/api/repairs/completed', {
+            headers: {
+                'Authorization': `Bearer ${user.token}`
+            }
+        })
+        const json = await response.json()
+        console.log("Completed Repairs: ", json)
+
+        if (response.ok) {
+            completedRepairsDispatch({ type: 'SET_COMPLETED_REPAIRS', payload: json })
+        }
+    }
+
+    const incompleteClick = () => {
+        if (!incompleteClicked) {
+            setIncompleteClicked(true)
+            setCompletedClicked(false)
+        }
+    }
+
+    const completeClick = async () => {
+        if (!completedClicked) {
+            setIncompleteClicked(false)
+            setCompletedClicked(true)
+            if (!completedRepairs) {
+                fetchCompletedRepairs()
+            }
+        }
+    }
+
+
 
 
     return (
@@ -127,10 +234,15 @@ const Repairs = () => {
                 <div className="div-empty-space"></div>
                 <Link to="/repairs/add" className="new-item-nav-link"><button className="new-item-nav-btn btn-effect">+ New Repair</button></Link>
             </div>
+            <hr className='repairs-hr-divider'></hr>
+            <div className="complete-incomplete-select-bar">
+                <div className={incompleteClicked ? 'incomplete-clicked' : 'incomplete'} onClick={incompleteClick}>Incomplete/Overdue</div>
+                <div className={completedClicked ? 'complete-clicked' : 'complete'} onClick={completeClick}>Complete</div>
+            </div> 
             <div className="ag-theme-alpine repairs">
-                <AgGridReact
-                    rowData={repairs}
-                    columnDefs={columnDefs}
+            <AgGridReact
+                    rowData={incompleteClicked ? repairs : completedRepairs}
+                    columnDefs={incompleteClicked ? columnDefs : columnDefsForCompletedRepairs}
                     defaultColDef={defaultColDef}
                 />
             </div>
