@@ -182,9 +182,10 @@ const ViewOrUpdateRepair = (props) => {
             if (!title) {
                 emptyFields.push('title')
             }
+            /*
             if (parentAssetName.length === 0) {
                 emptyFields.push('asset')
-            }
+            }*/
             if (!selectedServicer) {
                 emptyFields.push('servicer');
             }

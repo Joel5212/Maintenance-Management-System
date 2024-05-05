@@ -5,24 +5,31 @@ const { ObjectId } = require('mongodb');
 
 // CREATE new repair
 const createRepair = async (req, res) => {
-
     // adding doc to db
     try {
-        const {title, asset, startDate, dueDate, priority, servicers, status, cost, description} = req.body
-        const repair = await Repair.create({title: title, 
-            asset: asset, 
-            cost: Math.round(cost * 100) / 100, 
-            priority: priority, 
-            startDate: new Date(), 
-            dueDate: dueDate, 
-            servicers: servicers, 
-            status: status, 
-            description: description})
+        const { title, asset, startDate, dueDate, priority, servicers, status, cost, description } = req.body
+        // Check if dueDate is after startDate
+        if (new Date(dueDate) <= new Date(startDate)) {
+            return res.status(400).json({ error: "Due date must be after start date" });
+        }
+        const repair = await Repair.create({
+            title: title,
+            asset: asset,
+            cost: Math.round(cost * 100) / 100,
+            priority: priority,
+            startDate: new Date(),
+            dueDate: dueDate,
+            servicers: servicers,
+            status: status,
+            description: description
+        })
         res.status(200).json(repair)
     } catch (error) {
-        res.status(400).json({error: error.message})
+        res.status(400).json({ error: error.message })
     }
 }
+
+
 
 const getRepairs = async (req, res) => {
     try {
@@ -99,13 +106,13 @@ const getRepair = async (req, res) => {
     const { id } = req.params
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
-        return res.status(404).json({error: 'No such repair'})
+        return res.status(404).json({ error: 'No such repair' })
     }
 
     const repair = await Repair.findById(id)
 
     if (!repair) {
-        return res.status(400).json({error: 'No such repair'})
+        return res.status(400).json({ error: 'No such repair' })
     }
 
     res.status(200).json(repair)
@@ -187,7 +194,28 @@ const getCompletedRepairs = async (req, res) => {
     }
 }
 
+/*
 // UPDATE a repair
+const updateRepair = async (req, res) => {
+    const { id } = req.params
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+        return res.status(404).json({ error: 'No such repair' })
+    }
+
+    const repair = await Repair.findOneAndUpdate({ _id: id }, {
+        ...req.body
+    })
+
+    if (!repair) {
+        return res.status(400).json({ error: 'No such repair' })
+    }
+
+    res.status(200).json(repair)
+}
+*/
+
+
 const updateRepair = async (req, res) => {
     const { id } = req.params
 
@@ -195,15 +223,26 @@ const updateRepair = async (req, res) => {
         return res.status(404).json({error: 'No such repair'})
     }
 
-    const repair = await Repair.findOneAndUpdate({_id: id}, {
-        ...req.body
-    })
+    try {
+        const repairToUpdate = await Repair.findById(id);
 
-    if (!repair) {
-        return res.status(400).json({error: 'No such repair'})
+        if (!repairToUpdate) {
+            return res.status(404).json({ error: 'No such repair' });
+        }
+
+        const { startDate, dueDate } = req.body;
+
+        // Check if dueDate is after startDate
+        if (startDate && dueDate && new Date(dueDate) <= new Date(startDate)) {
+            return res.status(400).json({ error: "Due date must be after start date" });
+        }
+
+        const updatedRepair = await Repair.findByIdAndUpdate(id, req.body, { new: true });
+
+        res.status(200).json(updatedRepair);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
     }
-
-    res.status(200).json(repair)
 }
 
 // DELETE repair
@@ -211,15 +250,15 @@ const deleteRepair = async (req, res) => {
     const { id } = req.params
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
-        return res.status(404).json({error: 'No such repair'})
+        return res.status(404).json({ error: 'No such repair' })
     }
 
-    const repair = await Repair.findOneAndDelete({_id: id})
+    const repair = await Repair.findOneAndDelete({ _id: id })
 
     if (!repair) {
-        return res.status(400).json({error: 'No such repair'})
+        return res.status(400).json({ error: 'No such repair' })
     }
-    
+
     res.status(200).json(repair)
 }
 
