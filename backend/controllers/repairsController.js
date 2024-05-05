@@ -7,7 +7,14 @@ const { ObjectId } = require('mongodb');
 const createRepair = async (req, res) => {
     // adding doc to db
     try {
-        const { title, asset, startDate, dueDate, priority, servicers, status, cost, description } = req.body
+        const { title, asset, dueDate, priority, servicers, status, cost, description } = req.body
+
+        // Subtract one day from the current date, newDate() operates on UTC time, should be on PST
+        const currentDate = new Date()
+        const startDate = new Date(currentDate)
+        startDate.setDate(startDate.getDate() - 1)
+
+
         // Check if dueDate is after startDate
         if (new Date(dueDate) <= new Date(startDate)) {
             return res.status(400).json({ error: "Due date must be after start date" });
@@ -17,7 +24,7 @@ const createRepair = async (req, res) => {
             asset: asset,
             cost: Math.round(cost * 100) / 100,
             priority: priority,
-            startDate: new Date(),
+            startDate: startDate,
             dueDate: dueDate,
             servicers: servicers,
             status: status,

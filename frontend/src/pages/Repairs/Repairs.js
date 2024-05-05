@@ -22,13 +22,13 @@ const Repairs = () => {
     const [repairToDelete, setRepairToDelete] = useState()
     const [incompleteClicked, setIncompleteClicked] = useState(true)
     const [completedClicked, setCompletedClicked] = useState(false)
-    
+
 
     const onMarkAsComplete = async (repair) => {
         const repairId = repair._id;
         const currentDate = new Date().toISOString(); // Get current date in ISO format
-        const updatedRepair = { status: "Complete", completedDate: currentDate};
-    
+        const updatedRepair = { status: "Complete", completedDate: currentDate };
+
         const response = await fetch(`/api/repairs/${repairId}`, {
             method: 'PATCH',
             body: JSON.stringify(updatedRepair),
@@ -37,18 +37,20 @@ const Repairs = () => {
                 'Authorization': `Bearer ${user.Token}`
             }
         });
-    
+
         if (response.ok) {
             const json = await response.json();
             // Reload the page after successful completion
-            window.location.reload();
+            // window.location.reload();
+            repairsDispatch({ type: 'DELETE_REPAIR', payload: json })
+
             return json;
         } else {
             const json = await response.json();
             throw new Error(json.error || 'Failed to complete repair');
         }
     };
-    
+
     const onCancel = function () {
         setShowDeleteRepairModal(false)
     }
@@ -238,9 +240,9 @@ const Repairs = () => {
             <div className="complete-incomplete-select-bar">
                 <div className={incompleteClicked ? 'incomplete-clicked' : 'incomplete'} onClick={incompleteClick}>Incomplete/Overdue</div>
                 <div className={completedClicked ? 'complete-clicked' : 'complete'} onClick={completeClick}>Complete</div>
-            </div> 
+            </div>
             <div className="ag-theme-alpine repairs">
-            <AgGridReact
+                <AgGridReact
                     rowData={incompleteClicked ? repairs : completedRepairs}
                     columnDefs={incompleteClicked ? columnDefs : columnDefsForCompletedRepairs}
                     defaultColDef={defaultColDef}
