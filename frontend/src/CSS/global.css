@@ -328,6 +328,11 @@ input {
     background-color: #ddd;
 }
 
+.select-procedure-modal-title {
+    font-size: 30px;
+    font-family: Arial, sans-serif;
+}
+
 .select-procedure-modal-container {
     display: flex;
     justify-content: center;

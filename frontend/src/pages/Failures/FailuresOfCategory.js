@@ -73,6 +73,7 @@ const FailuresOfCategory = () => {
     }
 
     const fetchFailuresOfCategory = async () => {
+        console.log(category)
         const response = await fetch('/api/failures/' + category._id, {
             headers: {
                 'Authorization': `Bearer ${user.token}`
@@ -102,17 +103,26 @@ const FailuresOfCategory = () => {
                     failures.map((failure) => (
                         <div className='failures-container' key={failure._id}>
                             <div className="failures-top">
-                                <div className='failures-title'>
+                                <div className='failures-container-title'>
                                     {failure.title}
                                 </div>
                                 <FailureActionEllipsis onDelete={() => onDelete(failure._id)} onViewUpdate={() => onViewUpdate(failure)} />
                             </div>
-                            <div className='failures-observation'>
-                                {failure.observation}
+                            <div className='failure-field-container'>
+                                <div className='failure-field-title'>Observation</div>
+                                <div className='failure-field-description'> {failure.observation}</div>
                             </div>
-                            <div className='failures-cause'>
-                                {failure.cause}
+                            <div className='failure-field-container'>
+                                <div className='failure-field-title'>Cause</div>
+                                <div className='failure-field-description'> {failure.cause}</div>
                             </div>
+                            {failure.procedure || (failure.procedureTitle && failure.procedureDescription) ?
+                                <div className='failure-field-container'>
+                                    <div className='failure-field-title'> Procedure </div>
+                                    <div className='failure-field-description'>{failure.procedure ? failure.procedure.description : failure.procedureDescription}</div>
+                                    <div />
+                                </div> : ""}
+                            <div />
                         </div>
                     )) : <NoItemsAvailable itemName={"Failures"} />}
             </div>
