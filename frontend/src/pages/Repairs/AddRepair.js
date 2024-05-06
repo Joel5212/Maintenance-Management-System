@@ -25,7 +25,8 @@ const AddRepair = () => {
     const [selectedTeam, setSelectedTeam] = useState([])
     const [selectedOption, setSelectedOption] = useState(null);
 
-    const [startDate, setStartDate] = useState(new Date().toISOString().slice(0, 10))
+    const [startDate, setStartDate] = useState(new Date().toLocaleDateString('en-CA'));
+
     const [dueDate, setDueDate] = useState('')
     const [priority, setPriority] = useState('')
 
@@ -354,58 +355,7 @@ const AddRepair = () => {
                                     </button>
                                 </div>
                             </div>
-                            <div className='label-input'>
-                                <label>Cost ($):</label>
-                                <input
-                                    onChange={(e) => {
-                                        const cost = e.target.value;
-                                        // Check if the input is a number
-                                        if (!isNaN(cost)) {
-                                            // If number, update the state
-                                            setCost(cost);
-                                        }
-                                    }}
-                                    value={cost}
-                                    placeholder='Enter Cost'
-                                    className={emptyFields.includes('cost') ? 'input-error' : 'input'}
-                                />
-                            </div>
-                            <div className="label-input">
-                                <label>Priority:</label>
-                                <Dropdown
-                                    options={priorities}
-                                    onChange={(selectedPriority) => setPriority(selectedPriority.value)}
-                                    value={priority}
-                                    placeholder='Select Priority'
-                                    className={emptyFields.includes('priority') ? 'dropdown-error' : ''}
-                                />
-                            </div>
 
-                        </div>
-                        <div className='middle'>
-                            {/* DEFAULT TO CREATE DATE: repairsController.js (new Date())
-                    <div className='label-input'>
-                        <label>Start Date:</label>
-                        <input
-                            type="date"
-                            onChange={(e) => setStartDate(e.target.value)}
-                            value={startDate}
-                            placeholder='Enter Start Date'
-                            className={emptyFields.includes('startDate') ? 'input-error' : 'input'}
-                        />
-                    </div>
-                        */}
-                            <div className='label-input'>
-                                <label>Start Date:</label>
-                                <input
-                                    type='date'
-                                    onChange={(e) => setStartDate(e.target.value)}
-                                    value={startDate}
-                                    placeholder='Enter Start Date'
-                                    className={emptyFields.includes('startDate') ? 'input-error' : 'input'}
-                                    disabled='true'
-                                />
-                            </div>
                             <div className="label-input">
                                 <label>Servicers:</label>
                                 <div className='dropdown'>
@@ -434,6 +384,24 @@ const AddRepair = () => {
                                     />
                                 </div>
                             </div>
+                            
+                            
+
+                        </div>
+                        <div className='middle'>
+                        {/* Start Date not visible to user on repair creation
+                            <div className='label-input'>
+                                <label>Start Date:</label>
+                                <input
+                                    type='date'
+                                    onChange={(e) => setStartDate(e.target.value)}
+                                    value={startDate}
+                                    placeholder='Enter Start Date'
+                                    className={emptyFields.includes('startDate') ? 'input-error' : 'input'}
+                                    disabled='true'
+                                />
+                            </div>
+                            */}
                             <div className='label-input'>
                                 <label>Due Date:</label>
                                 <input
@@ -444,6 +412,33 @@ const AddRepair = () => {
                                     className={emptyFields.includes('dueDate') ? 'input-error' : 'input'}
                                 />
                             </div>
+                            <div className="label-input">
+                                <label>Priority:</label>
+                                <Dropdown
+                                    options={priorities}
+                                    onChange={(selectedPriority) => setPriority(selectedPriority.value)}
+                                    value={priority}
+                                    placeholder='Select Priority'
+                                    className={emptyFields.includes('priority') ? 'dropdown-error' : ''}
+                                />
+                            </div>
+                            <div className='label-input'>
+                                <label>Cost ($):</label>
+                                <input
+                                    onChange={(e) => {
+                                        const cost = e.target.value;
+                                        // Check if the input is a number
+                                        if (!isNaN(cost)) {
+                                            // If number, update the state
+                                            setCost(cost);
+                                        }
+                                    }}
+                                    value={cost}
+                                    placeholder='Enter Cost'
+                                    className={emptyFields.includes('cost') ? 'input-error' : 'input'}
+                                />
+                            </div>
+                            {/*
                             <div className='label-input'>
                                 <label>Status:</label>
                                 <Dropdown
@@ -454,7 +449,7 @@ const AddRepair = () => {
                                     className={`dropdown-disabled ${emptyFields.includes('status') ? 'dropdown-error' : ''}`}
                                     disabled={true} />
                             </div>
-
+                                */}
                         </div>
                         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%', fontFamily: 'Arial' }}>
                             <label for="description" style={{ fontFamily: 'Times New Roman' }}>Description:</label>
