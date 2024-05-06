@@ -202,25 +202,25 @@ input {
     padding: 0;
     margin: 0;
     width: 100%;
-    margin-bottom: 50%
+    margin-bottom: 10px
 }
 
-.sidebarRoutes .sidebarRoute {
+.sidebarRoute {
     padding-top: 10%;
     padding-bottom: 10%;
     font-size: 25px;
     width: 100%;
-    height: 55px;
+    height: 50px;
     text-decoration: none;
     align-content: space-between;
     display: flex;
     color: white;
     justify-content: center;
     align-items: center;
-    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    font-family: sans-serif;
 }
 
-.sidebarRoutes .sidebarRoute:hover {
+.sidebarRoute:hover {
     cursor: pointer;
     background-color: #1e1d1d;
 }
@@ -234,7 +234,7 @@ input {
     align-items: center;
 }
 
-.sidebarItems .sidebarLogoutIconButton {
+.sidebarLogoutIconButton {
     margin-left: 40%;
     font-size: 40px;
     display: flex;
@@ -260,25 +260,28 @@ input {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    margin-top: 20px;
-    margin-bottom: 40px;
+    margin-top: 10px;
+    margin-bottom: 20px;
 }
 
 .sidebar-user-name {
     font-size: 20px;
     color: white;
     font-weight: bold;
+    font-family: sans-serif;
 }
 
 .sidebar-user-role {
     font-size: 15px;
     color: white;
     font-weight: bold;
+    font-family: sans-serif;
 }
 
 .org-name {
     font-size: 18px;
     color: rgb(183, 183, 183);
+    font-family: sans-serif;
 }
 
 /* Select Asset Modal */
@@ -458,6 +461,59 @@ input {
         display: flex;
         justify-content: flex-start;
         width: 70vw;
+    }
+
+}
+
+@media screen and (max-height: 1230px) {
+
+    .sidebarRoute {
+        height: 35px;
+        font-size: 23px;
+    }
+
+    .sidebar-user-icon {
+        font-size: 50px;
+    }
+
+    .sidebarLogoutIconButton {
+        margin-left: 40%;
+        font-size: 30px;
+    }
+}
+
+@media screen and (max-height: 1060px) {
+
+    .sidebarRoute {
+        height: 25px;
+        font-size: 20px;
+    }
+
+    .sidebar-user-icon {
+        height: 40px;
+    }
+
+    .sidebarLogoutIconButton {
+        margin-left: 40%;
+        font-size: 25px;
+    }
+
+}
+
+@media screen and (max-height: 980px) {
+
+    .sidebarRoute {
+        height: 15px;
+        font-size: 17px;
+    }
+
+    .sidebar-user-icon {
+        height: 30px;
+    }
+
+    .sidebarLogoutIconButton {
+        margin-left: 40%;
+        font-size: 20px;
     }
 
 }
