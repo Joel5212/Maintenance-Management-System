@@ -55,7 +55,7 @@ export const SelectProcedureModal = ({ selectProcedure, categoryId, goBack }) =>
             <div className='select-procedure-modal-container'>
                 <div className="select-procedure-modal-top">
                     <button className='back-button' onClick={goBack}><ArrowBackIcon /></button>
-                    <h1>Select Repair Procedure</h1>
+                    <h1 className='select-procedure-modal-title'>Select Repair Procedure</h1>
                     <div className='invisible-back-button'></div>
                 </div>
                 <div className='procedures-list'>
