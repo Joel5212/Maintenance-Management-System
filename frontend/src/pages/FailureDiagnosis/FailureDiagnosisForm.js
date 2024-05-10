@@ -8,7 +8,7 @@ import { useAuthContext } from '../../hooks/useAuthContext'
 import Select from 'react-dropdown-select';
 import { DiagnosisResultsModal } from './DiagnosisResultsModal';
 
-const AddFailure = () => {
+const FailureDiagnosisForm = () => {
     const [selectedCategory, setSelectedCategory] = useState([])
     const [categories, setCategories] = useState([])
     const [failureObservation, setFailureObservation] = useState('')
@@ -133,12 +133,12 @@ const AddFailure = () => {
                                 onChange={(e) => setFailureObservation(e.target.value)}
                                 value={failureObservation}
                                 placeholder='Enter Failure Observation'
-                                className={`failure-diagnosis-observation-input ${emptyFields.includes('failureObservation') ? '.failure-diagnosis-observation-input-error' : ''}`}
+                                className={`failure-diagnosis-observation-input ${emptyFields.includes('failureObservation') ? 'failure-diagnosis-observation-input-error' : ''}`}
                             />
                         </div>
                     </div>
                     <div className='bottom'>
-                        <button className='btn btn-effect' type='submit'>Diagnose</button>
+                        <button className='btn btn-effect' type='submit'>Diagnose Failure</button>
                         <div className="error-div">
                             {error && <div className='failure-form-error'>{error}</div>}
                         </div>
@@ -148,4 +148,4 @@ const AddFailure = () => {
     )
 }
 
-export default AddFailure
+export default FailureDiagnosisForm

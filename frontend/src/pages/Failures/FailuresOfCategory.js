@@ -34,13 +34,13 @@ const FailuresOfCategory = () => {
         navigate('viewOrUpdate', { state: { category, failure } })
     }
 
-    const onDelete = async (procedureId) => {
+    const onDelete = async (failureId) => {
 
         if (!user) {
             return
         }
 
-        const response = await fetch('/api/failures/' + procedureId, {
+        const response = await fetch('/api/failures/' + failureId, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',

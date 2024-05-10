@@ -66,8 +66,8 @@ const AddTeam = () => {
             emptyFields.push('teamName')
         }
 
-        if (emptyFields.length === 0) {
-            if (selectedUsers.length > 1) {
+        if (selectedUsers.length > 1) {
+            if (emptyFields.length === 0) {
 
                 let userIds = []
                 let userIdsAndNames = []
@@ -103,13 +103,14 @@ const AddTeam = () => {
                 }
             }
             else {
-                error = 'Add more than one User'
+                error = 'Fill in all required fields'
             }
         }
         else {
-            error = 'Fill in all the fields'
+            emptyFields.push('users')
+            error = 'Add more than one User'
         }
-
+        console.log(emptyFields)
         setEmptyFields(emptyFields)
         setError(error)
     }
@@ -126,7 +127,7 @@ const AddTeam = () => {
                             onChange={(e) => setTeamName(e.target.value)}
                             value={teamName}
                             placeholder='Enter Team Name'
-                            className={emptyFields.includes('teamName') ? 'input-error' : 'input'}
+                            className={emptyFields.includes('teamName') ? 'input input-error' : 'input'}
                         />
                     </div>
                     <div className="label-input">
@@ -135,7 +136,7 @@ const AddTeam = () => {
                             isMulti
                             options={users}
                             onChange={(users) => setSelectedUsers(users)}
-                            className='users-select'
+                            className={emptyFields.includes('users') ? 'input-error' : 'users-select'}
                         />
                     </div>
                     <div className="label-input">

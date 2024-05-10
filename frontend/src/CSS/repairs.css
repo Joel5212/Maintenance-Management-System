@@ -1,35 +1,66 @@
 /* Repairs Page */
-
 .repairs {
     height: 100%;
     width: 100%;
 
 }
 
+.add-update-repair-form-input {
+    width: 350px !important;
+    height: 50px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+.add-update-asset-select-input {
+    width: 300px !important;
+    height: 50px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+
+.repair-inputs-row {
+    display: flex;
+    flex-direction: row;
+    /* gap: 50px; */
+    justify-content: space-between;
+    width: 100%
+        /* align-items: space-around; */
+}
+
+.repair-label-input {
+    display: flex;
+    flex-direction: column;
+    width: 100%
+}
+
 .repairs-title {
     margin-left: 1%;
+    font-family: Arial, sans-serif;
 }
 
 .repairs-header {
     display: flex;
     flex-direction: row;
-    height: 5.5%
-
+    height: 6.1%
 }
 
-.add-update-repair-form {
+/* .add-update-repair-form-container {
+    width: 1200px;
+    height: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    row-gap: 40px;
+} */
 
-}
-
-.add-update-repair-container {
+.add-update-repair-form-container {
     width: 100%;
     height: 100%;
-    
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -37,14 +68,55 @@
     justify-content: center;
     */
     overflow: auto;
+    /* padding-top: 25px; */
+    /* margin-bottom: 60px; */
+    /* padding: 50px */
+}
 
+.add-update-repair-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    /* justify-content: center; */
+    row-gap: 40px;
+    width: 1200px;
+    height: 100%;
+    /* padding: 10px */
+    /* padding-bottom: 50px; */
+}
 
+.add-update-repair-title {
+    font-size: 30px;
+    font-family: Arial, sans-serif;
+}
+
+.add-update-repair-top {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    /* justify-content: center; */
+    align-items: center;
+}
+
+.add-update-repair-back-btn {
+    width: 80px;
+    height: 30px
+}
+
+.add-update-repair-back-btn-invisible {
+    width: 80px
 }
 
 .add-update-repair-title {
     font-size: 30px
 }
 
+.add-update-repair-form-label-input {
+    display: flex;
+    flex-direction: column;
+    width: 100%
+}
 
 .repair-input {
     width: 100%;
@@ -53,20 +125,199 @@
     /* Set a maximum width if necessary */
 }
 
+.bottom-pf-add-repair-form {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    /* width: 100%; */
+}
+
+.repair-form-error {
+    height: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+    background: #ffefef;
+    border: 1px solid var(--error);
+    color: var(--error);
+    border-radius: 15px;
+    margin: 10px;
+    font-family: sans-serif;
+    font-weight: bold;
+
+}
+
+.repair-form-empty-error {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+    border: 1px solid var(--error);
+    color: var(--error);
+    border-radius: 15px;
+    margin: 20px 0;
+    font-family: sans-serif;
+    font-weight: bold;
+}
+
+/* Repair Procedures */
+.procedure-repair-inputs-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    row-gap: 20px;
+}
+
+.select-procedure-in-repair-form-btn {
+    background-color: rgb(179, 179, 179);
+    /* height: 100%; */
+    width: 40%;
+    /* margin-top: 20px; */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 15px;
+    font-family: sans-serif;
+    font-weight: bold;
+    border-radius: 15px;
+}
+
+.select-procedure-in-repair-form-btn:hover {
+    background-color: #d1d1d1;
+}
+
+.select-repair-procedure-container {
+    display: flex;
+    flex-direction: row;
+    /* align-items: center; */
+    justify-content: space-around;
+    width: 100%
+}
+
+/* .procedure-repair-row-inputs {
+    display: flex;
+    flex-direction: row;
+    width: 100%
+} */
+
+.procedure-repair-row-input {
+    /* width: 100%; */
+    display: flex;
+    flex-direction: row;
+}
+
+.add-update-repair-procedure-title-input {
+    height: 50px;
+    width: 100%;
+    border: 1px solid #ddd;
+}
+
+.add-update-repair-procedure-description-input {
+    width: 100%;
+    height: 300px;
+    font-size: 15px;
+    border: 1px solid #ddd;
+}
+
+.procedure-label-input {
+    display: flex;
+    flex-direction: column;
+    width: 100%
+}
+
+.add-update-repair-failure-description-input {
+    width: 100%;
+    height: 300px;
+    font-size: 15px;
+    border: 1px solid #ddd;
+}
+
+.add-update-failure-input-error {
+    border: 1px solid #ff0000;
+}
+
+/* Repair Failures */
+.failure-inputs-container {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    row-gap: 20px;
+}
+
+.failure-repair-row-input {
+    display: flex;
+    flex-direction: row;
+}
+
+.select-failure-container {
+    display: flex;
+    flex-direction: row;
+    /* align-items: center; */
+    justify-content: space-around;
+    width: 100%
+}
+
+.select-failure-group {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    width: 100%
+}
+
+.select-failure-btn {
+    background-color: rgb(179, 179, 179);
+    /* height: 100%; */
+    width: 40%;
+    /* margin-top: 20px; */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 15px;
+    font-family: sans-serif;
+    font-weight: bold;
+    border-radius: 15px;
+}
+
+.select-failure-btn:hover {
+    background-color: #d1d1d1;
+}
+
+.or-div {
+    height: 100%;
+    display: flex;
+    font-size: 20px;
+    align-items: center;
+    justify-content: center;
+}
+
+.add-update-repair-failure-title-input {
+    height: 50px;
+    width: 50%;
+    border: 1px solid #ddd;
+}
+
+.failure-input {
+    width: 100%
+}
+
+.add-update-repair-failure-description-input {
+    width: 100%;
+    height: 300px;
+    font-size: 15px;
+    border: 1px solid #ddd;
+}
+
+.add-update-failure-input-error {
+    border: 1px solid #ff0000;
+}
+
 
 .textarea {
     width: '10%';
     height: '400px';
-}
-
-.procedure-details {
-    display: flex;
-    align-items: flex-start;
-    flex-wrap: wrap;
-}
-
-.procedure-details>div {
-    margin-right: 20px;
 }
 
 
@@ -170,28 +421,81 @@
     margin: 0 auto;
 }
 
-
 .dropdown-disabled {
-    color: #6f6767;  
-    background-color: #d6d6d6; 
-    border: 2px solid #adadad; 
-    cursor: not-allowed;      
+    color: #6f6767;
+    background-color: #d6d6d6;
+    border: 2px solid #adadad;
+    cursor: not-allowed;
 }
 
+/* FailureDiagnosisFormModal */
+.failure-diagnosis-form-modal-page {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
 
+.failure-diagnosis-form-modal-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    border-radius: 15px;
+    box-shadow: 5px;
+    height: 80%;
+    width: 900px;
+    background-color: rgb(255, 255, 255);
+}
 
+.failure-diagnosis-form-modal-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-direction: row;
+    width: 100%;
+    background-color: rgb(255, 255, 255);
+}
 
-@media screen and (max-width: 1400px) {
-    .add-update-repair-form {
-        
+@media (width < 1800px) {
+    /* .add-update-repair-form {
         display: flex;
         align-items: center;
         row-gap: 20px;
+    } */
 
-    }
-
-    .add-update-repair-container {
+    /* .add-update-repair-container {
         margin-top: 150px;
+    } */
+
+    .add-update-repair-form {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        /* justify-content: center; */
+        row-gap: 40px;
+        width: 900px;
+        height: 100%;
+        /* padding: 10px */
+        /* padding-bottom: 50px; */
     }
-    
+
+    .add-update-repair-form-input {
+        width: 250px !important;
+    }
+
+    .add-update-asset-select-input {
+        width: 200px !important;
+    }
+
+    .Dropdown-control {
+        width: 250px;
+        height: 50px;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        box-sizing: border-box;
+    }
 }
