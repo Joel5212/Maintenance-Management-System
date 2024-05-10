@@ -11,6 +11,7 @@ import './CSS/teams.css'
 import './CSS/registration.css'
 import './CSS/locations.css'
 import './CSS/dashboard.css'
+import './CSS/failureDiagnosis.css'
 import App from './App';
 import { AuthContextProvider } from './context/AuthContext';
 import { PrevRouteContextProvider } from './context/PrevRouteContext';

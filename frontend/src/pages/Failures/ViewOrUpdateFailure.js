@@ -251,7 +251,7 @@ const ViewOrUpdateFailure = () => {
                                     disabled={!selectedProcedure ? false : true}
                                 />
                             </div>
-                            {!selectedProcedure ? <div className='select-procedure-btn' onClick={enableSelectProcedureModel}>+ Save Procedure</div> :
+                            {!selectedProcedure ? <div className='select-procedure-btn' onClick={enableSelectProcedureModel}>+ Select Procedure</div> :
                                 <div className='select-procedure-btn' onClick={removeSelectedProcedure}>- Remove Procedure</div>}
                         </div>
                         <div className="label-input">

@@ -27,6 +27,7 @@ import ViewOrUpdateProcedure from '../Procedures/ViewOrUpdateProcedure'
 import FailuresOfCategory from '../Failures/FailuresOfCategory'
 import AddFailure from '../Failures/AddFailure'
 import ViewOrUpdateFailure from '../Failures/ViewOrUpdateFailure'
+import FailureDiagnosisForm from '../FailureDiagnosis/FailureDiagnosisForm'
 import { UsersContextProvider } from '../../context/UsersContext';
 import { TeamsContextProvider } from '../../context/TeamsContext';
 import { AssetsContextProvider } from '../../context/AssetsContext';
@@ -159,6 +160,12 @@ const Home = () => {
               }
             />
             <Route
+              path="/failure-diagnosis"
+              element={
+                <FailureDiagnosisForm />
+              }
+            />
+            <Route
               path="/repairs"
               element={
                 <RepairsContextProvider>
@@ -183,7 +190,7 @@ const Home = () => {
               element={
                 <RepairsContextProvider>
                   <AssetsContextProvider>
-                   <ViewOrUpdateRepair /> 
+                    <ViewOrUpdateRepair />
                   </AssetsContextProvider>
                 </RepairsContextProvider>
               }

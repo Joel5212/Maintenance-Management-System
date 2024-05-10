@@ -119,7 +119,7 @@ const AddUser = () => {
                             onChange={(e) => setFirstName(e.target.value)}
                             value={firstName}
                             placeholder='Enter First Name'
-                            className={emptyFields.includes('firstName') ? 'input-error' : 'input'}
+                            className={emptyFields.includes('firstName') ? 'input input-error' : 'input'}
                         />
                     </div>
                     <div className="label-input">
@@ -128,7 +128,7 @@ const AddUser = () => {
                             onChange={(e) => setLastName(e.target.value)}
                             value={lastName}
                             placeholder='Enter Last Name'
-                            className={emptyFields.includes('lastName') ? 'input-error' : 'input'}
+                            className={emptyFields.includes('lastName') ? 'input input-error' : 'input'}
 
                         />
                     </div>
@@ -150,7 +150,7 @@ const AddUser = () => {
                             onChange={(e) => setPhoneNumber(e.target.value)}
                             value={phoneNumber}
                             placeholder='Enter Phone Number'
-                            className={emptyFields.includes('phoneNumber') ? 'input-error' : 'input'}
+                            className={emptyFields.includes('phoneNumber') ? 'input input-error' : 'input'}
                         />
                     </div>
                     <div className="label-input">
@@ -159,7 +159,7 @@ const AddUser = () => {
                             onChange={(e) => setEmail(e.target.value)}
                             value={email}
                             placeholder='Enter Email'
-                            className={emptyFields.includes('email') ? 'input-error' : 'input'}
+                            className={emptyFields.includes('email') ? 'input input-error' : 'input'}
 
                         />
                     </div>
@@ -169,7 +169,7 @@ const AddUser = () => {
                             onChange={(e) => setPassword(e.target.value)}
                             value={password}
                             placeholder='Enter Password'
-                            className={emptyFields.includes('password') ? 'input-error' : 'input'}
+                            className={emptyFields.includes('password') ? 'input input-error' : 'input'}
 
                         />
                     </div>

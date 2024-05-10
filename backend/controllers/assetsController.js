@@ -6,17 +6,12 @@ const { MongoClient, ObjectId } = require('mongodb');
 
 const getAssets = async (req, res) => {
 
-    const assets = await Asset.find({}).sort({ createdAt: -1 })
+    const assets = await Asset.find({}).populate([
+        { path: 'category', select: 'name' },
+        { path: 'location', select: 'name' }
+    ])
 
-    const populatedAssets = await Promise.all(
-        assets.map(async (asset) => {
-            await asset.populate({ path: 'category', select: 'name' });
-            await asset.populate({ path: 'location', select: 'name' });
-            return asset
-        })
-    );
-
-    res.status(200).json(populatedAssets)
+    res.status(200).json(assets)
 }
 
 const addAsset = async (req, res) => {

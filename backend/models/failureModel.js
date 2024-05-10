@@ -13,6 +13,10 @@ const failureSchema = new Schema({
         required: true
     },
 
+    denseVectorOfObservation: [
+        Number
+    ],
+
     cause: {
         type: String,
         required: true

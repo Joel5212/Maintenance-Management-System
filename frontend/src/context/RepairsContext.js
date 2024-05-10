@@ -10,16 +10,17 @@ export const repairsReducer = (state, action) => {
                 repairs: action.payload
             }
         case 'ADD_REPAIR':
-            const newRepair = {_id: action.payload._id, 
-                title: action.payload.title, 
-                asset: action.assetName, 
-                startDate: action.payload.startDate, 
-                dueDate: action.payload.dueDate, 
-                priority: action.payload.priority, 
-                servicers: action.servicerName, 
-                status: action.payload.status, 
-                cost: action.payload.cost, 
-                description: action.payload.description}
+            const newRepair = action.payload;
+            newRepair.asset = action.asset;
+            newRepair.startDate = action.formattedStartDate;
+            newRepair.dueDate = action.formattedDueDate
+            if (action.userIdAndName._id && action.userIdAndName.name) {
+                newRepair.assignedUser = action.userIdAndName;
+            }
+
+            if (action.teamIdAndName._id && action.teamIdAndName.name) {
+                newRepair.assignedTeam = action.teamIdAndName;
+            }
             return {
                 repairs: [newRepair, ...state.repairs]
             }

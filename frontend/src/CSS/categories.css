@@ -231,6 +231,9 @@
 
 .failures-title {
     margin-left: 1%;
+    font-size: 30px;
+    margin-bottom: 30px;
+    font-family: Arial, sans-serif;
 }
 
 .failures-divider {
@@ -281,11 +284,11 @@
     margin-left: 2%;
 }
 
-.failures-title {
+.failures-container-title {
     margin-top: 1%;
     margin-left: 1%;
-    font-size: 28px;
-    font-weight: bold;
+    font-size: 30px;
+    font-family: Arial, sans-serif;
 }
 
 .failures-top {
@@ -328,6 +331,24 @@
     height: 100%;
 }
 
+.failure-field-container {
+    display: flex;
+    flex-direction: column;
+    row-gap: 5px;
+    margin-left: 1%;
+}
+
+.failure-field-title {
+    font-size: 20px;
+    font-family: Arial, sans-serif;
+    font-weight: bold;
+}
+
+.failure-field-description {
+    font-size: 18px;
+    font-family: Arial, sans-serif;
+}
+
 .procedure-failure-row-inputs {
     display: flex;
     flex-direction: row;
@@ -353,6 +374,11 @@
     background-color: #d1d1d1;
 }
 
+.add-failure-page {
+    width: 100%;
+    height: 100%;
+}
+
 .add-update-failure-container {
     width: 100%;
     height: 100%;
@@ -371,7 +397,8 @@
 }
 
 .add-update-failure-title {
-    font-size: 30px
+    font-size: 30px;
+    font-family: Arial, sans-serif;
 }
 
 .add-update-failure-top {

@@ -22,41 +22,37 @@ const repairSchema = new Schema({
         ref: 'Asset',
         required: false
     },
-
-    isFailure: {
-        type: Boolean,
-        required: false
-    },
-
     startDate: {
         type: Date,
         required: false,
 
     },
-
+    dueDate: {
+        type: Date,
+        required: false,
+    },
     completedDate: {
         type: Date,
         required: false
     },
-
-    dueDate: {
-        type: Date,
-        required: false, 
-    },
-
     priority: {
         type: String,
         required: false
     },
-
-    servicers: {
+    assignedUser: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
+        required: false
+    },
+    assignedTeam: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Team',
+        required: false
     },
     status: {
         type: String,
         required: false,
-        default: function() {
+        default: function () {
             return "Incomplete";
         }
     },
@@ -64,11 +60,45 @@ const repairSchema = new Schema({
         type: Number,
         required: false,
         set: formatCost
-    }, 
+    },
     description: {
         type: String,
         required: false
-    }
+    },
+
+    isFailure: {
+        type: Boolean,
+        required: true
+    },
+
+    failure: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Failure',
+        required: false
+    },
+
+    procedure: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'RepairProcedure',
+        required: false
+    },
+
+    procedureTitle: {
+        type: String,
+        required: false
+    },
+
+    procedureDescription: {
+        type: String,
+        required: false
+    },
+
+    createdAt: {
+        type: Date,
+        default: Date.now,
+        required: true
+    },
+
 }, { timestamps: true })
 
 

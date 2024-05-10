@@ -8,9 +8,9 @@ export const completedRepairsReducer = (state, action) => {
             return {
                 completedRepairs: action.payload
             }
-        case 'DELETE_REPAIR':
+        case 'DELETE_COMPLETED_REPAIR':
             return {
-                completedRepairs: state.repairs.filter(u => u._id !== action.payload._id)
+                completedRepairs: state.completedRepairs.filter(u => u._id !== action.payload._id)
             }
         default:
             return state
