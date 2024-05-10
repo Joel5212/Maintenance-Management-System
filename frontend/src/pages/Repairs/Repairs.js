@@ -64,7 +64,10 @@ const Repairs = () => {
         setRepairToDelete(repair)
     }
 
-    const onDelete = async (id) => {
+    const onDelete = async (id, status) => {
+
+        console.log(completedRepairs)
+        console.log(status)
 
         if (!user) {
             return
@@ -80,8 +83,13 @@ const Repairs = () => {
         const json = await response.json()
 
         if (response.ok) {
-            repairsDispatch({ type: 'DELETE_REPAIR', payload: json })
-            completedRepairsDispatch({ type: 'DELETE_REPAIR', payload: json })
+            if (status === "Overdue" || status === "Incomplete") {
+                repairsDispatch({ type: 'DELETE_REPAIR', payload: json })
+            }
+
+            if (status === "Complete") {
+                completedRepairsDispatch({ type: 'DELETE_COMPLETED_REPAIR', payload: json })
+            }
         }
 
         setShowDeleteRepairModal(false)
@@ -150,7 +158,7 @@ const Repairs = () => {
             headerName: 'Actions',
             cellRenderer: RepairActionEllipsis,
             cellRendererParams: (params) => ({
-                onDelete: () => onDelete(params.data._id),
+                onDelete: () => onDelete(params.data._id, params.data.status),
                 onViewUpdate: () => onViewUpdate(params.data),
                 onMarkAsComplete: () => onMarkAsComplete(params.data),
             }),
@@ -178,6 +186,13 @@ const Repairs = () => {
             field: 'priority',
         },
         {
+            headerName: 'Asset Failed?',
+            valueGetter: function (params) {
+                const isFailure = params.data.isFailure ? "Yes" : "No"
+                return isFailure
+            },
+        },
+        {
             headerName: 'Assigned To',
             valueGetter: function (params) {
                 const assignedUser = params.data.assignedUser
@@ -202,7 +217,7 @@ const Repairs = () => {
             headerName: 'Actions',
             cellRenderer: RepairActionEllipsis,
             cellRendererParams: (params) => ({
-                onDelete: () => onDelete(params.data._id),
+                onDelete: () => onDelete(params.data._id, params.data.status),
                 onViewUpdate: () => onViewUpdate(params.data)
             }),
         },
@@ -246,6 +261,7 @@ const Repairs = () => {
         console.log("Completed Repairs: ", json)
 
         if (response.ok) {
+            console.log(json)
             completedRepairsDispatch({ type: 'SET_COMPLETED_REPAIRS', payload: json })
         }
     }

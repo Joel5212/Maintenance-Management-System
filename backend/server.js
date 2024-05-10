@@ -16,7 +16,7 @@ const dashboardRoutes = require('./routes/dashboard')
 
 //cron job date checks
 const cron = require('node-cron');
-const moment = require('moment');
+const moment = require('moment-timezone');
 const Repair = require('./models/repairModel'); // Adjust the path according to your project structure
 
 
@@ -60,18 +60,16 @@ app.use('/api/dashboard', dashboardRoutes)
 
 // Connect to MongoDB
 mongoose.connect(process.env.MONGO_URI)
+  // Check for overdue repairs immediately after connection is established
   .then(async () => {
     console.log('Connected to database');
-
-    // Check for overdue repairs immediately after connection is established
-    const today = moment().startOf('day');
+    const today = moment().utc().startOf('day').format('YYYY-MM-DDTHH:mm:ss.SSS[+00:00]');
+    console.log(today)
     try {
       const overdueRepairs = await Repair.updateMany(
         {
-          dueDate: { $lt: today.toDate() },
-          status: { $ne: 'Overdue' },
-          status: { $ne: 'Complete' } // don't update completed repairs
-
+          status: "Incomplete",
+          dueDate: { $lt: today },
         },
         { $set: { status: 'Overdue' } }
       );
@@ -97,18 +95,15 @@ cron.schedule('0 0 * * *', async () => {
 
   try {
     // Current date in 'YYYY-MM-DD' format
-    const today = moment().startOf('day');
+    const today = moment().utc().startOf('day').format('YYYY-MM-DDTHH:mm:ss.SSS[+00:00]');
 
     // Find repairs where dueDate is before today and status is not 'overdue'
     const overdueRepairs = await Repair.updateMany(
       {
-        dueDate: { $lt: today.toDate() },
-        status: { $ne: 'Overdue' },
-        status: { $ne: 'Complete' } // don't update completed repairs
+        status: "Incomplete",
+        dueDate: { $lt: today },
       },
-      {
-        $set: { status: 'Overdue' }
-      }
+      { $set: { status: 'Overdue' } }
     );
 
     console.log(`Updated ${overdueRepairs.modifiedCount} repairs to 'Overdue' status.`);
