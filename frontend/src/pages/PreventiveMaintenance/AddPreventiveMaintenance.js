@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useEffect } from "react"
 import Dropdown from 'react-dropdown';
-import Select from 'react-dropdown-select';
+import Select from 'react-select'
 
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { Link } from 'react-router-dom';
@@ -39,12 +39,12 @@ const AddPreventiveMaintenance = () => {
 
     const [dueDate, setDueDate] = useState('')
 
-    const [frequencyType, setFrequencyType] = useState('')
     const [frequency, setFrequency] = useState('')
-    const [repeatability, setRepeatability] = useState('')
+    const [frequencyType, setFrequencyType] = useState('')
     const [selectedDays, setSelectedDays] = useState([]);
+    const [weekInterval, setWeekInterval] = useState([]);
 
-    const repeatabilityOptions = [
+    const frequencyTypes = [
         { value: 'Daily', label: 'Daily' },
         { value: 'Weekly', label: 'Weekly' },
         { value: 'Monthly', label: 'Monthly' },
@@ -59,13 +59,22 @@ const AddPreventiveMaintenance = () => {
         { value: 'Saturday', label: 'Saturday' },
         { value: 'Sunday', label: 'Sunday' },
     ];
+    const weekOptions = [
+        { value: 1, label: '1' },
+        { value: 2, label: '2' },
+        { value: 3, label: '3' },
+    ]
+
 
     const handleRepeatabilityChange = selectedOption => {
-        setRepeatability(selectedOption);
+        console.log("Repeatability selected:", selectedOption); // Debug log
+        setFrequencyType(selectedOption);
         if (selectedOption.value !== 'Weekly') {
-            setSelectedDays([]);
+            setSelectedDays([]); // Clear days if not weekly
         }
     };
+
+
 
 
     const [status, setStatus] = useState('Incomplete')
@@ -195,8 +204,8 @@ const AddPreventiveMaintenance = () => {
             let servicerId = null
             let servicerName = ''
             if (selectedServicer.length !== 0) {
-                servicerId = selectedServicer[0].value
-                servicerName = selectedServicer[0].label
+                servicerId = selectedServicer.value
+                servicerName = selectedServicer.label
             }
 
             //Send Request
@@ -281,56 +290,28 @@ const AddPreventiveMaintenance = () => {
                             <div className="label-input">
                                 <label>Servicers:</label>
                                 <div className='dropdown'>
-                                    {/* COMBINING SERVICERS AND TEAMS
-                                    <Select
-                                        options={options}
-                                        value={selectedOption}
-                                        onChange={option => setSelectedOption(option)}
-                                        placeholder="Select Servicer or Team"
-                                        formatGroupLabel={formatGroupLabel}
-                                    />
-                                    <Select
-                                        options={teams}
-                                        value={selectedTeam}
-                                        onChange={option => setSelectedTeam(teams)}
-                                        placeholder="Select Servicer or Team"
-                                        formatGroupLabel={formatGroupLabel}
-                                    />
-                                    */}
+
                                     <Select
                                         options={servicers}
                                         onChange={(selectedServicer) => setSelectedServicer(selectedServicer)}
                                         value={selectedServicer}
                                         placeholder="Select Servicer or Team"
                                         formatGroupLabel={formatGroupLabel}
+                                        className=''
                                     />
                                 </div>
                             </div>
                         </div>
                         <div className='middle'>
                             <div className="label-input">
-                                <label>Repeatability:</label>
+                                <label>Frequency Type:</label>
                                 <Select
-                                    options={repeatabilityOptions}
+                                    options={frequencyTypes}
                                     onChange={handleRepeatabilityChange}
-                                    className=""
-                                    classNamePrefix="react-select"
-                                    value={repeatability}
-                                    placeholder='Select Repeatability'
-                                //className={emptyFields.includes('repeatability') ? 'dropdown-error' : ''}
+                                    value={frequencyType}
+                                    placeholder='Select Frequency Type'
+                                    className={emptyFields.includes('frequencyType') ? 'dropdown-error' : ''}
                                 />
-                                {repeatability && repeatability.value === 'Weekly' && (
-                                    <Select
-                                        className="react-select-container"
-                                        classNamePrefix="react-select"
-                                        options={dayOptions}
-                                        onChange={values => setSelectedDays(values)}
-                                        value={selectedDays}
-                                        isMulti
-                                        placeholder="Select Days"
-                                    //className={emptyFields.includes('days') ? 'dropdown-error' : ''}
-                                    />
-                                )}
                             </div>
 
                             <div className="label-input">
@@ -359,6 +340,36 @@ const AddPreventiveMaintenance = () => {
                                     className={emptyFields.includes('cost') ? 'input-error' : 'input'}
                                 />
                             </div>
+                        </div>
+                        <div>
+                            {frequencyType.value === 'Weekly' && (
+                                <div className='lower-middle'>
+                                    <h2>Weekly Repeatability</h2>
+                                    <div>
+                                        <label>Perform every (x) amount of weeks:</label>
+                                        <Select
+                                            className="react-select-container"
+                                            classNamePrefix="react-select"
+                                            options={weekOptions}
+                                            onChange={(weekInterval) => setWeekInterval(weekInterval)}
+                                            value={weekInterval}
+                                            placeholder="Select Week Interval"
+                                        />
+
+                                        <label>Frequency:</label>
+                                        <Select
+                                            className="react-select-container"
+                                            classNamePrefix="react-select"
+                                            options={dayOptions}
+                                            onChange={values => setSelectedDays(values.map(v => v.value))}
+                                            value={dayOptions.filter(option => selectedDays.includes(option.value))}
+                                            isMulti
+                                            placeholder="Select Days"
+                                        />
+                                    </div>
+                                </div>
+
+                            )}
                         </div>
                         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%', fontFamily: 'Arial' }}>
                             <label for="description" style={{ fontFamily: 'Times New Roman' }}>Description:</label>

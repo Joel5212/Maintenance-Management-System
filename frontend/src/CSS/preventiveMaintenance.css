@@ -28,7 +28,8 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+    /*justify-content: center;*/
+    overflow: auto;
 }
 
 .add-update-preventiveMaintenance-title {
@@ -52,11 +53,14 @@
 
 }
 
+
 .react-select__control {
-    width: 100%; /* Ensures the control element fills the container */
+    width: 100%; /*  control element fills the container */
     min-height: 36px; /* Optional: Adjusts the height of the select box */
 }
 
+
 .react-select__menu {
-    width: 100%; /* Ensure the dropdown menu matches the width of the container */
+    width: 100%; /* dropdown menu matches the width of the container */
 }
+
