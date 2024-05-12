@@ -24,13 +24,19 @@ import ViewOrUpdateLocation from '../Locations/ViewOrUpdateLocation'
 import AddProcedure from '../Procedures/AddProcedure'
 import ProceduresOfCategory from '../Procedures/ProceduresOfCategory'
 import ViewOrUpdateProcedure from '../Procedures/ViewOrUpdateProcedure'
+import FailuresOfCategory from '../Failures/FailuresOfCategory'
+import AddFailure from '../Failures/AddFailure'
+import ViewOrUpdateFailure from '../Failures/ViewOrUpdateFailure'
+import FailureDiagnosisForm from '../FailureDiagnosis/FailureDiagnosisForm'
 import { UsersContextProvider } from '../../context/UsersContext';
 import { TeamsContextProvider } from '../../context/TeamsContext';
 import { AssetsContextProvider } from '../../context/AssetsContext';
 import { CategoriesContextProvider } from '../../context/CategoriesContext';
 import { ProceduresContextProvider } from '../../context/ProceduresContext';
 import { RepairsContextProvider } from '../../context/RepairsContext';
+import { CompletedRepairsContextProvider } from '../../context/CompletedRepairsContext';
 import { LocationsContextProvider } from '../../context/LocationsContext';
+import { FailuresContextProvider } from '../../context/FailuresContext';
 
 const Home = () => {
   return (
@@ -124,10 +130,48 @@ const Home = () => {
               }
             />
             <Route
+              path="/categories/failures"
+              element={
+                <CategoriesContextProvider>
+                  <FailuresContextProvider>
+                    <FailuresOfCategory />
+                  </FailuresContextProvider>
+                </CategoriesContextProvider>
+              }
+            />
+            <Route
+              path="/categories/failures/add"
+              element={
+                <CategoriesContextProvider>
+                  <FailuresContextProvider>
+                    <AddFailure />
+                  </FailuresContextProvider>
+                </CategoriesContextProvider>
+              }
+            />
+            <Route
+              path="/categories/failures/viewOrUpdate"
+              element={
+                <CategoriesContextProvider>
+                  <FailuresContextProvider>
+                    <ViewOrUpdateFailure />
+                  </FailuresContextProvider>
+                </CategoriesContextProvider>
+              }
+            />
+            <Route
+              path="/failure-diagnosis"
+              element={
+                <FailureDiagnosisForm />
+              }
+            />
+            <Route
               path="/repairs"
               element={
                 <RepairsContextProvider>
-                  <Repairs />
+                  <CompletedRepairsContextProvider>
+                    <Repairs />
+                  </CompletedRepairsContextProvider>
                 </RepairsContextProvider>
               }
             />
@@ -135,7 +179,9 @@ const Home = () => {
               path="/repairs/add"
               element={
                 <RepairsContextProvider>
-                  <AddRepair />
+                  <AssetsContextProvider>
+                    <AddRepair />
+                  </AssetsContextProvider>
                 </RepairsContextProvider>
               }
             />
@@ -143,7 +189,9 @@ const Home = () => {
               path="/repairs/viewOrUpdate"
               element={
                 <RepairsContextProvider>
-                  <ViewOrUpdateRepair />
+                  <AssetsContextProvider>
+                    <ViewOrUpdateRepair />
+                  </AssetsContextProvider>
                 </RepairsContextProvider>
               }
             />

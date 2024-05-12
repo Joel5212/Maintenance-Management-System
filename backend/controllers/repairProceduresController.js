@@ -9,6 +9,14 @@ const getRepairProceduresOfCategory = async (req, res) => {
     res.status(200).json(procedures)
 }
 
+const getRepairProcedure = async (req, res) => {
+    const { id } = req.params
+
+    const procedure = await RepairProcedure.findOne({ _id: id }).sort({ createdAt: -1 })
+
+    res.status(200).json(procedure)
+}
+
 const addRepairProcedure = async (req, res) => {
     try {
         const { title, description, category } = req.body
@@ -76,4 +84,4 @@ const updateRepairProcedure = async (req, res) => {
     }
 }
 
-module.exports = { getRepairProceduresOfCategory, addRepairProcedure, updateRepairProcedure, deleteRepairProcedure }
+module.exports = { getRepairProceduresOfCategory, getRepairProcedure, addRepairProcedure, updateRepairProcedure, deleteRepairProcedure }

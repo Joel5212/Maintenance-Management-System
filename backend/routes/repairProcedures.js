@@ -1,5 +1,5 @@
 const express = require('express')
-const { getRepairProceduresOfCategory, addRepairProcedure, deleteRepairProcedure, updateRepairProcedure } = require('../controllers/repairProceduresController')
+const { getRepairProceduresOfCategory, getRepairProcedure, addRepairProcedure, deleteRepairProcedure, updateRepairProcedure } = require('../controllers/repairProceduresController')
 const requireAuth = require('../middleware/requiredAuth')
 
 const router = express.Router()
@@ -7,6 +7,8 @@ const router = express.Router()
 router.use(requireAuth)
 
 router.get('/:categoryId', getRepairProceduresOfCategory)
+
+router.get('/get-repair-procedure/:id', getRepairProcedure)
 
 router.post('/', addRepairProcedure)
 

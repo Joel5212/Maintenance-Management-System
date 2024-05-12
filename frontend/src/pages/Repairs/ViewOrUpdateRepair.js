@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 import Dropdown from 'react-dropdown';
+import Select from 'react-dropdown-select';
 import 'react-dropdown/style.css';
 import { useRepairsContext } from "../../hooks/useRepairsContext";
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
@@ -10,16 +11,33 @@ import { usePrevRouteContext } from "../../hooks/usePrevRouteContext";
 import { useAuthContext } from '../../hooks/useAuthContext'
 import { UsersContext } from '../../context/UsersContext';
 
+import { SelectAssetModal } from '../../components/SelectAssetModal'
+
 const validator = require('validator')
 
 
 const ViewOrUpdateRepair = (props) => {
     const [title, setTitle] = useState('')
-    const [asset, setAsset] = useState('')
+
+    const [assets, setAssets] = useState([])
+    const [parentAsset, setParentAsset] = useState('')
+    const [parentAssetName, setParentAssetName] = useState([])
+    const [showSelectAssetModal, setShowSelectAssetModal] = useState(false)
+
+    const [servicers, setServicers] = useState('')
+    const [selectedServicer, setSelectedServicer] = useState([])
+    const [teams, setTeams] = useState('')
+    const [selectedTeam, setSelectedTeam] = useState([])
+    const [selectedOption, setSelectedOption] = useState(null);
+
+    const [startDate, setStartDate] = useState(null)
     const [dueDate, setDueDate] = useState('')
     const [priority, setPriority] = useState('')
-    const [servicers, setServicers] = useState('')
+
     const [status, setStatus] = useState('')
+    const [cost, setCost] = useState('')
+    const [description, setDescription] = useState('')
+
     const [error, setError] = useState(null)
     const [emptyFields, setEmptyFields] = useState('')
     const { user } = useAuthContext()
@@ -48,28 +66,109 @@ const ViewOrUpdateRepair = (props) => {
     }
 
     useEffect(() => {
+        fetchAndSetAssets()
+        fetchAndSetServicers()
+
+        setSelectedServicer(repair.servicers)
         setTitle(repair.title)
-        setAsset(repair.asset)
+
+        setParentAsset(repair.asset)
+
+        setStartDate(repair.startDate)
         setDueDate(repair.dueDate)
         setPriority(repair.priority)
-        setServicers(repair.servicers)
         setStatus(repair.status)
+        setCost(repair.cost)
+        setDescription(repair.description)
         prevRouterDispatch({ type: 'SET_PREV_ROUTE', location: location.pathname })
     }, [repairsDispatch, user])
 
+
+
+    const fetchAndSetServicers = async () => {
+        const response = await fetch('/api/users', {
+            headers: {
+                'Authorization': `Bearer ${user.token}`
+            }
+        })
+        const json = await response.json()
+
+        if (response.ok) {
+            const servicers = []
+            if (json) {
+                for (const servicer of json) {
+                    const value = servicer._id
+                    const label = servicer.name
+                    servicers.push({ label, value })
+
+                }
+                console.log("servicers", servicers)
+                setServicers(servicers)
+            }
+        }
+    }
+
+    const fetchAndSetAssets = async () => {
+        const response = await fetch('/api/Assets', {
+            headers: {
+                'Authorization': `Bearer ${user.token}`
+            }
+        })
+        const json = await response.json()
+
+        if (response.ok) {
+            const assets = []
+            if (json) {
+                for (const asset of json) {
+                    const value = asset._id
+                    const label = asset.name
+                    assets.push({ label, value })
+
+                }
+                console.log("assets", assets)
+                setAssets(assets)
+            }
+        }
+    }
+
+    const selectParentAsset = function () {
+        setShowSelectAssetModal(true)
+    }
+
+    const goBack = function () {
+        setShowSelectAssetModal(false)
+    }
+
+    const selectAsset = function (asset) {
+        setParentAsset(asset)
+        setParentAssetName(asset.name)
+        setShowSelectAssetModal(false)
+    }
     //Check if form is changed
     const isFormUnchanged = () => {
         return (
             title === repair.title &&
-            asset === repair.asset &&
+            assets === repair.assets &&
+            startDate === repair.startDate &&
             dueDate === repair.dueDate &&
             priority === repair.priority &&
             servicers === repair.servicers &&
-            status === repair.status
+            status === repair.status &&
+            cost === repair.status &&
+            description === repair.description
         )
     }
 
+    function formatGroupLabel(data) {
+        return (
+            <div style={{ fontWeight: 'bold' }}>
+                {data.label}
+            </div>
+        );
+    }
+
     const handleSubmit = async (e) => {
+        console.log("YOOOOOO parentAsset", parentAssetName)
         e.preventDefault()
 
         if (!user) {
@@ -83,9 +182,25 @@ const ViewOrUpdateRepair = (props) => {
             if (!title) {
                 emptyFields.push('title')
             }
-
-            if (!asset) {
+            /*
+            if (parentAssetName.length === 0) {
                 emptyFields.push('asset')
+            }*/
+            if (!selectedServicer) {
+                emptyFields.push('servicer');
+            }
+
+            if (emptyFields.length > 0) {
+                setError(`Please fill in all required fields: ${emptyFields.join(', ')}`);
+                setEmptyFields(emptyFields);
+                return; // Stop the form submission
+            }
+
+            /*
+            
+
+            if (!startDate) {
+                emptyFields.push('startDate')
             }
 
             if (!dueDate) {
@@ -96,17 +211,42 @@ const ViewOrUpdateRepair = (props) => {
                 emptyFields.push('priority')
             }
 
-            if (!servicers) {
-                emptyFields.push('servicers')
-            }
-
+            
             if (!status) {
                 emptyFields.push('status')
             }
 
+            if (!cost) {
+                emptyFields.push('cost')
+            }
+
+            if (!description) {
+                emptyFields.push('description')
+            }
+
+            */
             if (emptyFields.length === 0) {
 
-                const newRepair = { title, asset, dueDate, priority, servicers, status }
+                let assetId = null
+
+                if (parentAsset) {
+                    assetId = parentAsset._id
+                }
+                console.log("assetId", assetId)
+
+
+                let servicerId = null
+                let servicerName = ''
+
+                if (selectedServicer.length !== 0) {
+                    servicerId = selectedServicer[0].value
+                    servicerName = selectedServicer[0].label
+                }
+
+
+
+
+                const newRepair = { title: title, asset: assetId, startDate: startDate, dueDate: dueDate, priority: priority, servicers: servicerId, status: status, cost: cost, description: description }
 
                 const _id = repair._id
                 console.log('check 1', newRepair)
@@ -145,90 +285,140 @@ const ViewOrUpdateRepair = (props) => {
         setError(error)
     }
 
-    const goBack = () => {
-        navigate(-1)
-    }
-
     const priorities = ["Low", "Medium", "High"];
-    const statuses = ["Incomplete", "In-Progress", "Complete"]
+    const statuses = ["Incomplete", "Overdue", "Complete"]
 
 
     return (
         <div className="add-update-repair-container">
-            <Link to='/repairs' className='back-button-link'><button className='back-button'><ArrowBackIcon /></button></Link>
-            <form className="add-update-repair-form" onSubmit={handleSubmit}>
-                <h1 className="add-update-repair-title">Update Repair</h1>
-                <div className='top'>
-                    <div className="label-input">
-                        <label>Title:</label>
-                        <input
-                            onChange={(e) => setTitle(e.target.value)}
-                            value={title}
-                            placeholder='Enter title'
-                            className={emptyFields.includes('title') ? 'input-error' : 'input'}
-                        />
-                    </div>
-                    <div className="label-input">
-                        <label>Asset:</label>
-                        <input
-                            onChange={(e) => setAsset(e.target.value)}
-                            value={asset}
-                            placeholder='Enter asset'
-                            className={emptyFields.includes('asset') ? 'input-error' : 'input'}
+            {showSelectAssetModal === false ?
+                <div className="add-update-repair-form-container">
+                    <Link to='/repairs' className='back-button-link'><button className='back-button'><ArrowBackIcon /></button></Link>
 
-                        />
-                    </div>
-                    <div className="label-input">
-                        <label>Priority:</label>
-                        <Dropdown
-                            options={priorities}
-                            onChange={(selectedPriority) => setPriority(selectedPriority.value)}
-                            value={priority}
-                            placeholder='Select a Priority'
-                            className={emptyFields.includes('priority') ? 'dropdown-error' : ''}
-                        />
-                    </div>
-                </div>
-                <div className='middle'>
-                    <div className='label-input'>
-                        <label>Due Date:</label>
-                        <input
-                            onChange={(e) => setDueDate(e.target.value)}
-                            value={dueDate}
-                            placeholder='Enter Due Date'
-                            className={emptyFields.includes('dueDate') ? 'input-error' : 'input'}
-                        />
-                    </div>
-                    <div className="label-input">
-                        <label>Servicers:</label>
-                        <input
-                            onChange={(e) => setServicers(e.target.value)}
-                            value={servicers}
-                            placeholder='Enter Servicers'
-                            className={emptyFields.includes('servicers') ? 'input-error' : 'input'}
+                    <form className="add-update-repair-form" onSubmit={handleSubmit}>
+                        <h1 className="add-update-repair-title">Update Repair</h1>
+                        <div className='top'>
+                            <div className="label-input">
+                                <label>Title:</label>
+                                <input
+                                    onChange={(e) => setTitle(e.target.value)}
+                                    value={title}
+                                    placeholder='Enter title'
+                                    className={emptyFields.includes('title') ? 'input-error' : 'input'}
+                                />
+                            </div>
+                            <div className="label-input">
+                                <label>Asset:</label>
+                                <div className="add-parent-asset-container">
+                                    <input
+                                        value={parentAssetName}
+                                        placeholder={repair.asset}
+                                        className='add-parent-asset-input'
+                                        disabled={true}
+                                    />
+                                    <button className='add-parent-asset-btn' onClick={selectParentAsset}>
+                                        +
+                                    </button>
+                                </div>
+                            </div>
+                            <div className="label-input">
+                                <label>Cost ($):</label>
+                                <input
+                                    onChange={(e) => {
+                                        const inputCost = e.target.value;
+                                        // Check if the input is a number
+                                        if (!isNaN(inputCost)) {
+                                            // If it's a number, update the state
+                                            setCost(inputCost);
+                                        }
+                                    }}
 
-                        />
-                    </div>
-                    <div className='label-input'>
-                        <label>Status:</label>
-                        <Dropdown
-                            options={statuses}
-                            onChange={(selectedStatus) => setStatus(selectedStatus.value)}
-                            value={status}
-                            placeholder='Select a Status'
-                            className={emptyFields.includes('status') ? 'dropdown-error' : ''}
-                        />
-                    </div>
-                </div>
-                <div className='bottom'>
-                    <button className='btn btn-effect' type='submit'>Update</button>
-                    <div className="error-div">
-                        {error && <div className='error'>{error}</div>}
-                    </div>
-                </div>
-            </form>
+                                    value={cost}
+                                    placeholder='Enter Cost'
+                                    className={emptyFields.includes('cost') ? 'input-error' : 'input'}
+
+                                />
+                            </div>
+                            <div className="label-input">
+                                <label>Priority:</label>
+                                <Dropdown
+                                    options={priorities}
+                                    onChange={(selectedPriority) => setPriority(selectedPriority.value)}
+                                    value={priority}
+                                    placeholder='Select a Priority'
+                                    className={emptyFields.includes('priority') ? 'dropdown-error' : ''}
+                                />
+                            </div>
+                        </div>
+                        <div className='middle'>
+                            <div className='label-input'>
+                                <label>Start Date:</label>
+                                <input
+                                    type='date'
+                                    onChange={(e) => setStartDate(e.target.value)}
+                                    value={startDate}
+                                    placeholder='Enter Start Date'
+                                    className={emptyFields.includes('startDate') ? 'input-error' : 'input'}
+                                    disabled='true'
+                                />
+                            </div>
+                            
+                            <div className="label-input">
+                                <label>Servicers:</label>
+                                <Select
+                                    value={selectedServicer}
+                                    options={servicers}
+                                    placeholder={selectedServicer}
+                                    onChange={(selectedServicer) => setSelectedServicer(selectedServicer)}
+                                    formatGroupLabel={formatGroupLabel}
+                                />
+                            </div>
+                            <div className='label-input'>
+                                <label>Due Date:</label>
+                                <input
+                                    type='date'
+                                    onChange={(e) => setDueDate(e.target.value)}
+                                    value={dueDate}
+                                    placeholder='Enter Due Date'
+                                    className={emptyFields.includes('dueDate') ? 'input-error' : 'input'}
+                                />
+                            </div>
+                            <div className='label-input'>
+                                <label>Status:</label>
+                                <Dropdown
+                                    options={statuses}
+                                    onChange={(selectedStatus) => setStatus(selectedStatus.value)}
+                                    value={status}
+                                    placeholder='Select a Status'
+                                    className={emptyFields.includes('status') ? 'dropdown-error' : ''}
+                                    disabled
+                                />
+                            </div>
+
+                        </div>
+                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%', fontFamily: 'Arial' }}>
+                            <label for="description" style={{ fontFamily: 'Times New Roman' }}>Description:</label>
+                            <textarea
+                                id="description"
+                                onChange={(e) => setDescription(e.target.value)}
+                                value={description}
+                                placeholder='Enter Description'
+                                className={emptyFields.includes('description') ? 'input-error' : ''}
+                                style={{ width: '100%', height: '200px', fontFamily: 'Times New Roman' }}
+                            />
+                        </div>
+                        <div className='bottom'>
+                            <button className='btn btn-effect' type='submit'>Update</button>
+                            <div className="error-div">
+                                {error && <div className='error'>{error}</div>}
+                            </div>
+                        </div>
+                    </form>
+                </div> : <SelectAssetModal title={"Select Parent Asset"} selectAsset={selectAsset} goBack={goBack} />}
         </div>
+
     )
+
 }
 
 export default ViewOrUpdateRepair

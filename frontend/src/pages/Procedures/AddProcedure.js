@@ -10,8 +10,8 @@ import { useAuthContext } from '../../hooks/useAuthContext'
 const validator = require('validator')
 
 const AddProcedure = () => {
-    const [procedureTitle, setProcedureTitle] = useState('')
-    const [procedureDescription, setProcedureDescription] = useState('')
+    const [procedureTitle, setProcedureTitle] = useState(null)
+    const [procedureDescription, setProcedureDescription] = useState(null)
     const [error, setError] = useState(null)
     const [emptyFields, setEmptyFields] = useState('')
     const { categories, dispatch: categoriesDispatch } = useCategoriesContext()
@@ -55,8 +55,8 @@ const AddProcedure = () => {
         //Check if there are empty fields
         if (emptyFields.length === 0) {
 
-            const response = await fetch(procedureType === "repair" ? '/api/repairProcedures/' :
-                '/api/preventiveMaintenanceProcedures/', {
+            const response = await fetch(procedureType === "repair" ? '/api/repair-procedures/' :
+                '/api/preventive-maintenance-procedures/', {
                 method: 'POST',
                 body: JSON.stringify(procedureType === "repair" ? { category: category._id, title: procedureTitle, description: procedureDescription } :
                     { category: category._id, title: procedureTitle, description: procedureDescription }),
@@ -86,7 +86,7 @@ const AddProcedure = () => {
     }
 
     const fetchProceduresOfCategory = async () => {
-        const response = await fetch(procedureType === "repair" ? '/api/repairProcedures/' + category._id : '/api/preventiveMaintenanceProcedures/' + category._id, {
+        const response = await fetch(procedureType === "repair" ? '/api/repair-procedures/' + category._id : '/api/preventive-maintenance-procedures/' + category._id, {
             headers: {
                 'Authorization': `Bearer ${user.token}`
             }

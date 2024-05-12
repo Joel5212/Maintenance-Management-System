@@ -38,7 +38,7 @@ const ViewOrUpdateProcedure = () => {
     }
 
     const goBackToProcedures = async () => {
-        navigate('/categories/procedures', { state: { categoryId: category._id, procedureType } })
+        navigate('/categories/procedures', { state: { category: category, procedureType } })
     }
 
     const fetchCategories = async () => {
@@ -55,7 +55,7 @@ const ViewOrUpdateProcedure = () => {
     }
 
     const fetchProceduresOfCategory = async () => {
-        const response = await fetch(procedureType === "repair" ? '/api/repairProcedures/' + category._id : '/api/preventiveMaintenanceProcedures/' + category._id, {
+        const response = await fetch(procedureType === "repair" ? '/api/repair-procedures/' + category._id : '/api/preventive-maintenance-procedures/' + category._id, {
             headers: {
                 'Authorization': `Bearer ${user.token}`
             }
@@ -88,8 +88,8 @@ const ViewOrUpdateProcedure = () => {
         if (!isFormUnchanged()) {
             if (emptyFields.length === 0) {
 
-                const response = await fetch(procedureType === "repair" ? '/api/repairProcedures/' + procedure._id :
-                    '/api/preventiveMaintenanceProcedures/' + procedure._id, {
+                const response = await fetch(procedureType === "repair" ? '/api/repair-procedures/' + procedure._id :
+                    '/api/preventive-maintenance-procedures/' + procedure._id, {
                     method: 'PATCH',
                     body: JSON.stringify(procedureType === "repair" ? { category: category._id, title: procedureTitle, description: procedureDescription } :
                         { category: category._id, title: procedureTitle, description: procedureDescription }),
