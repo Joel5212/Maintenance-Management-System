@@ -1,23 +1,24 @@
 const mongoose = require('mongoose')
-const PreventiveMaintenance = require ('../models/preventiveMaintenanceModel')
+const PreventiveMaintenance = require('../models/preventiveMaintenanceModel')
 
 // CREATE new preventiveMaintenance
 const createPreventiveMaintenance = async (req, res) => {
-    const {title} = req.body
+    const { title, asset, servicers, frequencyType, frequency, startDate, completedDate, dueDate, priority, status, cost, description } = req.body
 
     // adding doc to db
     try {
-        const preventiveMaintenance = await PreventiveMaintenance.create({title: title})
+        const preventiveMaintenance = await PreventiveMaintenance.create({ title: title, asset: asset, servicers: servicers, frequencyType: frequencyType, frequency: frequency, startDate: startDate, completedDate: completedDate, dueDate: dueDate, priority: priority, status: status, cost: cost, description: description })
+        console.log("CREATED A PREVENTIVE")
         res.status(200).json(preventiveMaintenance)
     } catch (error) {
-        res.status(400).json({error: error.message})
-    }   
+        res.status(400).json({ error: error.message })
+    }
 }
 
 
 
 const getPreventiveMaintenances = async (req, res) => {
-    const preventiveMaintenance = await PreventiveMaintenance.find({}).sort({createdAt: -1})
+    const preventiveMaintenance = await PreventiveMaintenance.find({}).sort({ createdAt: -1 })
 
     res.status(200).json(preventiveMaintenance)
 }
@@ -141,15 +142,15 @@ const updatePreventiveMaintenance = async (req, res) => {
     const { id } = req.params
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
-        return res.status(404).json({error: 'No such preventiveMaintenance'})
+        return res.status(404).json({ error: 'No such preventiveMaintenance' })
     }
 
-    const preventiveMaintenance = await PreventiveMaintenance.findOneAndUpdate({_id: id}, {
+    const preventiveMaintenance = await PreventiveMaintenance.findOneAndUpdate({ _id: id }, {
         ...req.body
     })
 
     if (!preventiveMaintenance) {
-        return res.status(400).json({error: 'No such preventiveMaintenance'})
+        return res.status(400).json({ error: 'No such preventiveMaintenance' })
     }
 
     res.status(200).json(preventiveMaintenance)

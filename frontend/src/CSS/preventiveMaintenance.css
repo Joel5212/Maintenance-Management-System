@@ -46,3 +46,17 @@
         margin-top: 150px;
     }
 }
+
+.react-select-container {
+    width: 250px !important ;  /* Fixed width for the container */
+
+}
+
+.react-select__control {
+    width: 100%; /* Ensures the control element fills the container */
+    min-height: 36px; /* Optional: Adjusts the height of the select box */
+}
+
+.react-select__menu {
+    width: 100%; /* Ensure the dropdown menu matches the width of the container */
+}

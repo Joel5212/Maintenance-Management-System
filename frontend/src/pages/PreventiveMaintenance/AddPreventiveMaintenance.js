@@ -2,31 +2,70 @@ import { useState } from 'react'
 import { useEffect } from "react"
 import Dropdown from 'react-dropdown';
 import Select from 'react-dropdown-select';
-import 'react-dropdown/style.css';
-import { usePreventiveMaintenancesContext } from "../../hooks/usePreventiveMaintenancesContext";
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import { Link } from 'react-router-dom'
-import { useNavigate, useLocation } from 'react-router-dom';
-import { usePrevRouteContext } from "../../hooks/usePrevRouteContext";
-import { useAuthContext } from '../../hooks/useAuthContext'
 
-import { SelectAssetModal } from '../../components/SelectAssetModal'
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import { Link } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { SelectAssetModal } from '../../components/SelectAssetModal';
+import { usePreventiveMaintenancesContext } from "../../hooks/usePreventiveMaintenancesContext";
+import { useAuthContext } from '../../hooks/useAuthContext';
+
+
+import 'react-dropdown/style.css';
+
+
+
+import { usePrevRouteContext } from "../../hooks/usePrevRouteContext";
+
+
+
 const validator = require('validator')
 
 const AddPreventiveMaintenance = () => {
     const [title, setTitle] = useState('')
-    const [description, setDescription] = useState('')
 
     const [parentAsset, setParentAsset] = useState('')
     const [parentAssetName, setParentAssetName] = useState([])
     const [showSelectAssetModal, setShowSelectAssetModal] = useState(false)
 
+    const [description, setDescription] = useState('')
+
     const [servicers, setServicers] = useState('')
     const [selectedServicer, setSelectedServicer] = useState([])
 
     const [priority, setPriority] = useState('')
+
+    const [startDate, setStartDate] = useState(new Date().toLocaleDateString('en-CA'));
+
+    const [dueDate, setDueDate] = useState('')
+
+    const [frequencyType, setFrequencyType] = useState('')
+    const [frequency, setFrequency] = useState('')
     const [repeatability, setRepeatability] = useState('')
-    const repeatabilityOptions = ["Daily", "Weekly"]
+    const [selectedDays, setSelectedDays] = useState([]);
+
+    const repeatabilityOptions = [
+        { value: 'Daily', label: 'Daily' },
+        { value: 'Weekly', label: 'Weekly' },
+        { value: 'Monthly', label: 'Monthly' },
+        { value: 'Yearly', label: 'Yearly' }
+    ];
+    const dayOptions = [
+        { value: 'Monday', label: 'Monday' },
+        { value: 'Tuesday', label: 'Tuesday' },
+        { value: 'Wednesday', label: 'Wednesday' },
+        { value: 'Thursday', label: 'Thursday' },
+        { value: 'Friday', label: 'Friday' },
+        { value: 'Saturday', label: 'Saturday' },
+        { value: 'Sunday', label: 'Sunday' },
+    ];
+
+    const handleRepeatabilityChange = selectedOption => {
+        setRepeatability(selectedOption);
+        if (selectedOption.value !== 'Weekly') {
+            setSelectedDays([]);
+        }
+    };
 
 
     const [status, setStatus] = useState('Incomplete')
@@ -137,11 +176,31 @@ const AddPreventiveMaintenance = () => {
         if (!title) {
             emptyFields.push('title')
         }
+        if (parentAssetName.length === 0) {
+            emptyFields.push('asset')
+        }
+        if (selectedServicer.length === 0) {
+            emptyFields.push('servicer');
+        }
 
         //Check if there are empty fields
         if (emptyFields.length === 0) {
+
+            let assetId = null;
+            if (parentAsset) {
+                assetId = parentAsset._id
+            }
+            console.log("assetId", assetId)
+
+            let servicerId = null
+            let servicerName = ''
+            if (selectedServicer.length !== 0) {
+                servicerId = selectedServicer[0].value
+                servicerName = selectedServicer[0].label
+            }
+
             //Send Request
-            const newPreventiveMaintenance = { title: title, description: description }
+            const newPreventiveMaintenance = { title: title, asset: assetId, servicers: servicerId, frequencyType: frequencyType, frequency: frequency, startDate: startDate, dueDate: dueDate, priority: priority, status: status, cost: cost, description: description }
 
             console.log("checkpoint 1", newPreventiveMaintenance)
             const response = await fetch('/api/preventiveMaintenances', {
@@ -175,6 +234,8 @@ const AddPreventiveMaintenance = () => {
     }
 
 
+
+
     function formatGroupLabel(data) {
         return (
             <div style={{ fontWeight: 'bold' }}>
@@ -182,6 +243,7 @@ const AddPreventiveMaintenance = () => {
             </div>
         );
     }
+
     return (
         <div className="add-update-preventiveMaintenance-container">
             {showSelectAssetModal === false ?
@@ -246,16 +308,31 @@ const AddPreventiveMaintenance = () => {
                             </div>
                         </div>
                         <div className='middle'>
-                        <div className="label-input">
+                            <div className="label-input">
                                 <label>Repeatability:</label>
-                                <Dropdown
+                                <Select
                                     options={repeatabilityOptions}
-                                    onChange={(selectedRepeatability) => setRepeatability(selectedRepeatability.value)}
+                                    onChange={handleRepeatabilityChange}
+                                    className=""
+                                    classNamePrefix="react-select"
                                     value={repeatability}
                                     placeholder='Select Repeatability'
-                                    className={emptyFields.includes('repeatability') ? 'dropdown-error' : ''}
+                                //className={emptyFields.includes('repeatability') ? 'dropdown-error' : ''}
                                 />
+                                {repeatability && repeatability.value === 'Weekly' && (
+                                    <Select
+                                        className="react-select-container"
+                                        classNamePrefix="react-select"
+                                        options={dayOptions}
+                                        onChange={values => setSelectedDays(values)}
+                                        value={selectedDays}
+                                        isMulti
+                                        placeholder="Select Days"
+                                    //className={emptyFields.includes('days') ? 'dropdown-error' : ''}
+                                    />
+                                )}
                             </div>
+
                             <div className="label-input">
                                 <label>Priority:</label>
                                 <Dropdown

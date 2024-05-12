@@ -2,7 +2,7 @@ const mongoose = require('mongoose')
 
 const Schema = mongoose.Schema
 
-/*
+
 // Custom function to format the cost with 2 decimal places
 function formatCost(cost) {
     // Ensure cost is a number
@@ -12,22 +12,30 @@ function formatCost(cost) {
     }
     return cost; // Return unchanged if not a number
 }
-*/
+
 const preventiveMaintenanceSchema = new Schema({
     title: {
         type: String,
         required: true
     },
-    /*
+    
     asset: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Asset',
         required: false
     },
+    
+    servicers: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+    },
 
-    isFailure: {
-        type: Boolean,
-        required: false
+    frequencyType: {
+        type: String
+    },
+
+    frequency: {
+        type: String
     },
 
     startDate: {
@@ -51,10 +59,7 @@ const preventiveMaintenanceSchema = new Schema({
         required: false
     },
 
-    servicers: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-    },
+    
     status: {
         type: String,
         required: false,
@@ -70,7 +75,7 @@ const preventiveMaintenanceSchema = new Schema({
     description: {
         type: String,
         required: false
-    }*/
+    }
 }, { timestamps: true })
 
 
