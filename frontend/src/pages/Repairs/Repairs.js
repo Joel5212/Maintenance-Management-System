@@ -64,7 +64,10 @@ const Repairs = () => {
         setRepairToDelete(repair)
     }
 
-    const onDelete = async (id) => {
+    const onDelete = async (id, status) => {
+
+        console.log(completedRepairs)
+        console.log(status)
 
         if (!user) {
             return
@@ -80,7 +83,13 @@ const Repairs = () => {
         const json = await response.json()
 
         if (response.ok) {
-            repairsDispatch({ type: 'DELETE_REPAIR', payload: json })
+            if (status === "Overdue" || status === "Incomplete") {
+                repairsDispatch({ type: 'DELETE_REPAIR', payload: json })
+            }
+
+            if (status === "Complete") {
+                completedRepairsDispatch({ type: 'DELETE_COMPLETED_REPAIR', payload: json })
+            }
         }
 
         setShowDeleteRepairModal(false)
@@ -99,7 +108,8 @@ const Repairs = () => {
             field: 'title',
         },
         {
-            field: 'asset',
+            headerName: "Asset Name",
+            field: 'asset.name',
         },
         {
             field: 'startDate',
@@ -111,19 +121,44 @@ const Repairs = () => {
             field: 'priority',
         },
         {
-            field: 'servicers',
+            headerName: 'Asset Failed?',
+            valueGetter: function (params) {
+                const isFailure = params.data.isFailure ? "Yes" : "No"
+                return isFailure
+            },
+        },
+        {
+            headerName: 'Assigned To',
+            valueGetter: function (params) {
+                const assignedUser = params.data.assignedUser
+                const assignedTeam = params.data.assignedTeam
+                if (assignedUser) {
+                    return assignedUser.name
+                }
+
+                if (assignedTeam) {
+                    return assignedTeam.name
+                }
+                return null
+            },
         },
         {
             field: 'status',
         },
         {
-            field: 'cost',
+            headerName: 'Cost',
+            valueGetter: function (params) {
+                const cost = params.data.cost
+                if (cost) {
+                    return `$${cost}`
+                }
+            },
         },
         {
             headerName: 'Actions',
             cellRenderer: RepairActionEllipsis,
             cellRendererParams: (params) => ({
-                onDelete: () => onDelete(params.data._id),
+                onDelete: () => onDelete(params.data._id, params.data.status),
                 onViewUpdate: () => onViewUpdate(params.data),
                 onMarkAsComplete: () => onMarkAsComplete(params.data),
             }),
@@ -135,7 +170,8 @@ const Repairs = () => {
             field: 'title',
         },
         {
-            field: 'asset',
+            headerName: "Asset Name",
+            field: 'asset.name',
         },
         {
             field: 'startDate',
@@ -150,7 +186,26 @@ const Repairs = () => {
             field: 'priority',
         },
         {
-            field: 'servicers',
+            headerName: 'Asset Failed?',
+            valueGetter: function (params) {
+                const isFailure = params.data.isFailure ? "Yes" : "No"
+                return isFailure
+            },
+        },
+        {
+            headerName: 'Assigned To',
+            valueGetter: function (params) {
+                const assignedUser = params.data.assignedUser
+                const assignedTeam = params.data.assignedTeam
+                if (assignedUser) {
+                    return assignedUser.name
+                }
+
+                if (assignedTeam) {
+                    return assignedTeam.name
+                }
+                return null
+            },
         },
         {
             field: 'status',
@@ -162,7 +217,7 @@ const Repairs = () => {
             headerName: 'Actions',
             cellRenderer: RepairActionEllipsis,
             cellRendererParams: (params) => ({
-                onDelete: () => onDelete(params.data._id),
+                onDelete: () => onDelete(params.data._id, params.data.status),
                 onViewUpdate: () => onViewUpdate(params.data)
             }),
         },
@@ -175,6 +230,7 @@ const Repairs = () => {
             }
         })
         const json = await response.json()
+        console.log(json)
 
         if (response.ok) {
             repairsDispatch({ type: 'SET_REPAIRS', payload: json })
@@ -205,6 +261,7 @@ const Repairs = () => {
         console.log("Completed Repairs: ", json)
 
         if (response.ok) {
+            console.log(json)
             completedRepairsDispatch({ type: 'SET_COMPLETED_REPAIRS', payload: json })
         }
     }
@@ -220,9 +277,7 @@ const Repairs = () => {
         if (!completedClicked) {
             setIncompleteClicked(false)
             setCompletedClicked(true)
-            if (!completedRepairs) {
-                fetchCompletedRepairs()
-            }
+            fetchCompletedRepairs()
         }
     }
 
@@ -232,6 +287,14 @@ const Repairs = () => {
     return (
         <div className="repairs">
             <div className="repairs-header">
+
+                {/* <div className='failures-header'>
+            <Link to='/categories' className='failures-back-btn-link'><button className='failures-back-btn'><ArrowBackIcon /></button></Link>
+            <h1 className='failures-title'>Failures of Category {category ? category.name : ''}</h1>
+            <div className="div-empty-space"></div>
+            <button className="failures-add-btn btn-effect" onClick={goToAddFailure}>+ Add Failure</button>
+            </div> */}
+
                 <h1 className="repairs-title">Repairs</h1>
                 <div className="div-empty-space"></div>
                 <Link to="/repairs/add" className="new-item-nav-link"><button className="new-item-nav-btn btn-effect">+ New Repair</button></Link>

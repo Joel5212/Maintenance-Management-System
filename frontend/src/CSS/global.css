@@ -88,13 +88,7 @@ body {
     width: 75px;
 }
 
-/* Global dropdown and input*/
-
-.label-input {
-    display: flex;
-    flex-direction: column;
-}
-
+/* Global Dropdowns */
 .Dropdown-control {
     width: 350px;
     height: 50px;
@@ -121,8 +115,14 @@ body {
     border: 1px solid #ddd;
 }
 
+/* Global Labels */
+.label-input {
+    display: flex;
+    flex-direction: column;
+}
+
 .input {
-    width: 350px;
+    width: 350px !important;
     height: 50px;
     padding: 10px;
     border: 1px solid #ddd;
@@ -137,9 +137,17 @@ body {
     border: none
 }
 
-label,
-input {
+label {
     display: block;
+    font-size: 15px;
+    font-family: sans-serif;
+    font-weight: bold;
+}
+
+input {
+    /* display: block; */
+    font-size: 15px;
+    font-family: sans-serif;
 }
 
 /* Errors */
@@ -152,8 +160,10 @@ input {
     background: #ffefef;
     border: 1px solid var(--error);
     color: var(--error);
-    border-radius: 4px;
+    border-radius: 15px;
     margin: 20px 0;
+    font-family: sans-serif;
+    font-weight: bold;
 }
 
 .error-div {
@@ -165,12 +175,7 @@ input {
 }
 
 .input-error {
-    border: 1px solid #ff0000;
-    width: 350px;
-    height: 50px;
-    padding: 10px;
-    border-radius: 4px;
-    box-sizing: border-box;
+    border: 1px solid #ff0000 !important;
 }
 
 /* Home */
@@ -321,7 +326,6 @@ input {
 }
 
 /* Select Procedure Modal */
-
 .select-procedure-modal {
     display: flex;
     justify-content: center;
@@ -329,6 +333,7 @@ input {
     width: 100%;
     height: 100%;
     background-color: #ddd;
+    flex-direction: column;
 }
 
 .select-procedure-modal-title {
@@ -341,10 +346,11 @@ input {
     justify-content: center;
     align-items: center;
     flex-direction: column;
-    border-radius: 10px;
+    border-radius: 15px;
     box-shadow: 5px;
-    height: 80%;
-    width: 80%;
+    height: 85%;
+    width: 65%;
+    background-color: rgb(255, 255, 255);
 }
 
 .select-procedure-modal-top {
@@ -354,20 +360,65 @@ input {
     /* gap: 100px; */
     flex-direction: row;
     width: 80%;
-    background-color: #ddd;
+    background-color: #ffffff;
 }
 
+.select-procedures-list {
+    /* padding-top: 30px; */
+    display: flex;
+    flex-direction: column;
+    row-gap: 30px;
+    /* max-height: 100%; */
+    overflow: auto;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+}
+
+.select-procedure-container {
+    min-height: 250px;
+    width: 80%;
+    display: flex;
+    row-gap: 20px;
+    padding: 10px;
+    flex-direction: column;
+    /* margin-top: 5px; */
+    background-color: rgb(241, 241, 241);
+    border-radius: 15px;
+    box-shadow: 0 0 5px rgb(133, 133, 133);
+    margin-top: 1%;
+    margin-bottom: 1%
+}
+
+.select-procedure-title {
+    font-size: 30px;
+    font-family: Arial, sans-serif;
+}
+
+.select-procedure-description {
+    font-size: 18px;
+    font-family: Arial, sans-serif;
+}
+
+.select-procedure-save-btn {
+    margin-top: 25px;
+}
+
+
+/* Select Failure Modal */
+
+
+/* Clicked Items */
 .clicked {
     border: 5px solid rgb(25, 0, 255);
     box-shadow: 0 0 0px rgb(255, 255, 255);
 }
 
 .border {
-    background-color: white;
-    border: 5px solid rgb(255, 255, 255);
-    box-shadow: 0 0 0px rgb(255, 255, 255);
+    /* background-color: white; */
+    border: 5px solid rgb(241, 241, 241);
+    /* box-shadow: 0 0 0px rgb(255, 255, 255); */
 }
-
 
 /* No Items Component */
 .no-items-available-container {
@@ -384,10 +435,10 @@ input {
     font-size: 30px;
 }
 
-@media screen and (max-width: 2000px) {
+@media (1400px < width < 2000px) {
     .sidebar {
         height: 100%;
-        width: 15%;
+        width: 20%;
         margin: 0;
         background: linear-gradient(#424242, #212121);
     }
@@ -397,10 +448,10 @@ input {
         flex-direction: column;
     }
 
-    .sidebarRoutes .sidebarRoute {
+    /* .sidebarRoutes .sidebarRoute {
         font-size: 18px;
         height: 30px;
-    }
+    } */
 
     .sidebarLogoutIconButton {
         margin-left: 40%;
@@ -421,6 +472,15 @@ input {
 }
 
 @media screen and (max-width: 1400px) {
+    .sidebar {
+        width: 22%;
+    }
+
+    .sidebarRoutes .sidebarRoute {
+        font-size: 17px;
+        height: 20px;
+    }
+
     .add-user-form {
         display: flex;
         align-items: center;
@@ -455,7 +515,10 @@ input {
     }
 }
 
-@media screen and (max-width: 1900px) {
+/* @media screen and (max-width: 1900px) {
+    .sidebar {
+        width: 20%;
+    }
 
     .back-button-link {
         display: flex;
@@ -463,12 +526,12 @@ input {
         width: 70vw;
     }
 
-}
+} */
 
 @media screen and (max-height: 1230px) {
 
     .sidebarRoute {
-        height: 35px;
+        height: 30px;
         font-size: 23px;
     }
 
@@ -482,10 +545,10 @@ input {
     }
 }
 
-@media screen and (max-height: 1060px) {
+@media (980px < height < 1100px) {
 
     .sidebarRoute {
-        height: 25px;
+        height: 15px;
         font-size: 20px;
     }
 
@@ -500,10 +563,10 @@ input {
 
 }
 
-@media screen and (max-height: 980px) {
+@media (height < 980px) {
 
     .sidebarRoute {
-        height: 15px;
+        height: 14px;
         font-size: 17px;
     }
 

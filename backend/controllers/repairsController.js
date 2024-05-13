@@ -1,35 +1,71 @@
 const Repair = require('../models/repairModel')
+const Failure = require('../models/failureModel')
+const Category = require('../models/categoryModel')
 const User = require('../models/userModel')
 const mongoose = require('mongoose')
 const { ObjectId } = require('mongodb');
+const axios = require('axios');
 
 // CREATE new repair
 const createRepair = async (req, res) => {
     // adding doc to db
     try {
-        const { title, asset, dueDate, priority, servicers, status, cost, description } = req.body
+        const { title, asset, startDate, dueDate, priority, assignedUser, assignedTeam, status, cost, description, isFailure, failure, failureTitle, failureCause, failureObservation, procedure, procedureTitle, procedureDescription, category } = req.body
 
         // Subtract one day from the current date, newDate() operates on UTC time, should be on PST
-        const currentDate = new Date()
-        const startDate = new Date(currentDate)
-        startDate.setDate(startDate.getDate() - 1)
+        // const startDate = new Date(new Date().toLocaleDateString('en-CA'))
+        // startDate.setDate(startDate.getDate() - 1)
 
+        let roundedCost = null
 
-        // Check if dueDate is after startDate
-        if (new Date(dueDate) <= new Date(startDate)) {
-            return res.status(400).json({ error: "Due date must be after start date" });
+        if (cost) {
+            roundedCost = Math.round(cost * 100) / 100
         }
-        const repair = await Repair.create({
-            title: title,
-            asset: asset,
-            cost: Math.round(cost * 100) / 100,
-            priority: priority,
-            startDate: startDate,
-            dueDate: dueDate,
-            servicers: servicers,
-            status: status,
-            description: description
-        })
+
+        let newRepair = null
+
+        if (failure) {
+            newRepair = { title: title, asset: asset, startDate: startDate, dueDate: dueDate, priority: priority, assignedUser: assignedUser, assignedTeam: assignedTeam, status: status, cost: roundedCost, description: description, isFailure: isFailure, failure: failure, procedure: null, procedureTitle: null, procedureDescription: null }
+        }
+        else if (failureTitle && failureCause && failureObservation) {
+            const categoryExists = await Category.findOne({ _id: ObjectId(category) })
+
+            if (!categoryExists) {
+                return res.status(404).json({ error: 'Category does not exist' })
+            }
+
+            const observation = failureObservation
+
+            const flaskResponse = await axios.post('http://127.0.0.1:4000/convert-to-dense-vector', { observation })
+
+            const denseVectorOfObservation = flaskResponse.data.dense_vector_of_observation
+
+            let newFailure = null
+
+            if (procedure) {
+                newFailure = await Failure.create({ title: failureTitle, observation: failureObservation, denseVectorOfObservation: denseVectorOfObservation, cause: failureCause, procedure: procedure, procedureTitle: null, procedureDescription: null, category: category })
+            }
+            else if (!procedure && procedureTitle && procedureDescription) {
+                newFailure = await Failure.create({ title: failureTitle, observation: failureObservation, denseVectorOfObservation: denseVectorOfObservation, cause: failureCause, procedure: null, procedureTitle: procedureTitle, procedureDescription: procedureDescription, category: category })
+            }
+            else {
+                newFailure = await Failure.create({ title: failureTitle, observation: failureObservation, denseVectorOfObservation: denseVectorOfObservation, cause: failureCause, procedure: null, procedureTitle: null, procedureDescription: null, category: category })
+            }
+
+            newRepair = { title: title, asset: asset, startDate: startDate, dueDate: dueDate, priority: priority, assignedUser: assignedUser, assignedTeam: assignedTeam, status: status, cost: roundedCost, description: description, isFailure: isFailure, failure: newFailure._id, procedure: null, procedureTitle: null, procedureDescription: null }
+        }
+        else if (procedure) {
+            newRepair = { title: title, asset: asset, startDate: startDate, dueDate: dueDate, priority: priority, assignedUser: assignedUser, assignedTeam: assignedTeam, status: status, cost: roundedCost, description: description, isFailure: isFailure, failure: null, procedure: procedure, procedureTitle: null, procedureDescription: null }
+        }
+        else if (procedureTitle && procedureDescription) {
+            newRepair = { title: title, asset: asset, startDate: startDate, dueDate: dueDate, priority: priority, assignedUser: assignedUser, assignedTeam: assignedTeam, status: status, cost: roundedCost, description: description, isFailure: isFailure, failure: null, procedure: null, procedureTitle: procedureTitle, procedureDescription: procedureDescription }
+        }
+        else {
+            newRepair = { title: title, asset: asset, startDate: startDate, dueDate: dueDate, priority: priority, assignedUser: assignedUser, assignedTeam: assignedTeam, status: status, cost: roundedCost, description: description, isFailure: isFailure, failure: null, procedure: null, procedureTitle: null, procedureDescription: null }
+        }
+
+        const repair = await Repair.create(newRepair)
+
         res.status(200).json(repair)
     } catch (error) {
         res.status(400).json({ error: error.message })
@@ -65,20 +101,17 @@ const getRepairs = async (req, res) => {
             {
                 $lookup: {
                     from: "users", // Replace with the actual collection name of servicers
-                    localField: "servicers", // Field in the repairs collection
+                    localField: "assignedUser", // Field in the repairs collection
                     foreignField: "_id", // Field in the servicers collection to match on
-                    as: "servicerDetails" // Where to put the resulting data
+                    as: "assignedUser" // Where to put the resulting data
                 }
             },
             {
-                $unwind: {
-                    path: "$servicerDetails",
-                    preserveNullAndEmptyArrays: true // If no servicer is found, keep the repair without a servicer
-                }
-            },
-            {
-                $addFields: {
-                    "servicers": "$servicerDetails.name" // Assumes the servicer's name is stored under 'name'
+                $lookup: {
+                    from: "teams", // Replace with the actual collection name of servicers
+                    localField: "assignedTeam", // Field in the repairs collection
+                    foreignField: "_id", // Field in the servicers collection to match on
+                    as: "assignedTeam" // Where to put the resulting data
                 }
             },
             {
@@ -86,22 +119,40 @@ const getRepairs = async (req, res) => {
                     from: "assets", // Replace with the actual collection name of assets
                     localField: "asset", // Field in the repairs collection
                     foreignField: "_id", // Field in the assets collection to match on
-                    as: "assetDetails" // Where to put the resulting data
+                    as: "asset" // Where to put the resulting data
                 }
             },
             {
                 $unwind: {
-                    path: "$assetDetails",
-                    preserveNullAndEmptyArrays: true // If no asset is found, keep the repair without an asset
+                    path: "$assignedUser",
+                    preserveNullAndEmptyArrays: true // If no servicer is found, keep the repair without a servicer
                 }
             },
             {
-                $addFields: {
-                    "asset": "$assetDetails.name" // Assumes the asset's name is stored under 'name'
+                $unwind: {
+                    path: "$assignedTeam",
+                    preserveNullAndEmptyArrays: true // If no servicer is found, keep the repair without a servicer
                 }
             },
+            {
+                $unwind: {
+                    path: "$asset",
+                    preserveNullAndEmptyArrays: true // If no asset is found, keep the repair without an asset
+                }
+            },
+            // {
+            //     $addFields: {
+            //         "servicers": "$servicerDetails.name" // Assumes the servicer's name is stored under 'name'
+            //     }
+            // },
+            // {
+            //     $addFields: {
+            //         "asset": "$assetDetails.name" // Assumes the asset's name is stored under 'name'
+            //     }
+            // },
 
         ]);
+        console.log(repairs)
         res.status(200).json(repairs);
     } catch (error) {
         res.status(500).json({ message: "An error occurred while fetching repairs", error: error.message });
@@ -133,11 +184,7 @@ const getCompletedRepairs = async (req, res) => {
     try {
         const repairs = await Repair.aggregate([
             {
-                $match: {
-                    $or: [
-                        { status: "Complete" }
-                    ]
-                }
+                $match: { status: "Complete" }
             },
             {
                 $sort: { createdAt: -1 }
@@ -158,20 +205,17 @@ const getCompletedRepairs = async (req, res) => {
             {
                 $lookup: {
                     from: "users", // Replace with the actual collection name of servicers
-                    localField: "servicers", // Field in the repairs collection
+                    localField: "assignedUser", // Field in the repairs collection
                     foreignField: "_id", // Field in the servicers collection to match on
-                    as: "servicerDetails" // Where to put the resulting data
+                    as: "assignedUser" // Where to put the resulting data
                 }
             },
             {
-                $unwind: {
-                    path: "$servicerDetails",
-                    preserveNullAndEmptyArrays: true // If no servicer is found, keep the repair without a servicer
-                }
-            },
-            {
-                $addFields: {
-                    "servicers": "$servicerDetails.name" // Assumes the servicer's name is stored under 'name'
+                $lookup: {
+                    from: "teams", // Replace with the actual collection name of servicers
+                    localField: "assignedTeam", // Field in the repairs collection
+                    foreignField: "_id", // Field in the servicers collection to match on
+                    as: "assignedTeam" // Where to put the resulting data
                 }
             },
             {
@@ -179,18 +223,25 @@ const getCompletedRepairs = async (req, res) => {
                     from: "assets", // Replace with the actual collection name of assets
                     localField: "asset", // Field in the repairs collection
                     foreignField: "_id", // Field in the assets collection to match on
-                    as: "assetDetails" // Where to put the resulting data
+                    as: "asset" // Where to put the resulting data
                 }
             },
             {
                 $unwind: {
-                    path: "$assetDetails",
-                    preserveNullAndEmptyArrays: true // If no asset is found, keep the repair without an asset
+                    path: "$assignedUser",
+                    preserveNullAndEmptyArrays: true // If no servicer is found, keep the repair without a servicer
                 }
             },
             {
-                $addFields: {
-                    "asset": "$assetDetails.name" // Assumes the asset's name is stored under 'name'
+                $unwind: {
+                    path: "$assignedTeam",
+                    preserveNullAndEmptyArrays: true // If no servicer is found, keep the repair without a servicer
+                }
+            },
+            {
+                $unwind: {
+                    path: "$asset",
+                    preserveNullAndEmptyArrays: true // If no asset is found, keep the repair without an asset
                 }
             },
 
@@ -227,7 +278,7 @@ const updateRepair = async (req, res) => {
     const { id } = req.params
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
-        return res.status(404).json({error: 'No such repair'})
+        return res.status(404).json({ error: 'No such repair' })
     }
 
     try {
