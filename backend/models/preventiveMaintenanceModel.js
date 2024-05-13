@@ -35,7 +35,7 @@ const preventiveMaintenanceSchema = new Schema({
     },
 
     frequency: {
-        type: String
+        type: Number
     },
 
     startDate: {

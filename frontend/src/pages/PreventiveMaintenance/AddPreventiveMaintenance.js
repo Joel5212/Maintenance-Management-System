@@ -39,10 +39,9 @@ const AddPreventiveMaintenance = () => {
 
     const [dueDate, setDueDate] = useState('')
 
-    const [frequency, setFrequency] = useState('')
     const [frequencyType, setFrequencyType] = useState('')
     const [selectedDays, setSelectedDays] = useState([]);
-    const [weekInterval, setWeekInterval] = useState([]);
+    const [frequency, setFrequency] = useState([]);
 
     const frequencyTypes = [
         { value: 'Daily', label: 'Daily' },
@@ -51,24 +50,24 @@ const AddPreventiveMaintenance = () => {
         { value: 'Yearly', label: 'Yearly' }
     ];
     const dayOptions = [
-        { value: 'Monday', label: 'Monday' },
-        { value: 'Tuesday', label: 'Tuesday' },
-        { value: 'Wednesday', label: 'Wednesday' },
-        { value: 'Thursday', label: 'Thursday' },
-        { value: 'Friday', label: 'Friday' },
-        { value: 'Saturday', label: 'Saturday' },
-        { value: 'Sunday', label: 'Sunday' },
+        { value: 1, label: 'Monday' },
+        { value: 2, label: 'Tuesday' },
+        { value: 3, label: 'Wednesday' },
+        { value: 4, label: 'Thursday' },
+        { value: 5, label: 'Friday' },
+        { value: 6, label: 'Saturday' },
+        { value: 7, label: 'Sunday' },
     ];
     const weekOptions = [
-        { value: 1, label: '1' },
-        { value: 2, label: '2' },
-        { value: 3, label: '3' },
+        { value: 7, label: '1' },
+        { value: 14, label: '2' },
+        { value: 21, label: '3' },
     ]
 
 
     const handleRepeatabilityChange = selectedOption => {
-        console.log("Repeatability selected:", selectedOption); // Debug log
-        setFrequencyType(selectedOption);
+        console.log("Repeatability selected:", selectedOption)
+        setFrequencyType(selectedOption)
         if (selectedOption.value !== 'Weekly') {
             setSelectedDays([]); // Clear days if not weekly
         }
@@ -191,6 +190,8 @@ const AddPreventiveMaintenance = () => {
         if (selectedServicer.length === 0) {
             emptyFields.push('servicer');
         }
+
+        console.log("SELECTED DAYS:", selectedDays)
 
         //Check if there are empty fields
         if (emptyFields.length === 0) {
@@ -351,8 +352,8 @@ const AddPreventiveMaintenance = () => {
                                             className="react-select-container"
                                             classNamePrefix="react-select"
                                             options={weekOptions}
-                                            onChange={(weekInterval) => setWeekInterval(weekInterval)}
-                                            value={weekInterval}
+                                            onChange={(weekInterval) => setFrequency(weekInterval)}
+                                            value={frequency}
                                             placeholder="Select Week Interval"
                                         />
 
