@@ -209,7 +209,7 @@ const AddPreventiveMaintenance = () => {
             }
 
             //Send Request
-            const newPreventiveMaintenance = { title: title, asset: assetId, servicers: servicerId, frequencyType: frequencyType, frequency: frequency, startDate: startDate, dueDate: dueDate, priority: priority, status: status, cost: cost, description: description }
+            const newPreventiveMaintenance = { title: title, asset: assetId, servicers: servicerId, frequencyType: frequencyType.value, frequency: frequency.value, startDate: startDate, dueDate: dueDate, priority: priority, status: status, cost: cost, description: description }
 
             console.log("checkpoint 1", newPreventiveMaintenance)
             const response = await fetch('/api/preventiveMaintenances', {
