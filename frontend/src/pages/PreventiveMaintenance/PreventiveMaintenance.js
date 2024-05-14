@@ -67,6 +67,36 @@ const PreventiveMaintenance = () => {
             field: 'title',
         },
         {
+            headerName: "Asset Name",
+            field: 'asset',
+        },
+        {
+            headerName: 'Assigned To',
+            field: 'servicers'
+        },
+        {
+            headerName: 'Frequency Type',
+            field: 'frequencyType'
+        },
+        {
+            headerName: 'Due Date',
+            field: 'dueDate'
+        },
+        {
+            headerName: 'Priority',
+            field: 'priority'
+        },
+        {
+            headerName: 'Status',
+            field: 'status'
+        },
+        {
+            headerName: 'Cost',
+            field: 'cost'
+        },
+        
+        
+        {
             headerName: 'Actions',
             cellRenderer: PreventiveMaintenanceActionEllipsis,
             cellRendererParams: (params) => ({
