@@ -34,10 +34,6 @@ const getPreventiveMaintenance = async (req, res) => {
 }
 
 const getPreventiveMaintenances = async (req, res) => {
-    /*
-    const preventiveMaintenance = await PreventiveMaintenance.find({}).sort({ createdAt: -1 })
-
-    res.status(200).json(preventiveMaintenance)*/
 
     try {
         const preventiveMaintenances = await PreventiveMaintenance.aggregate([

@@ -19,6 +19,34 @@ const PreventiveMaintenance = () => {
     const [showDeletePreventiveMaintenanceModal, setShowDeletePreventiveMaintenanceModal] = useState(false)
     const [preventiveMaintenanceToDelete, setPreventiveMaintenanceToDelete] = useState()
 
+
+    const onMarkAsComplete = async (preventive) => {
+        const preventiveId = preventive._id;
+        const currentDate = new Date().toISOString(); // Get current date in ISO format
+        const updatedPreventive = { status: "Complete", completedDate: currentDate };
+
+        const response = await fetch(`/api/preventiveMaintenances/${preventiveId}`, {
+            method: 'PATCH',
+            body: JSON.stringify(updatedPreventive),
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${user.Token}`
+            }
+        });
+
+        if (response.ok) {
+            const json = await response.json();
+            // Reload the page after successful completion
+            // window.location.reload();
+            preventiveMaintenancesDispatch({ type: 'DELETE_PREVENTIVE', payload: json })
+
+            return json;
+        } else {
+            const json = await response.json();
+            throw new Error(json.error || 'Failed to complete PREVENTIVE MAINTENANCE');
+        }
+    };
+
     const onCancel = function () {
         setShowDeletePreventiveMaintenanceModal(false)
     }
@@ -48,7 +76,7 @@ const PreventiveMaintenance = () => {
         const json = await response.json()
 
         if (response.ok) {
-            preventiveMaintenancesDispatch({ type: 'DELETE_LOCATION', payload: json })
+            preventiveMaintenancesDispatch({ type: 'DELETE_PREVENTIVE', payload: json })
         }
 
         setShowDeletePreventiveMaintenanceModal(false)
@@ -101,7 +129,8 @@ const PreventiveMaintenance = () => {
             cellRenderer: PreventiveMaintenanceActionEllipsis,
             cellRendererParams: (params) => ({
                 onDelete: () => onDelete(params.data._id),
-                onViewUpdate: () => onViewUpdate(params.data)
+                onViewUpdate: () => onViewUpdate(params.data),
+                onMarkAsComplete: () => onMarkAsComplete(params.data),
             }),
         },
     ]
@@ -115,7 +144,7 @@ const PreventiveMaintenance = () => {
         const json = await response.json()
 
         if (response.ok) {
-            preventiveMaintenancesDispatch({ type: 'SET_LOCATIONS', payload: json })
+            preventiveMaintenancesDispatch({ type: 'SET_PREVENTIVE', payload: json })
         }
     }
 

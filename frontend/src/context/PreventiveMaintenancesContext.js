@@ -4,7 +4,7 @@ export const PreventiveMaintenancesContext = createContext()
 
 export const preventiveMaintenancesReducer = (state, action) => {
     switch (action.type) {
-        case 'SET_LOCATIONS':
+        case 'SET_PREVENTIVE':
             return {
                 preventiveMaintenances: action.payload
             }
@@ -12,7 +12,7 @@ export const preventiveMaintenancesReducer = (state, action) => {
             return {
                 preventiveMaintenances: [action.payload.preventiveMaintenance, ...state.preventiveMaintenances]
             }
-        case 'DELETE_LOCATION':
+        case 'DELETE_PREVENTIVE':
             return {
                 preventiveMaintenances: state.preventiveMaintenances.filter(u => u._id !== action.payload._id)
             }
