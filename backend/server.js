@@ -10,6 +10,7 @@ const repairProcedureRoutes = require('./routes/repairProcedures')
 const preventiveMaintenanceProcedureRoutes = require('./routes/preventiveMaintenanceProcedures')
 const organizationRoutes = require('./routes/organization')
 const repairRoutes = require('./routes/repairs')
+const preventiveMaintenanceRoutes = require('./routes/preventiveMaintenance')
 const locationRoutes = require('./routes/locations')
 const failureRoutes = require('./routes/failures')
 const dashboardRoutes = require('./routes/dashboard')
@@ -50,6 +51,8 @@ app.use('/api/repair-procedures', repairProcedureRoutes)
 app.use('/api/preventive-maintenance-procedures', preventiveMaintenanceProcedureRoutes)
 
 app.use('/api/repairs', repairRoutes)
+
+app.use('/api/preventiveMaintenances', preventiveMaintenanceRoutes)
 
 app.use('/api/locations', locationRoutes)
 
