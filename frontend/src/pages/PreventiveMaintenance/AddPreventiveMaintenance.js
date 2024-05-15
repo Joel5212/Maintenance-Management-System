@@ -216,7 +216,7 @@ const AddPreventiveMaintenance = () => {
         if (!frequencyType) {
             emptyFields.push('frequency type')
         }
-        if (frequencyType && ((selectedDays.length === 0) || !frequency)) {
+        if (frequencyType.value === 'Weekly' && ((selectedDays.length === 0) || !frequency)) {
             emptyFields.push('frequency details')
         }
 
