@@ -38,7 +38,7 @@ const PreventiveMaintenance = () => {
 
         if (response.ok) {
             const json = await response.json();
-            preventiveMaintenancesDispatch({ type: 'DELETE_PREVENTIVE', payload: json });
+            
 
             // Calculate the next due date
             const frequencyType = preventive.frequencyType; // assuming frequency is stored directly on the preventive object
@@ -59,10 +59,14 @@ const PreventiveMaintenance = () => {
             // Create a new preventive maintenance entry
             const newPreventive = {
                 ...preventive,
+                asset: preventive.assetDetails._id,
+                servicers: preventive.servicerDetails._id,
                 dueDate: nextDueDate,
                 status: 'Incomplete', // Reset status for the new maintenance
                 completedDate: null // Clear completed date
             };
+
+            console.log("NEW UPDATED PREVENTIVE", newPreventive)
 
             const newResponse = await fetch('/api/preventiveMaintenances', {
                 method: 'POST',
@@ -77,12 +81,15 @@ const PreventiveMaintenance = () => {
                 const errorJson = await newResponse.json();
                 throw new Error(errorJson.error || 'Failed to create new PREVENTIVE MAINTENANCE');
             }
-
+            preventiveMaintenancesDispatch({ type: 'ADD_PREVENTIVE', payload: json });
+            window.location.reload()
             return newResponse.json();
+            
         } else {
             const errorJson = await response.json();
             throw new Error(errorJson.error || 'Failed to complete PREVENTIVE MAINTENANCE');
         }
+        
     };
 
     function getNextDueDate(currentDueDate, frequencyType, frequency) {

@@ -15,8 +15,10 @@ const validator = require('validator')
 const AddPreventiveMaintenance = () => {
     const [title, setTitle] = useState('')
 
-    const [parentAsset, setParentAsset] = useState('')
-    const [parentAssetName, setParentAssetName] = useState([])
+    //Asset
+    const [assets, setAssets] = useState('')
+    const [selectedAsset, setSelectedAsset] = useState('')
+    const [selectedAssetName, setSelectedAssetName] = useState([])
     const [showSelectAssetModal, setShowSelectAssetModal] = useState(false)
 
     const [description, setDescription] = useState('')
@@ -104,8 +106,6 @@ const AddPreventiveMaintenance = () => {
         return nextDueDate.toLocaleDateString('en-CA');
     };
 
-
-
     const handleRepeatabilityChange = selectedOption => {
         console.log("Repeatability selected:", selectedOption)
         setFrequencyType(selectedOption)
@@ -135,6 +135,22 @@ const AddPreventiveMaintenance = () => {
     const location = useLocation()
     const { user } = useAuthContext()
 
+    useEffect(() => {
+        fetchAndSetAssets()
+        fetchAndSetServicers()
+        prevRouterDispatch({ type: 'SET_PREV_ROUTE', location: location.pathname })
+
+    }, [selectedDay, frequency, preventiveMaintenancesDispatch, user])
+
+    useEffect(() => {
+        // Update the dueDate state
+        if (selectedDay && frequency) {
+            const nextDueDates = getNextDueDate();
+            console.log('nextDueDates', nextDueDates)
+            setDueDate(nextDueDates);
+            console.log('dueDate', dueDate)
+        }
+    }, [selectedDay, frequency])
 
     const fetchPreventiveMaintenances = async () => {
         const response = await fetch('/api/preventiveMaintenances', {
@@ -150,6 +166,7 @@ const AddPreventiveMaintenance = () => {
         }
     }
 
+    //Asset FUnctions
     const fetchAndSetAssets = async () => {
         const response = await fetch('/api/Assets', {
             headers: {
@@ -168,22 +185,23 @@ const AddPreventiveMaintenance = () => {
 
                 }
                 console.log("assets", assets)
-                setParentAsset(assets)
+                setAssets(assets)
             }
         }
     }
 
-    const selectParentAsset = function () {
+    const enableSelectAssetModal = function () {
         setShowSelectAssetModal(true)
     }
 
-    const goBack = function () {
+    const goBackFromSelectAssetModal = function () {
         setShowSelectAssetModal(false)
     }
 
+
     const selectAsset = function (asset) {
-        setParentAsset(asset)
-        setParentAssetName(asset.name)
+        setSelectedAsset(asset)
+        setSelectedAssetName(asset.name)
         setShowSelectAssetModal(false)
     }
 
@@ -210,20 +228,6 @@ const AddPreventiveMaintenance = () => {
         }
     }
 
-    useEffect(() => {
-        fetchAndSetAssets()
-        fetchAndSetServicers()
-        // Update the dueDate state
-        if (selectedDay && frequency) {
-            const nextDueDates = getNextDueDate();
-            console.log('nextDueDates', nextDueDates)
-            setDueDate(nextDueDates);
-            console.log('dueDate', dueDate)
-        }
-        prevRouterDispatch({ type: 'SET_PREV_ROUTE', location: location.pathname })
-
-    }, [selectedDay, frequency, preventiveMaintenancesDispatch, user])
-
     const handleSubmit = async (e) => {
         e.preventDefault()
 
@@ -236,13 +240,13 @@ const AddPreventiveMaintenance = () => {
 
         if (!title) {
             emptyFields.push('title')
-        }
+        }/*
         if (parentAssetName.length === 0) {
             emptyFields.push('asset')
         }
         if (selectedServicer.length === 0) {
             emptyFields.push('servicer');
-        }
+        }*/
         if (!frequencyType) {
             emptyFields.push('frequency type')
         }
@@ -257,8 +261,11 @@ const AddPreventiveMaintenance = () => {
         if (emptyFields.length === 0) {
 
             let assetId = null;
-            if (parentAsset) {
-                assetId = parentAsset._id
+            let assetName = null;
+
+            if (selectedAsset) {
+                assetId = selectedAsset._id
+                assetName = selectedAsset.name
             }
             console.log("assetId", assetId)
 
@@ -313,7 +320,7 @@ const AddPreventiveMaintenance = () => {
             }
 
             if (response.ok) {
-                fetchPreventiveMaintenances()
+                //fetchPreventiveMaintenances()
                 preventiveMaintenancesDispatch({ type: 'ADD_PREVENTIVE', payload: json })
                 navigate(-1)
             }
@@ -333,7 +340,7 @@ const AddPreventiveMaintenance = () => {
         );
     }
 
-    //STOPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP
+
     const handleFrequencyChange = selectedOption => {
         setFrequency(selectedOption.value); // Save only the numerical value
     };
@@ -362,12 +369,12 @@ const AddPreventiveMaintenance = () => {
                                 <label>Asset:</label>
                                 <div className="add-parent-asset-container">
                                     <input
-                                        value={parentAssetName}
+                                        value={selectedAssetName}
                                         placeholder='Select Asset'
-                                        className={`add-parent-asset-input ${emptyFields.includes('parentAsset') ? 'input-error' : ''}`}
+                                        className={`add-update-asset-select-input ${emptyFields.includes('asset') ? 'input-error' : ''}`}
                                         disabled={true}
                                     />
-                                    <button className='add-parent-asset-btn' onClick={selectParentAsset}>
+                                    <button className='add-parent-asset-btn' onClick={enableSelectAssetModal}>
                                         +
                                     </button>
                                 </div>
@@ -453,17 +460,6 @@ const AddPreventiveMaintenance = () => {
                                             placeholder="Select Days"
                                         />
 
-                                        {/*
-                                        <Select
-                                            className="react-select-container"
-                                            classNamePrefix="react-select"
-                                            options={dayOptions}
-                                            onChange={values => setSelectedDays(values.map(v => v.value))}
-                                            value={dayOptions.filter(option => selectedDays.includes(option.value))}
-                                            isMulti
-                                            placeholder="Select Days"
-                            />*/}
-
                                     </div>
                                 </div>
 
@@ -487,7 +483,7 @@ const AddPreventiveMaintenance = () => {
                             </div>
                         </div>
                     </form>
-                </div> : <SelectAssetModal title={"Select Parent Asset"} selectAsset={selectAsset} goBack={goBack} />}
+                </div> :  <SelectAssetModal title={"Select Parent Asset"} selectAsset={selectAsset} goBack={goBackFromSelectAssetModal} />}
         </div >
     )
 }

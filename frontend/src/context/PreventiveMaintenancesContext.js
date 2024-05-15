@@ -8,7 +8,7 @@ export const preventiveMaintenancesReducer = (state, action) => {
             return {
                 preventiveMaintenances: action.payload
             }
-        case 'ADD_LOCATION':
+        case 'ADD_PREVENTIVE':
             return {
                 preventiveMaintenances: [action.payload.preventiveMaintenance, ...state.preventiveMaintenances]
             }
