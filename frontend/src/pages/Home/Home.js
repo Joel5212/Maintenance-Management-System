@@ -37,6 +37,7 @@ import { ProceduresContextProvider } from '../../context/ProceduresContext';
 import { RepairsContextProvider } from '../../context/RepairsContext';
 import { PreventiveMaintenancesContextProvider } from '../../context/PreventiveMaintenancesContext';
 import { CompletedRepairsContextProvider } from '../../context/CompletedRepairsContext';
+import { CompletedPreventivesContextProvider } from '../../context/CompletedPreventivesContext';
 import { LocationsContextProvider } from '../../context/LocationsContext';
 import { FailuresContextProvider } from '../../context/FailuresContext';
 
@@ -202,7 +203,9 @@ const Home = () => {
               path="/preventiveMaintenance"
               element={
                 <PreventiveMaintenancesContextProvider>
-                  <PreventiveMaintenance />
+                  <CompletedPreventivesContextProvider>
+                    <PreventiveMaintenance />
+                  </CompletedPreventivesContextProvider>
                 </PreventiveMaintenancesContextProvider>
               }
             />

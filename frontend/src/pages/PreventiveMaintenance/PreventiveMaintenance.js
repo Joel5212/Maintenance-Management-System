@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { useEffect } from 'react';
 import { usePreventiveMaintenancesContext } from "../../hooks/usePreventiveMaintenancesContext";
+import { useCompletedPreventivesContext } from "../../hooks/useCompletedPreventivesContext";
 import { AgGridReact } from 'ag-grid-react';
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";
@@ -13,11 +14,14 @@ import { useAuthContext } from '../../hooks/useAuthContext'
 const PreventiveMaintenance = () => {
     const { prevRoute, dispatch: prevRouterDispatch } = usePrevRouteContext()
     const { preventiveMaintenances, dispatch: preventiveMaintenancesDispatch } = usePreventiveMaintenancesContext()
+    const { completedPreventives, dispatch: completedPreventivesDispatch } = useCompletedPreventivesContext([])
     const { user } = useAuthContext()
     const navigate = useNavigate()
     const location_util = useLocation()
     const [showDeletePreventiveMaintenanceModal, setShowDeletePreventiveMaintenanceModal] = useState(false)
     const [preventiveMaintenanceToDelete, setPreventiveMaintenanceToDelete] = useState()
+    const [incompleteClicked, setIncompleteClicked] = useState(true)
+    const [completedClicked, setCompletedClicked] = useState(false)
 
 
     const onMarkAsComplete = async (preventive) => {
@@ -206,8 +210,52 @@ const PreventiveMaintenance = () => {
         },
     ]
 
+    const columnDefsForCompletedPreventives = [
+        {
+            field: 'title',
+        },
+        {
+            headerName: "Asset Name",
+            field: 'asset',
+        },
+        {
+            headerName: 'Assigned To',
+            field: 'servicers'
+        },
+        {
+            headerName: 'Frequency Type',
+            field: 'frequencyType'
+        },
+        {
+            headerName: 'Due Date',
+            field: 'dueDate'
+        },
+        {
+            headerName: 'Priority',
+            field: 'priority'
+        },
+        {
+            headerName: 'Status',
+            field: 'status'
+        },
+        {
+            headerName: 'Cost',
+            field: 'cost'
+        },
+
+
+        {
+            headerName: 'Actions',
+            cellRenderer: PreventiveMaintenanceActionEllipsis,
+            cellRendererParams: (params) => ({
+                onDelete: () => onDelete(params.data._id),
+                onViewUpdate: () => onViewUpdate(params.data),
+            }),
+        },
+    ]
+
     const fetchPreventiveMaintenances = async () => {
-        const response = await fetch('/api/preventiveMaintenances', {
+        const response = await fetch('/api/preventiveMaintenances/', {
             headers: {
                 'Authorization': `Bearer ${user.token}`
             }
@@ -216,6 +264,36 @@ const PreventiveMaintenance = () => {
 
         if (response.ok) {
             preventiveMaintenancesDispatch({ type: 'SET_PREVENTIVE', payload: json })
+        }
+    }
+
+    const getCompletedPreventiveMaintenances = async () => {
+        const response = await fetch('/api/preventiveMaintenances/completed', {
+            headers: {
+                'Authorization': `Bearer ${user.token}`
+            }
+        })
+        const json = await response.json()
+        console.log("Completed Preventives: ", json)
+
+        if (response.ok) {
+            console.log(json)
+            completedPreventivesDispatch({ type: 'SET_COMPLETED_PREVENTIVES', payload: json })
+        }
+    }
+
+    const incompleteClick = () => {
+        if (!incompleteClicked) {
+            setIncompleteClicked(true)
+            setCompletedClicked(false)
+        }
+    }
+
+    const completeClick = async () => {
+        if (!completedClicked) {
+            setIncompleteClicked(false)
+            setCompletedClicked(true)
+            getCompletedPreventiveMaintenances()
         }
     }
 
@@ -242,10 +320,15 @@ const PreventiveMaintenance = () => {
                 <div className="div-empty-space"></div>
                 <Link to="/preventiveMaintenance/add" className="new-item-nav-link"><button className="new-item-nav-btn btn-effect">+ New PreventiveMaintenance</button></Link>
             </div>
-            <div className="ag-theme-alpine preventiveMaintenances">
+            <hr className='repairs-hr-divider'></hr>
+            <div className="complete-incomplete-select-bar">
+                <div className={incompleteClicked ? 'incomplete-clicked' : 'incomplete'} onClick={incompleteClick}>Incomplete/Overdue</div>
+                <div className={completedClicked ? 'complete-clicked' : 'complete'} onClick={completeClick}>Complete</div>
+            </div>
+            <div className="ag-theme-alpine repairs">
                 <AgGridReact
-                    rowData={preventiveMaintenances}
-                    columnDefs={columnDefs}
+                    rowData={incompleteClicked ? preventiveMaintenances : completedPreventives}
+                    columnDefs={incompleteClicked ? columnDefs : columnDefsForCompletedPreventives}
                     defaultColDef={defaultColDef}
                 />
             </div>
