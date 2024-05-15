@@ -41,6 +41,7 @@ const getPreventiveMaintenances = async (req, res) => {
                 $match: {
                     $or: [
                         { status: "Incomplete" },
+                        { status: "Complete" },
                         { status: "Overdue" }
                     ]
                 }

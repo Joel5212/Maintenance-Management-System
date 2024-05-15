@@ -21,10 +21,12 @@ const PreventiveMaintenance = () => {
 
 
     const onMarkAsComplete = async (preventive) => {
+        console.log('IN MARKASCOMPLETE')
         const preventiveId = preventive._id;
-        const currentDate = new Date().toISOString(); // Get current date in ISO format
+        const currentDate = new Date().toLocaleDateString('en-CA');
         const updatedPreventive = { status: "Complete", completedDate: currentDate };
 
+        // Updating the existing preventive maintenance to complete
         const response = await fetch(`/api/preventiveMaintenances/${preventiveId}`, {
             method: 'PATCH',
             body: JSON.stringify(updatedPreventive),
@@ -36,16 +38,78 @@ const PreventiveMaintenance = () => {
 
         if (response.ok) {
             const json = await response.json();
-            // Reload the page after successful completion
-            // window.location.reload();
-            preventiveMaintenancesDispatch({ type: 'DELETE_PREVENTIVE', payload: json })
+            preventiveMaintenancesDispatch({ type: 'DELETE_PREVENTIVE', payload: json });
 
-            return json;
+            // Calculate the next due date
+            const frequencyType = preventive.frequencyType; // assuming frequency is stored directly on the preventive object
+            const frequency = preventive.frequency
+            console.log('MARKASCOMPLETE - FREQUENCYTYPE', frequencyType)
+
+            //date formatting since mongoDB changes timezone
+            let preventiveDueDate = new Date(preventive.dueDate);
+            preventiveDueDate.setDate(preventiveDueDate.getDate() + 1);
+            preventiveDueDate = preventiveDueDate.toLocaleDateString('en-CA');
+
+            console.log('MARKASCOMPLETE - preventiveDueDate', preventiveDueDate)
+
+            const nextDueDate = getNextDueDate(preventiveDueDate, frequencyType, frequency);
+            
+            console.log('MARKASCOMPLETE - nextDueDate', nextDueDate)
+
+            // Create a new preventive maintenance entry
+            const newPreventive = {
+                ...preventive,
+                dueDate: nextDueDate,
+                status: 'Incomplete', // Reset status for the new maintenance
+                completedDate: null // Clear completed date
+            };
+
+            const newResponse = await fetch('/api/preventiveMaintenances', {
+                method: 'POST',
+                body: JSON.stringify(newPreventive),
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${user.Token}`
+                }
+            });
+
+            if (!newResponse.ok) {
+                const errorJson = await newResponse.json();
+                throw new Error(errorJson.error || 'Failed to create new PREVENTIVE MAINTENANCE');
+            }
+
+            return newResponse.json();
         } else {
-            const json = await response.json();
-            throw new Error(json.error || 'Failed to complete PREVENTIVE MAINTENANCE');
+            const errorJson = await response.json();
+            throw new Error(errorJson.error || 'Failed to complete PREVENTIVE MAINTENANCE');
         }
     };
+
+    function getNextDueDate(currentDueDate, frequencyType, frequency) {
+        console.log('GETNEXTDUEDATE - currentDueDate', currentDueDate)
+        console.log('GETNEXTDUEDATE - frequency', frequencyType)
+        let newDueDate = new Date(currentDueDate);
+        newDueDate.setDate(newDueDate.getDate() + 1);
+        console.log('GETNEXTDUEDATE - newDueDate', newDueDate)
+        switch (frequencyType) {
+            case 'Daily':
+                newDueDate.setDate(newDueDate.getDate() + frequency);
+                break;
+            case 'Weekly':
+                newDueDate.setDate(newDueDate.getDate() + frequency);
+                break;
+            case 'Monthly':
+                newDueDate.setMonth(newDueDate.getMonth() + 1);
+                break;
+            case 'Yearly':
+                newDueDate.setFullYear(newDueDate.getFullYear() + 1);
+                break;
+            default:
+                throw new Error('Invalid frequency type');
+        }
+        return newDueDate.toLocaleDateString('en-CA');
+    }
+
 
     const onCancel = function () {
         setShowDeletePreventiveMaintenanceModal(false)
@@ -122,8 +186,8 @@ const PreventiveMaintenance = () => {
             headerName: 'Cost',
             field: 'cost'
         },
-        
-        
+
+
         {
             headerName: 'Actions',
             cellRenderer: PreventiveMaintenanceActionEllipsis,

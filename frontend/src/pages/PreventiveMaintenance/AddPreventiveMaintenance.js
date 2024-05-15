@@ -32,13 +32,13 @@ const AddPreventiveMaintenance = () => {
         const today = new Date(); // Get the current date.
         const tomorrow = new Date(today); // Create a new date object for manipulation.
         tomorrow.setDate(tomorrow.getDate() + 1); // Add one day.
-        return tomorrow.toLocaleDateString('en-CA'); // Format the date as 'yyyy-mm-dd'.
+        return today.toLocaleDateString('en-CA'); // Format the date as 'yyyy-mm-dd'.
     });
-    
+
 
     const [frequencyType, setFrequencyType] = useState('')
-    const [selectedDays, setSelectedDays] = useState([]);
-    const [frequency, setFrequency] = useState([]);
+    const [selectedDay, setSelectedDay] = useState(0);
+    const [frequency, setFrequency] = useState(0);
 
     const frequencyTypes = [
         { value: 'Daily', label: 'Daily' },
@@ -62,33 +62,64 @@ const AddPreventiveMaintenance = () => {
         { value: 28, label: '4' },
     ]
 
-    const getNextDueDates = () => {
-        const today = new Date()
-        const currentDayOfWeek = today.getDay(); // Sunday is 0, Saturday is 6
-        const dates = selectedDays.map(day => {
-            // Adjust day number from 1-7 (Mon-Sun) to 0-6 (Sun-Sat)
-            const targetDayOfWeek = day % 7;
-            let daysUntil = targetDayOfWeek - currentDayOfWeek;
-            if (daysUntil <= 0) daysUntil += 7; // Ensure it's always the next occurrence
-
-            // Calculate next due date based on frequency
+    /* Finds selected day (x) weeks away from current day
+        const getNextDueDates = () => {
+            if (!selectedDay) return null; // Ensure there's a selected day, otherwise return null
+    
+            const today = new Date();
+            const currentDayOfWeek = today.getDay(); // Sunday is 0, Saturday is 6
+    
+            // Adjust day number from 1-7 (Mon-Sun) to 0-6 (Sun-Sat), since JavaScript's getDay uses 0 for Sunday
+            const targetDayOfWeek = (selectedDay % 7) || 7;
+            let daysUntil = (targetDayOfWeek) - currentDayOfWeek; // Convert 1-7 to 0-6 for comparison
+    
+            // Calculate the next due date based on frequency
             const nextDueDate = new Date(today);
-            // Calculate the next due date by adding the days until the next occurrence
-            nextDueDate.setDate(today.getDate() + daysUntil + (frequency.value - 7));
+            nextDueDate.setDate(today.getDate() + daysUntil + (frequency - 7));
+    
+            // Return the next due date formatted to 'YYYY-MM-DD'
+            return nextDueDate.toLocaleDateString('en-CA');
+        };
+    */
 
-            // Format the date to 'yyyy/mm/dd'
-            console.log('HERE MFFFFF', nextDueDate)
-            return nextDueDate.toLocaleDateString('en-CA')
-        });
-        return dates
-    }
+    const getNextDueDate = () => {
+        if (!selectedDay) return null; // Ensure there's a selected day, otherwise return null
+
+        const today = new Date();
+        const currentDayOfWeek = today.getDay(); // Sunday is 0, Saturday is 6
+
+        // Adjust day number from 1-7 (Mon-Sun) to 0-6 (Sun-Sat), since JavaScript's getDay uses 0 for Sunday
+        const targetDayOfWeek = (selectedDay % 7);
+        let daysUntil = (targetDayOfWeek) - currentDayOfWeek; // Convert 1-7 to 0-6 for comparison
+        if (daysUntil < 0) {
+            daysUntil += 7
+        }
+        // Calculate the next due date based on frequency
+        const nextDueDate = new Date(today);
+        let dayDifference = today.getDate() + daysUntil
+        
+        nextDueDate.setDate(dayDifference);
+
+        // Return the next due date formatted to 'YYYY-MM-DD'
+        return nextDueDate.toLocaleDateString('en-CA');
+    };
+
+
 
     const handleRepeatabilityChange = selectedOption => {
         console.log("Repeatability selected:", selectedOption)
         setFrequencyType(selectedOption)
+
         if (selectedOption.value !== 'Weekly') {
-            setSelectedDays([]); // Clear days if not weekly
+            setSelectedDay(0); // Clear days if not weekly
         }
+
+
+        if (selectedOption.value === 'Daily') {
+            setFrequency(1)
+            console.log(frequency)
+        }
+
     };
 
     const [status, setStatus] = useState('Incomplete')
@@ -183,15 +214,15 @@ const AddPreventiveMaintenance = () => {
         fetchAndSetAssets()
         fetchAndSetServicers()
         // Update the dueDate state
-        if (selectedDays.length > 0 && frequency) {
-            const nextDueDates = getNextDueDates();
+        if (selectedDay && frequency) {
+            const nextDueDates = getNextDueDate();
             console.log('nextDueDates', nextDueDates)
-            setDueDate(nextDueDates); 
+            setDueDate(nextDueDates);
             console.log('dueDate', dueDate)
         }
         prevRouterDispatch({ type: 'SET_PREV_ROUTE', location: location.pathname })
 
-    }, [selectedDays, frequency, preventiveMaintenancesDispatch, user])
+    }, [selectedDay, frequency, preventiveMaintenancesDispatch, user])
 
     const handleSubmit = async (e) => {
         e.preventDefault()
@@ -206,21 +237,22 @@ const AddPreventiveMaintenance = () => {
         if (!title) {
             emptyFields.push('title')
         }
-        
+        /*
         if (parentAssetName.length === 0) {
             emptyFields.push('asset')
         }
         if (selectedServicer.length === 0) {
             emptyFields.push('servicer');
-        }
+        }*/
         if (!frequencyType) {
             emptyFields.push('frequency type')
         }
-        if (frequencyType.value === 'Weekly' && ((selectedDays.length === 0) || !frequency)) {
+        if (frequencyType.value === 'Weekly' && ((selectedDay.length === 0) || !frequency)) {
             emptyFields.push('frequency details')
         }
 
-        console.log("SELECTED DAYS:", selectedDays)
+
+        console.log("SELECTED DAYS:", selectedDay)
 
         //Check if there are empty fields
         if (emptyFields.length === 0) {
@@ -246,8 +278,22 @@ const AddPreventiveMaintenance = () => {
             }
             */
 
-            //Send Request
-            const newPreventiveMaintenance = { title: title, asset: assetId, servicers: servicerId, frequencyType: frequencyType.value, frequency: frequency.value, startDate: startDate, dueDate: dueDate, priority: priority, status: status, cost: cost, description: description }
+            /*
+            const freq = frequency.value
+            console.log("freq", freq)
+            console.log("freqType", freq.type)
+            if (frequencyType === 'Daily') {
+                setFrequency(1)
+                console.log(frequency)
+            }
+            if (frequencyType === 'Weekly') {
+                setFrequency(frequency.value)
+            }*/
+
+            //send request
+            const newPreventiveMaintenance = { title: title, asset: assetId, servicers: servicerId, frequencyType: frequencyType.value, frequency: frequency, startDate: startDate, dueDate: dueDate, priority: priority, status: status, cost: cost, description: description }
+
+
 
             console.log("checkpoint 1", newPreventiveMaintenance)
             const response = await fetch('/api/preventiveMaintenances', {
@@ -287,6 +333,12 @@ const AddPreventiveMaintenance = () => {
             </div>
         );
     }
+
+    //STOPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP
+    const handleFrequencyChange = selectedOption => {
+        setFrequency(selectedOption.value); // Save only the numerical value
+    };
+
 
     return (
         <div className="add-update-preventiveMaintenance-container">
@@ -386,12 +438,23 @@ const AddPreventiveMaintenance = () => {
                                             className="react-select-container"
                                             classNamePrefix="react-select"
                                             options={weekOptions}
-                                            onChange={(weekInterval) => setFrequency(weekInterval)}
-                                            value={frequency}
+                                            onChange={handleFrequencyChange}
+                                            value={weekOptions.find(option => option.value === frequency)} // Display the selected value
                                             placeholder="Select Week Interval"
                                         />
 
+
                                         <label>Frequency:</label>
+                                        <Select
+                                            className="react-select-container"
+                                            classNamePrefix="react-select"
+                                            options={dayOptions}
+                                            onChange={option => setSelectedDay(option.value)} // Save only the numerical value of the day
+                                            value={dayOptions.find(option => option.value === selectedDay)} // Display the selected day
+                                            placeholder="Select Days"
+                                        />
+
+                                        {/*
                                         <Select
                                             className="react-select-container"
                                             classNamePrefix="react-select"
@@ -400,7 +463,8 @@ const AddPreventiveMaintenance = () => {
                                             value={dayOptions.filter(option => selectedDays.includes(option.value))}
                                             isMulti
                                             placeholder="Select Days"
-                                        />
+                            />*/}
+
                                     </div>
                                 </div>
 
