@@ -315,8 +315,6 @@ const AddRepair = () => {
         }
 
         /*
-        
-
         if (!startDate) {
             emptyFields.push('startDate')
         }
@@ -329,8 +327,6 @@ const AddRepair = () => {
             emptyFields.push('priority')
         }
 
-        
-
         if (!status) {
             emptyFields.push('status')
         }
@@ -342,7 +338,6 @@ const AddRepair = () => {
         if (!description) {
             emptyFields.push('description')
         }
-
         */
 
         //Check if there are empty fields

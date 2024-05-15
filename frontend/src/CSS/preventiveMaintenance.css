@@ -1,0 +1,70 @@
+/* Locations Page */
+
+.preventiveMaintenances {
+    height: 100%;
+    width: 100%;
+}
+
+.preventiveMaintenances-title {
+    margin-left: 1%;
+}
+
+.preventiveMaintenances-header {
+    display: flex;
+    flex-direction: row;
+}
+
+.add-update-preventiveMaintenance-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    row-gap: 40px
+}
+
+.add-update-preventiveMaintenance-container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    /*justify-content: center;*/
+    overflow: auto;
+}
+
+.add-update-preventiveMaintenance-title {
+    font-size: 30px
+}
+
+@media screen and (max-width: 1400px) {
+    .add-update-preventiveMaintenance-form {
+        display: flex;
+        align-items: center;
+        row-gap: 20px
+    }
+
+    .add-update-preventiveMaintenance-container {
+        margin-top: 150px;
+    }
+}
+
+.react-select-container {
+    width: 250px !important ;  /* Fixed width for the container */
+
+}
+
+
+.react-select__control {
+    width: 100%; /*  control element fills the container */
+    min-height: 36px; /* Optional: Adjusts the height of the select box */
+}
+
+
+.react-select__menu {
+    width: 100%; /* dropdown menu matches the width of the container */
+}
+
+.lower-middle {
+    display: table-cell;
+    vertical-align: middle !important;
+}
