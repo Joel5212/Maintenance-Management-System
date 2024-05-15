@@ -54,7 +54,7 @@ export const PreventiveMaintenanceActionEllipsis = (props) => {
                 onClose={handleActionClose}
             >
                 <MenuItem onClick={() => handleMenuItemClick('delete')}>Delete</MenuItem>
-                {/*<MenuItem onClick={() => handleMenuItemClick('viewUpdate')}>View/Update</MenuItem>*/}
+                <MenuItem onClick={() => handleMenuItemClick('viewUpdate')}>View/Update</MenuItem>
                 <MenuItem onClick={() => handleMenuItemClick('onMarkAsComplete')}>Mark as Complete</MenuItem>
                 {/* Add more menu items for other actions */}
             </Menu>

@@ -10,6 +10,7 @@ import AddRepair from '../Repairs/AddRepair'
 import ViewOrUpdateRepair from '../Repairs/ViewOrUpdateRepair'
 import PreventiveMaintenance from '../PreventiveMaintenance/PreventiveMaintenance'
 import AddPreventiveMaintenance from '../PreventiveMaintenance/AddPreventiveMaintenance'
+import ViewOrUpdatePreventiveMaintenance from '../PreventiveMaintenance/ViewOrUpdatePreventiveMaintenance'
 import Users from '../Users/Users'
 import AddUser from '../Users/AddUser'
 import ViewOrUpdateUser from '../Users/ViewOrUpdateUser'
@@ -215,6 +216,16 @@ const Home = () => {
                 <PreventiveMaintenancesContextProvider>
                   <AssetsContextProvider>
                     <AddPreventiveMaintenance />
+                  </AssetsContextProvider>
+                </PreventiveMaintenancesContextProvider>
+              }
+            />
+            <Route
+              path="/preventiveMaintenance/viewOrUpdate"
+              element={
+                <PreventiveMaintenancesContextProvider>
+                  <AssetsContextProvider>
+                    <ViewOrUpdatePreventiveMaintenance />
                   </AssetsContextProvider>
                 </PreventiveMaintenancesContextProvider>
               }

@@ -12,7 +12,7 @@ import 'react-dropdown/style.css';
 import { usePrevRouteContext } from "../../hooks/usePrevRouteContext";
 const validator = require('validator')
 
-const AddPreventiveMaintenance = () => {
+const ViewOrUpdatePreventiveMaintenance = (props) => {
     const [title, setTitle] = useState('')
 
     //Asset
@@ -37,10 +37,11 @@ const AddPreventiveMaintenance = () => {
         return today.toLocaleDateString('en-CA'); // Format the date as 'yyyy-mm-dd'.
     });
 
-
     const [frequencyType, setFrequencyType] = useState('')
     const [selectedDay, setSelectedDay] = useState(0);
     const [frequency, setFrequency] = useState(0);
+
+    
 
     const frequencyTypes = [
         { value: 'Daily', label: 'Daily' },
@@ -63,6 +64,8 @@ const AddPreventiveMaintenance = () => {
         { value: 21, label: '3' },
         { value: 28, label: '4' },
     ]
+
+
 
     /* Finds selected day (x) weeks away from current day
         const getNextDueDates = () => {
@@ -99,7 +102,7 @@ const AddPreventiveMaintenance = () => {
         // Calculate the next due date based on frequency
         const nextDueDate = new Date(today);
         let dayDifference = today.getDate() + daysUntil
-        
+
         nextDueDate.setDate(dayDifference);
 
         // Return the next due date formatted to 'YYYY-MM-DD'
@@ -135,22 +138,7 @@ const AddPreventiveMaintenance = () => {
     const location = useLocation()
     const { user } = useAuthContext()
 
-    useEffect(() => {
-        fetchAndSetAssets()
-        fetchAndSetServicers()
-        prevRouterDispatch({ type: 'SET_PREV_ROUTE', location: location.pathname })
-
-    }, [preventiveMaintenancesDispatch, user])
-
-    useEffect(() => {
-        // Update the dueDate state
-        if (selectedDay && frequency) {
-            const nextDueDates = getNextDueDate();
-            console.log('nextDueDates', nextDueDates)
-            setDueDate(nextDueDates);
-            console.log('dueDate', dueDate)
-        }
-    }, [selectedDay, frequency])
+    
 
     const fetchPreventiveMaintenances = async () => {
         const response = await fetch('/api/preventiveMaintenances', {
@@ -165,6 +153,43 @@ const AddPreventiveMaintenance = () => {
             preventiveMaintenancesDispatch({ type: 'SET_LOCATIONS', payload: json })
         }
     }
+
+    const { preventive } = location.state
+    useEffect(() => {
+        console.log("THE PREVENTIVE", preventive)
+        fetchAndSetAssets()
+        fetchAndSetServicers()
+        /*
+        setFrequencyType(preventive.frequencyType)
+        setFrequency(preventive.frequency)
+
+        setTitle(preventive.title)
+        console.log('check1')
+        setSelectedAsset(preventive.selectedAsset) 
+        console.log('check2')
+        setSelectedServicer(preventive.servicers)  
+        setStartDate(preventive.startDate)
+        setDueDate(preventive.dueDate)
+        setPriority(preventive.priority)
+        setStatus(preventive.status)
+        setCost(preventive.cost)
+        setDescription(preventive.description)
+        */
+        prevRouterDispatch({ type: 'SET_PREV_ROUTE', location: location.pathname })
+
+    }, [preventiveMaintenancesDispatch, user])
+
+    useEffect(() => {
+        // Update the dueDate state
+        if (selectedDay && frequency) {
+            const nextDueDates = getNextDueDate();
+            console.log('nextDueDates', nextDueDates)
+            setDueDate(nextDueDates);
+            console.log('dueDate', dueDate)
+        }
+    }, [selectedDay, frequency])
+
+
 
     //Asset FUnctions
     const fetchAndSetAssets = async () => {
@@ -228,6 +253,23 @@ const AddPreventiveMaintenance = () => {
         }
     }
 
+    //Check if form is changed
+    const isFormUnchanged = () => {
+        return (
+            title === preventive.title &&
+            assets === preventive.assets &&
+            startDate === preventive.startDate &&
+            dueDate === preventive.dueDate &&
+            priority === preventive.priority &&
+            servicers === preventive.servicers &&
+            status === preventive.status &&
+            cost === preventive.status &&
+            description === preventive.description &&
+            frequency === preventive.frequency &&
+            frequencyType === preventive.frequencyType
+        )
+    }
+
     const handleSubmit = async (e) => {
         e.preventDefault()
 
@@ -238,95 +280,100 @@ const AddPreventiveMaintenance = () => {
         const emptyFields = [];
         let error = '';
 
-        if (!title) {
-            emptyFields.push('title')
-        }
-        if (selectedAssetName.length === 0) {
-            emptyFields.push('asset')
-        }
-        if (selectedServicer.length === 0) {
-            emptyFields.push('servicer');
-        }
-        if (!frequencyType) {
-            emptyFields.push('frequency type')
-        }
-        if (frequencyType.value === 'Weekly' && ((selectedDay.length === 0) || !frequency)) {
-            emptyFields.push('frequency details')
-        }
-
-
-        console.log("SELECTED DAYS:", selectedDay)
-
-        //Check if there are empty fields
-        if (emptyFields.length === 0) {
-
-            let assetId = null;
-            let assetName = null;
-
-            if (selectedAsset) {
-                assetId = selectedAsset._id
-                assetName = selectedAsset.name
+        if (!isFormUnchanged()) {
+            if (!title) {
+                emptyFields.push('title')
             }
-            console.log("assetId", assetId)
-
-            let servicerId = null
-            let servicerName = ''
-            if (selectedServicer.length !== 0) {
-                servicerId = selectedServicer.value
-                servicerName = selectedServicer.label
+            if (selectedAssetName.length === 0) {
+                emptyFields.push('asset')
             }
-            /* calculating dueDate doesn't work here?? done in useEffect()
-            if (selectedDays.length > 0 && frequency) {
-            const nextDueDates = getNextDueDates();
-            console.log('nextDueDates', nextDueDates)
-            setDueDate(nextDueDates);
-            console.log('dueDate', dueDate)
+            if (selectedServicer.length === 0) {
+                emptyFields.push('servicer');
             }
-            */
-
-            /*
-            const freq = frequency.value
-            console.log("freq", freq)
-            console.log("freqType", freq.type)
-            if (frequencyType === 'Daily') {
-                setFrequency(1)
-                console.log(frequency)
+            if (!frequencyType) {
+                emptyFields.push('frequency type')
             }
-            if (frequencyType === 'Weekly') {
-                setFrequency(frequency.value)
-            }*/
-
-            //send request
-            const newPreventiveMaintenance = { title: title, asset: assetId, servicers: servicerId, frequencyType: frequencyType.value, frequency: frequency, startDate: startDate, dueDate: dueDate, priority: priority, status: status, cost: cost, description: description }
+            if (frequencyType.value === 'Weekly' && ((selectedDay.length === 0) || !frequency)) {
+                emptyFields.push('frequency details')
+            }
 
 
+            console.log("SELECTED DAYS:", selectedDay)
 
-            console.log("checkpoint 1", newPreventiveMaintenance)
-            const response = await fetch('/api/preventiveMaintenances', {
-                method: 'POST',
-                body: JSON.stringify(newPreventiveMaintenance),
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${user.token}`
+            //Check if there are empty fields
+            if (emptyFields.length === 0) {
+
+                let assetId = null;
+                let assetName = null;
+
+                if (selectedAsset) {
+                    assetId = selectedAsset._id
+                    assetName = selectedAsset.name
                 }
-            })
-            console.log("checkpoint 2", response)
-            const json = await response.json()
+                console.log("assetId", assetId)
 
-            console.log("checkpoint 3", json)
-            //Check for errors from express server
-            if (!response.ok) {
-                error = json.error
+                let servicerId = null
+                let servicerName = ''
+                if (selectedServicer.length !== 0) {
+                    servicerId = selectedServicer.value
+                    servicerName = selectedServicer.label
+                }
+                /* calculating dueDate doesn't work here?? done in useEffect()
+                if (selectedDays.length > 0 && frequency) {
+                const nextDueDates = getNextDueDates();
+                console.log('nextDueDates', nextDueDates)
+                setDueDate(nextDueDates);
+                console.log('dueDate', dueDate)
+                }
+                */
+
+                /*
+                const freq = frequency.value
+                console.log("freq", freq)
+                console.log("freqType", freq.type)
+                if (frequencyType === 'Daily') {
+                    setFrequency(1)
+                    console.log(frequency)
+                }
+                if (frequencyType === 'Weekly') {
+                    setFrequency(frequency.value)
+                }*/
+
+                //send request
+                const newPreventiveMaintenance = { title: title, asset: assetId, servicers: servicerId, frequencyType: frequencyType.value, frequency: frequency, startDate: startDate, dueDate: dueDate, priority: priority, status: status, cost: cost, description: description }
+
+
+
+                const _id = preventive._id
+                console.log('check 1', newPreventiveMaintenance)
+                const response = await fetch('/api/preventiveMaintenances/' + _id, {
+                    method: 'PATCH',
+                    body: JSON.stringify(newPreventiveMaintenance),
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${user.token}`
+                    }
+                })
+
+                const json = await response.json()
+                console.log('check 2', json)
+                if (!response.ok) {
+                    error = json.error
+                }
+
+                if (response.ok) {
+                    fetchPreventiveMaintenances()
+                    preventiveMaintenancesDispatch({ type: 'UPDATE_PREVENTIVE', payload: json })
+                    navigate(-1)
+                }
             }
-
-            if (response.ok) {
-                //fetchPreventiveMaintenances()
-                preventiveMaintenancesDispatch({ type: 'ADD_PREVENTIVE', payload: json })
-                navigate(-1)
+            else {
+                error = 'Fill in all the fields'
             }
         }
         else {
-            error = 'Fill in all the fields'
+            error = 'Form is unchanged'
+
         }
         setEmptyFields(emptyFields)
         setError(error)
@@ -352,9 +399,8 @@ const AddPreventiveMaintenance = () => {
                 <div className='add-update-preventiveMaintenance-form-container'>
                     <Link to='/preventiveMaintenance' className='back-button-link'><button className='back-button'><ArrowBackIcon /></button></Link>
                     <form className="add-update-preventiveMaintenance-form" onSubmit={handleSubmit}>
-                        <h1 className="add-update-preventiveMaintenance-title">Add Preventive Maintenance</h1>
+                        <h1 className="add-update-preventiveMaintenance-title">Update Preventive Maintenance</h1>
                         <div className='top'>
-
                             <div className="label-input">
                                 <label>Title:</label>
                                 <input
@@ -370,13 +416,10 @@ const AddPreventiveMaintenance = () => {
                                 <div className="add-parent-asset-container">
                                     <input
                                         value={selectedAssetName}
-                                        placeholder='Select Asset'
-                                        className={`add-update-asset-select-input ${emptyFields.includes('asset') ? 'input-error' : ''}`}
+                                        placeholder={selectedAsset}
+                                        className='add-parent-asset-input'
                                         disabled={true}
                                     />
-                                    <button className='add-parent-asset-btn' onClick={enableSelectAssetModal}>
-                                        +
-                                    </button>
                                 </div>
                             </div>
 
@@ -385,12 +428,11 @@ const AddPreventiveMaintenance = () => {
                                 <div className='dropdown'>
 
                                     <Select
-                                        options={servicers}
-                                        onChange={(selectedServicer) => setSelectedServicer(selectedServicer)}
                                         value={selectedServicer}
-                                        placeholder="Select Servicer or Team"
+                                        options={servicers}
+                                        placeholder={selectedServicer}
+                                        onChange={(selectedServicer) => setSelectedServicer(selectedServicer)}
                                         formatGroupLabel={formatGroupLabel}
-                                        className=''
                                     />
                                 </div>
                             </div>
@@ -399,10 +441,10 @@ const AddPreventiveMaintenance = () => {
                             <div className="label-input">
                                 <label>Frequency Type:</label>
                                 <Select
+                                    value={frequencyType}
                                     options={frequencyTypes}
                                     onChange={handleRepeatabilityChange}
-                                    value={frequencyType}
-                                    placeholder='Select Frequency Type'
+                                    placeholder='frequency Type'
                                     className={emptyFields.includes('frequencyType') ? 'dropdown-error' : ''}
                                 />
                             </div>
@@ -413,7 +455,7 @@ const AddPreventiveMaintenance = () => {
                                     options={priorities}
                                     onChange={(selectedPriority) => setPriority(selectedPriority.value)}
                                     value={priority}
-                                    placeholder='Select Priority'
+                                    placeholder={priority}
                                     className={emptyFields.includes('priority') ? 'dropdown-error' : ''}
                                 />
                             </div>
@@ -483,9 +525,9 @@ const AddPreventiveMaintenance = () => {
                             </div>
                         </div>
                     </form>
-                </div> :  <SelectAssetModal title={"Select Parent Asset"} selectAsset={selectAsset} goBack={goBackFromSelectAssetModal} />}
+                </div> : <SelectAssetModal title={"Select Parent Asset"} selectAsset={selectAsset} goBack={goBackFromSelectAssetModal} />}
         </div >
     )
 }
 
-export default AddPreventiveMaintenance
+export default ViewOrUpdatePreventiveMaintenance

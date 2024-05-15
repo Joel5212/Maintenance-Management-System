@@ -66,6 +66,7 @@ const ViewOrUpdateRepair = (props) => {
     }
 
     useEffect(() => {
+        console.log("THE REPAIR", repair)
         fetchAndSetAssets()
         fetchAndSetServicers()
 
@@ -168,7 +169,6 @@ const ViewOrUpdateRepair = (props) => {
     }
 
     const handleSubmit = async (e) => {
-        console.log("YOOOOOO parentAsset", parentAssetName)
         e.preventDefault()
 
         if (!user) {
@@ -182,10 +182,10 @@ const ViewOrUpdateRepair = (props) => {
             if (!title) {
                 emptyFields.push('title')
             }
-            /*
+            
             if (parentAssetName.length === 0) {
                 emptyFields.push('asset')
-            }*/
+            }
             if (!selectedServicer) {
                 emptyFields.push('servicer');
             }
@@ -312,13 +312,10 @@ const ViewOrUpdateRepair = (props) => {
                                 <div className="add-parent-asset-container">
                                     <input
                                         value={parentAssetName}
-                                        placeholder={repair.asset}
+                                        placeholder={repair.asset.name}
                                         className='add-parent-asset-input'
                                         disabled={true}
                                     />
-                                    <button className='add-parent-asset-btn' onClick={selectParentAsset}>
-                                        +
-                                    </button>
                                 </div>
                             </div>
                             <div className="label-input">

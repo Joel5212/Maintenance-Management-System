@@ -10,6 +10,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { Link } from 'react-router-dom'
 import { usePrevRouteContext } from "../../hooks/usePrevRouteContext";
 import { useAuthContext } from '../../hooks/useAuthContext'
+import { PreventiveMaintenancesContext } from '../../context/PreventiveMaintenancesContext';
 
 const PreventiveMaintenance = () => {
     const { prevRoute, dispatch: prevRouterDispatch } = usePrevRouteContext()
@@ -42,7 +43,7 @@ const PreventiveMaintenance = () => {
 
         if (response.ok) {
             const json = await response.json();
-            
+            preventiveMaintenancesDispatch({ type: 'DELETE_PREVENTIVE', payload: json });
 
             // Calculate the next due date
             const frequencyType = preventive.frequencyType; // assuming frequency is stored directly on the preventive object
@@ -85,7 +86,7 @@ const PreventiveMaintenance = () => {
                 const errorJson = await newResponse.json();
                 throw new Error(errorJson.error || 'Failed to create new PREVENTIVE MAINTENANCE');
             }
-            preventiveMaintenancesDispatch({ type: 'ADD_PREVENTIVE', payload: json });
+            //preventiveMaintenancesDispatch({ type: 'ADD_PREVENTIVE', payload: json });
             window.location.reload()
             return newResponse.json();
             
@@ -161,6 +162,7 @@ const PreventiveMaintenance = () => {
 
 
     const onViewUpdate = async (preventiveMaintenance) => {
+        console.log('PREVENTIVE MAINTENANCES', preventiveMaintenances)
         navigate('viewOrUpdate', { state: { preventiveMaintenance } })
     }
 
