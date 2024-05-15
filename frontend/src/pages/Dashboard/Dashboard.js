@@ -16,6 +16,7 @@ const Dashboard = () => {
   const [repairStatusStats, setRepairStatusStats] = useState([])
   const [repairPriorityStats, setRepairPriorityStats] = useState([])
   const [repairFailureReport, setRepairFailureReport] = useState([])
+  const [performanceReport, setPerformanceReport] = useState([])
   const { user } = useAuthContext()
 
 
@@ -62,6 +63,44 @@ const Dashboard = () => {
     }
   }
 
+  const fetchUsersAndTeamsPerformanceReport = async () => {
+    const usersPerformanceReportResponse = await fetch('/api/dashboard/get-users-performance-report', {
+      headers: {
+        'Authorization': `Bearer ${user.token}`
+      }
+    })
+
+    const teamsPerformanceReportResponse = await fetch('/api/dashboard/get-teams-performance-report', {
+      headers: {
+        'Authorization': `Bearer ${user.token}`
+      }
+    })
+
+    const usersPerformanceReportJson = await usersPerformanceReportResponse.json()
+    const teamsPerformanceReportJson = await teamsPerformanceReportResponse.json()
+
+    setPerformanceReport([...usersPerformanceReportJson, ...teamsPerformanceReportJson])
+
+
+    // if (usersPerformanceReportJson.ok && teamsPerformanceReportJson.ok) {
+    //   setPerformanceReport(json)
+    // }
+  }
+
+  // const fetchTeamsPerformanceReportForRepair = async () => {
+  //   const response = await fetch('/api/dashboard/get-teams-performance-report-for-repairs', {
+  //     headers: {
+  //       'Authorization': `Bearer ${user.token}`
+  //     }
+  //   })
+
+  //   const json = await response.json()
+  //   console.log(json)
+  //   if (response.ok) {
+  //     setRepairFailureReport(json)
+  //   }
+  // }
+
   const repairStatusStatsData = {
     labels: ['Incomplete', 'Overdue', 'Complete'],
     datasets: [
@@ -93,7 +132,7 @@ const Dashboard = () => {
   //   maintainAspectRatio: false,
   // };
 
-  const columnDefs = [
+  const failureReportColumnDefs = [
     {
       headerName: 'Asset Name',
       field: 'asset'
@@ -109,7 +148,35 @@ const Dashboard = () => {
 
   ]
 
+  const performanceReportColumnDefs = [
+    {
+      headerName: 'Assigned To',
+      valueGetter: function (params) {
+        const user = params.data.user
+        const team = params.data.team
+        if (user) {
+          return user[0]
+        }
+
+        if (team) {
+          return team[0]
+        }
+        return null
+      }
+    },
+    {
+      headerName: 'Total Repairs',
+      field: 'totalRepairs'
+    },
+    {
+      headerName: 'MTFR (In Hours)',
+      field: 'mtfr'
+    }
+
+  ]
+
   useEffect(() => {
+    fetchUsersAndTeamsPerformanceReport();
     fetchRepairAndPreventiveStatusStats();
     fetchRepairAndPreventivePriorityStats();
     fetchRepairFailueReport();
@@ -150,18 +217,25 @@ const Dashboard = () => {
           </div>
         </div>
         <div className='row'>
-          <div className='failure-report-container'>
-            <h1 className='failure-report-title'>Failure Report</h1>
-            <div className="ag-theme-alpine failure-report">
+          <div className='report-container'>
+            <h1 className='report-title'>Failure Report</h1>
+            <div className="ag-theme-alpine report">
               <AgGridReact
                 rowData={repairFailureReport}
-                columnDefs={columnDefs}
+                columnDefs={failureReportColumnDefs}
                 defaultColDef={defaultColDef}
               />
             </div>
           </div>
-          <div className='dashboard-item'>
-
+          <div className='report-container'>
+            <h1 className='report-title'>Users/Teams Performance Report</h1>
+            <div className="ag-theme-alpine report">
+              <AgGridReact
+                rowData={performanceReport}
+                columnDefs={performanceReportColumnDefs}
+                defaultColDef={defaultColDef}
+              />
+            </div>
           </div>
         </div>
       </div>

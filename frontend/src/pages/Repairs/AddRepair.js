@@ -584,7 +584,7 @@ const AddRepair = () => {
                             value={description}
                             placeholder='Enter Description'
                             className={emptyFields.includes('description') ? 'input-error' : ''}
-                            style={{ width: '100%', height: '300px', fontFamily: 'Times New Roman' }}
+                            style={{ width: '100%', height: '250px', fontFamily: 'Times New Roman' }}
                         />
                     </div>
                     <div className="failure-checkbox" style={{ display: 'flex', alignItems: 'center' }}>

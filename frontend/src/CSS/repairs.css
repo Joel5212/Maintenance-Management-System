@@ -217,7 +217,7 @@
 
 .add-update-repair-procedure-description-input {
     width: 100%;
-    height: 300px;
+    height: 225px;
     font-size: 15px;
     border: 1px solid #ddd;
 }
@@ -230,7 +230,7 @@
 
 .add-update-repair-failure-description-input {
     width: 100%;
-    height: 300px;
+    height: 225px;
     font-size: 15px;
     border: 1px solid #ddd;
 }
@@ -305,7 +305,7 @@
 
 .add-update-repair-failure-description-input {
     width: 100%;
-    height: 300px;
+    height: 225px;
     font-size: 15px;
     border: 1px solid #ddd;
 }
