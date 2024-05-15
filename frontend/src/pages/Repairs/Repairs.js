@@ -26,7 +26,7 @@ const Repairs = () => {
 
     const onMarkAsComplete = async (repair) => {
         const repairId = repair._id;
-        const currentDate = new Date().toLocaleDateString('en-CA'); // Get current date in ISO format
+        const currentDate = new Date()
         const updatedRepair = { status: "Complete", completedDate: currentDate };
 
         const response = await fetch(`/api/repairs/${repairId}`, {
@@ -135,7 +135,7 @@ const Repairs = () => {
         {
             field: 'priority',
         },
-        
+
         {
             field: 'status',
         },
@@ -174,7 +174,7 @@ const Repairs = () => {
             headerName: "Asset Name",
             field: 'asset.name',
         },
-        
+
         {
             field: 'startDate',
         },
@@ -194,7 +194,7 @@ const Repairs = () => {
                 return isFailure
             },
         },
-        
+
         {
             field: 'status',
         },
