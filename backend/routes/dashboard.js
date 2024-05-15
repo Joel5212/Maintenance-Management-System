@@ -6,11 +6,11 @@ const router = express.Router()
 
 router.use(requireAuth)
 
-router.get('/getRepairStatusStats', getRepairStatusStats)
+router.get('/get-repair-status-stats', getRepairStatusStats)
 
-router.get('/getRepairPriorityStats', getRepairPriorityStats)
+router.get('/get-repair-priority-stats', getRepairPriorityStats)
 
-router.get('/getRepairFailureReport', getRepairFailureReport)
+router.get('/get-repair-failure-report', getRepairFailureReport)
 
 // router.patch('/ getPreventiveMaintenanceStats', getPreventiveMaintenanceStats)
 

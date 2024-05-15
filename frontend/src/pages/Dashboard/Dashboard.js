@@ -20,7 +20,7 @@ const Dashboard = () => {
 
 
   const fetchRepairAndPreventiveStatusStats = async () => {
-    const response = await fetch('/api/dashboard/getRepairStatusStats/', {
+    const response = await fetch('/api/dashboard/get-repair-status-stats/', {
       headers: {
         'Authorization': `Bearer ${user.token}`
       }
@@ -34,7 +34,7 @@ const Dashboard = () => {
   }
 
   const fetchRepairAndPreventivePriorityStats = async () => {
-    const response = await fetch('/api/dashboard/getRepairPriorityStats/', {
+    const response = await fetch('/api/dashboard/get-repair-priority-stats/', {
       headers: {
         'Authorization': `Bearer ${user.token}`
       }
@@ -49,7 +49,7 @@ const Dashboard = () => {
 
   const fetchRepairFailueReport = async () => {
     console.log(user.token)
-    const response = await fetch('/api/dashboard/getRepairFailureReport', {
+    const response = await fetch('/api/dashboard/get-repair-failure-report', {
       headers: {
         'Authorization': `Bearer ${user.token}`
       }
