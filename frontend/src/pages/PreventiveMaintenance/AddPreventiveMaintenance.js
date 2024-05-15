@@ -2,23 +2,14 @@ import { useState } from 'react'
 import { useEffect } from "react"
 import Dropdown from 'react-dropdown';
 import Select from 'react-select'
-
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { Link } from 'react-router-dom';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { SelectAssetModal } from '../../components/SelectAssetModal';
 import { usePreventiveMaintenancesContext } from "../../hooks/usePreventiveMaintenancesContext";
 import { useAuthContext } from '../../hooks/useAuthContext';
-
-
 import 'react-dropdown/style.css';
-
-
-
 import { usePrevRouteContext } from "../../hooks/usePrevRouteContext";
-
-
-
 const validator = require('validator')
 
 const AddPreventiveMaintenance = () => {
@@ -37,7 +28,13 @@ const AddPreventiveMaintenance = () => {
 
     const [startDate, setStartDate] = useState(new Date().toLocaleDateString('en-CA'));
 
-    const [dueDate, setDueDate] = useState('')
+    const [dueDate, setDueDate] = useState(() => {
+        const today = new Date(); // Get the current date.
+        const tomorrow = new Date(today); // Create a new date object for manipulation.
+        tomorrow.setDate(tomorrow.getDate() + 1); // Add one day.
+        return tomorrow.toLocaleDateString('en-CA'); // Format the date as 'yyyy-mm-dd'.
+    });
+    
 
     const [frequencyType, setFrequencyType] = useState('')
     const [selectedDays, setSelectedDays] = useState([]);
@@ -62,8 +59,29 @@ const AddPreventiveMaintenance = () => {
         { value: 7, label: '1' },
         { value: 14, label: '2' },
         { value: 21, label: '3' },
+        { value: 28, label: '4' },
     ]
 
+    const getNextDueDates = () => {
+        const today = new Date()
+        const currentDayOfWeek = today.getDay(); // Sunday is 0, Saturday is 6
+        const dates = selectedDays.map(day => {
+            // Adjust day number from 1-7 (Mon-Sun) to 0-6 (Sun-Sat)
+            const targetDayOfWeek = day % 7;
+            let daysUntil = targetDayOfWeek - currentDayOfWeek;
+            if (daysUntil <= 0) daysUntil += 7; // Ensure it's always the next occurrence
+
+            // Calculate next due date based on frequency
+            const nextDueDate = new Date(today);
+            // Calculate the next due date by adding the days until the next occurrence
+            nextDueDate.setDate(today.getDate() + daysUntil + (frequency.value - 7));
+
+            // Format the date to 'yyyy/mm/dd'
+            console.log('HERE MFFFFF', nextDueDate)
+            return nextDueDate.toLocaleDateString('en-CA')
+        });
+        return dates
+    }
 
     const handleRepeatabilityChange = selectedOption => {
         console.log("Repeatability selected:", selectedOption)
@@ -72,9 +90,6 @@ const AddPreventiveMaintenance = () => {
             setSelectedDays([]); // Clear days if not weekly
         }
     };
-
-
-
 
     const [status, setStatus] = useState('Incomplete')
     const [cost, setCost] = useState('')
@@ -167,9 +182,16 @@ const AddPreventiveMaintenance = () => {
     useEffect(() => {
         fetchAndSetAssets()
         fetchAndSetServicers()
+        // Update the dueDate state
+        if (selectedDays.length > 0 && frequency) {
+            const nextDueDates = getNextDueDates();
+            console.log('nextDueDates', nextDueDates)
+            setDueDate(nextDueDates); 
+            console.log('dueDate', dueDate)
+        }
         prevRouterDispatch({ type: 'SET_PREV_ROUTE', location: location.pathname })
 
-    }, [preventiveMaintenancesDispatch, user])
+    }, [selectedDays, frequency, preventiveMaintenancesDispatch, user])
 
     const handleSubmit = async (e) => {
         e.preventDefault()
@@ -208,6 +230,14 @@ const AddPreventiveMaintenance = () => {
                 servicerId = selectedServicer.value
                 servicerName = selectedServicer.label
             }
+            /* DUE DATE NOT WORKING HERE? done in useEffect()
+            if (selectedDays.length > 0 && frequency) {
+            const nextDueDates = getNextDueDates();
+            console.log('nextDueDates', nextDueDates)
+            setDueDate(nextDueDates);
+            console.log('dueDate', dueDate)
+            }
+            */
 
             //Send Request
             const newPreventiveMaintenance = { title: title, asset: assetId, servicers: servicerId, frequencyType: frequencyType.value, frequency: frequency.value, startDate: startDate, dueDate: dueDate, priority: priority, status: status, cost: cost, description: description }
@@ -242,9 +272,6 @@ const AddPreventiveMaintenance = () => {
         setEmptyFields(emptyFields)
         setError(error)
     }
-
-
-
 
     function formatGroupLabel(data) {
         return (
