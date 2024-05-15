@@ -237,13 +237,12 @@ const AddPreventiveMaintenance = () => {
         if (!title) {
             emptyFields.push('title')
         }
-        /*
         if (parentAssetName.length === 0) {
             emptyFields.push('asset')
         }
         if (selectedServicer.length === 0) {
             emptyFields.push('servicer');
-        }*/
+        }
         if (!frequencyType) {
             emptyFields.push('frequency type')
         }
