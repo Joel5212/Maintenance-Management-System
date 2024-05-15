@@ -1,5 +1,5 @@
 const express = require('express')
-const { getAssets, addAsset, deleteAsset, updateAsset } = require('../controllers/assetsController')
+const { getAssets, addAsset, deleteAsset, deleteAssetAndChildren, updateAsset } = require('../controllers/assetsController')
 const requireAuth = require('../middleware/requiredAuth')
 
 const router = express.Router()
@@ -8,7 +8,9 @@ router.use(requireAuth)
 
 router.post('/', addAsset)
 
-router.delete('/:id', deleteAsset)
+router.delete('/delete-asset/:id', deleteAsset)
+
+router.delete('/delete-asset-and-children/:id', deleteAssetAndChildren)
 
 router.patch('/:id', updateAsset)
 

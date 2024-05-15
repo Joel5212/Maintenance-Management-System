@@ -7,7 +7,7 @@ export const CategoryActionEllipsis = (props) => {
 
     const [anchorEl, setAnchorEl] = useState(null);
 
-    const { onDelete, onViewUpdate, goToRepairProceduresOfCategory, goToPreventiveMaintenanceProceduresOfCategory } = props;
+    const { onDelete, onViewUpdate, goToRepairProceduresOfCategory, goToPreventiveMaintenanceProceduresOfCategory, goToFailuresOfCategory } = props;
 
     const handleActionClick = (event) => {
         setAnchorEl(event.currentTarget);
@@ -31,6 +31,9 @@ export const CategoryActionEllipsis = (props) => {
                 break;
             case 'preventiveMaintenanceProcedures':
                 await goToPreventiveMaintenanceProceduresOfCategory();
+                break;
+            case 'failures':
+                await goToFailuresOfCategory();
                 break;
             default:
                 break;
@@ -58,6 +61,7 @@ export const CategoryActionEllipsis = (props) => {
                 <MenuItem onClick={() => handleMenuItemClick('viewUpdate')}>View/Update</MenuItem>
                 <MenuItem onClick={() => handleMenuItemClick('repairProcedures')}>Repair Procedures</MenuItem>
                 <MenuItem onClick={() => handleMenuItemClick('preventiveMaintenanceProcedures')}>PM Procedures</MenuItem>
+                <MenuItem onClick={() => handleMenuItemClick('failures')}>Failures</MenuItem>
                 {/* Add more menu items for other actions */}
             </Menu>
         </div>

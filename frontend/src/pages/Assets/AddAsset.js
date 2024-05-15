@@ -195,7 +195,7 @@ const AddAsset = () => {
                                     onChange={(e) => setName(e.target.value)}
                                     value={name}
                                     placeholder='Enter Name'
-                                    className={emptyFields.includes('name') ? 'input-error' : 'input'}
+                                    className={emptyFields.includes('name') ? 'input input-error' : 'input'}
                                 />
                             </div>
                             <div className="label-input">

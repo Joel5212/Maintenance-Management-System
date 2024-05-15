@@ -2,6 +2,7 @@ import { createContext, useReducer } from 'react'
 
 export const RepairsContext = createContext()
 
+
 export const repairsReducer = (state, action) => {
     switch (action.type) {
         case 'SET_REPAIRS':
@@ -9,8 +10,19 @@ export const repairsReducer = (state, action) => {
                 repairs: action.payload
             }
         case 'ADD_REPAIR':
+            const newRepair = action.payload;
+            newRepair.asset = action.asset;
+            newRepair.startDate = action.formattedStartDate;
+            newRepair.dueDate = action.formattedDueDate
+            if (action.userIdAndName._id && action.userIdAndName.name) {
+                newRepair.assignedUser = action.userIdAndName;
+            }
+
+            if (action.teamIdAndName._id && action.teamIdAndName.name) {
+                newRepair.assignedTeam = action.teamIdAndName;
+            }
             return {
-                repairs: [action.payload.repair, ...state.repairs]
+                repairs: [newRepair, ...state.repairs]
             }
         case 'DELETE_REPAIR':
             return {

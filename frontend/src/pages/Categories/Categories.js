@@ -17,6 +17,16 @@ const Categories = () => {
     const navigate = useNavigate()
     const location = useLocation()
 
+    const goToFailuresOfCategory = async (category) => {
+
+        if (!user) {
+            return
+        }
+
+        navigate('failures', { state: { category } })
+    }
+
+
     const goToRepairProceduresOfCategory = async (category) => {
 
         if (!user) {
@@ -72,7 +82,8 @@ const Categories = () => {
                 onDelete: () => onDelete(params.data._id),
                 onViewUpdate: () => onViewUpdate(params.data),
                 goToRepairProceduresOfCategory: () => goToRepairProceduresOfCategory(params.data),
-                goToPreventiveMaintenanceProceduresOfCategory: () => goToPreventiveMaintenanceProceduresOfCategory(params.data)
+                goToPreventiveMaintenanceProceduresOfCategory: () => goToPreventiveMaintenanceProceduresOfCategory(params.data),
+                goToFailuresOfCategory: () => goToFailuresOfCategory(params.data)
             }),
         },
     ]
@@ -92,7 +103,7 @@ const Categories = () => {
 
 
     useEffect(() => {
-        if ((user && prevRoute !== '/categories/add' && prevRoute !== '/categories/viewOrUpdate' && prevRoute !== '/categories/procedures') || (user && !categories)) {
+        if ((user && prevRoute !== '/categories/add' && prevRoute !== '/categories/viewOrUpdate' && prevRoute !== '/categories/procedures' && prevRoute !== '/categories/failures') || (user && !categories)) {
             fetchCategories()
             console.log(prevRoute, categories)
         }
