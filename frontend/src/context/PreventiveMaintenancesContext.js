@@ -16,7 +16,7 @@ export const preventiveMaintenancesReducer = (state, action) => {
             return {
                 preventiveMaintenances: state.preventiveMaintenances.filter(u => u._id !== action.payload._id)
             }
-        case 'UPDATE_LOCATION':
+        case 'UPDATE_PREVENTIVE':
             return {
                 preventiveMaintenances: state.preventiveMaintenances.map(u =>
                     u._id === action.payload._id ? action.payload : u

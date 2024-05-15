@@ -206,11 +206,18 @@ const AddPreventiveMaintenance = () => {
         if (!title) {
             emptyFields.push('title')
         }
+        
         if (parentAssetName.length === 0) {
             emptyFields.push('asset')
         }
         if (selectedServicer.length === 0) {
             emptyFields.push('servicer');
+        }
+        if (!frequencyType) {
+            emptyFields.push('frequency type')
+        }
+        if (frequencyType && ((selectedDays.length === 0) || !frequency)) {
+            emptyFields.push('frequency details')
         }
 
         console.log("SELECTED DAYS:", selectedDays)
@@ -230,7 +237,7 @@ const AddPreventiveMaintenance = () => {
                 servicerId = selectedServicer.value
                 servicerName = selectedServicer.label
             }
-            /* DUE DATE NOT WORKING HERE? done in useEffect()
+            /* calculating dueDate doesn't work here?? done in useEffect()
             if (selectedDays.length > 0 && frequency) {
             const nextDueDates = getNextDueDates();
             console.log('nextDueDates', nextDueDates)
@@ -262,7 +269,7 @@ const AddPreventiveMaintenance = () => {
 
             if (response.ok) {
                 fetchPreventiveMaintenances()
-                preventiveMaintenancesDispatch({ type: 'ADD_LOCATION', payload: json })
+                preventiveMaintenancesDispatch({ type: 'ADD_PREVENTIVE', payload: json })
                 navigate(-1)
             }
         }
