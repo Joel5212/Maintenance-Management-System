@@ -388,9 +388,11 @@ const AddRepair = () => {
 
             let formattedDueDate = null
 
+            let unformattedDueDate = null
+
             if (dueDate) {
 
-                let unformattedDueDate = new Date(dueDate)
+                unformattedDueDate = new Date(dueDate)
 
                 unformattedDueDate.setDate(unformattedDueDate.getDate() + 1)
 
@@ -416,7 +418,7 @@ const AddRepair = () => {
 
             console.log()
 
-            const newRepair = { title: title, asset: assetId, startDate: formattedStartDate, dueDate: formattedDueDate, priority: priority, assignedUser: userId, assignedTeam: teamId, status: status, cost: cost, description: description, isFailure: isFailureCheckboxChecked, failure: failureId, failureTitle: failureTitle, failureCause: failureCause, failureObservation: failureObservation, procedure: procedureId, procedureTitle: procedureTitle, procedureDescription: procedureDescription, category: categoryId }
+            const newRepair = { title: title, asset: assetId, startDate: unformattedStartDate, dueDate: unformattedDueDate, priority: priority, assignedUser: userId, assignedTeam: teamId, status: status, cost: cost, description: description, isFailure: isFailureCheckboxChecked, failure: failureId, failureTitle: failureTitle, failureCause: failureCause, failureObservation: failureObservation, procedure: procedureId, procedureTitle: procedureTitle, procedureDescription: procedureDescription, category: categoryId }
 
             console.log("checkpoint 1", newRepair)
 
@@ -579,7 +581,7 @@ const AddRepair = () => {
                             value={description}
                             placeholder='Enter Description'
                             className={emptyFields.includes('description') ? 'input-error' : ''}
-                            style={{ width: '100%', height: '300px', fontFamily: 'Times New Roman' }}
+                            style={{ width: '100%', height: '250px', fontFamily: 'Times New Roman' }}
                         />
                     </div>
                     <div className="failure-checkbox" style={{ display: 'flex', alignItems: 'center' }}>
