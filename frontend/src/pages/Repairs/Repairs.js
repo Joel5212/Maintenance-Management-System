@@ -26,7 +26,7 @@ const Repairs = () => {
 
     const onMarkAsComplete = async (repair) => {
         const repairId = repair._id;
-        const currentDate = new Date().toISOString(); // Get current date in ISO format
+        const currentDate = new Date().toLocaleDateString('en-CA'); // Get current date in ISO format
         const updatedRepair = { status: "Complete", completedDate: currentDate };
 
         const response = await fetch(`/api/repairs/${repairId}`, {
@@ -112,22 +112,6 @@ const Repairs = () => {
             field: 'asset.name',
         },
         {
-            field: 'startDate',
-        },
-        {
-            field: 'dueDate',
-        },
-        {
-            field: 'priority',
-        },
-        {
-            headerName: 'Asset Failed?',
-            valueGetter: function (params) {
-                const isFailure = params.data.isFailure ? "Yes" : "No"
-                return isFailure
-            },
-        },
-        {
             headerName: 'Assigned To',
             valueGetter: function (params) {
                 const assignedUser = params.data.assignedUser
@@ -143,6 +127,16 @@ const Repairs = () => {
             },
         },
         {
+            field: 'startDate',
+        },
+        {
+            field: 'dueDate',
+        },
+        {
+            field: 'priority',
+        },
+        
+        {
             field: 'status',
         },
         {
@@ -152,6 +146,13 @@ const Repairs = () => {
                 if (cost) {
                     return `$${cost}`
                 }
+            },
+        },
+        {
+            headerName: 'Asset Failed?',
+            valueGetter: function (params) {
+                const isFailure = params.data.isFailure ? "Yes" : "No"
+                return isFailure
             },
         },
         {
@@ -173,6 +174,7 @@ const Repairs = () => {
             headerName: "Asset Name",
             field: 'asset.name',
         },
+        
         {
             field: 'startDate',
         },
@@ -192,21 +194,7 @@ const Repairs = () => {
                 return isFailure
             },
         },
-        {
-            headerName: 'Assigned To',
-            valueGetter: function (params) {
-                const assignedUser = params.data.assignedUser
-                const assignedTeam = params.data.assignedTeam
-                if (assignedUser) {
-                    return assignedUser.name
-                }
-
-                if (assignedTeam) {
-                    return assignedTeam.name
-                }
-                return null
-            },
-        },
+        
         {
             field: 'status',
         },
