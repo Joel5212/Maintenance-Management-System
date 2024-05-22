@@ -224,7 +224,7 @@ const Repairs = () => {
     
             // overdue items
             const now = new Date();
-            const overdueRepairs = json.filter(item => new Date(item.dueDate) < now && (item.status === "Incomplete" || item.status === "Overdue"));
+            const overdueRepairs = json.filter(item => item.status === "Overdue");
             showOverdueNotification(overdueRepairs);
         }
     };
@@ -249,7 +249,6 @@ const Repairs = () => {
         if (Notification.permission === 'granted' && overdueRepairs.length > 0) {
             new Notification('Overdue Repairs', {
                 body: `You have ${overdueRepairs.length} overdue repairs!`,
-                icon: '/path/to/icon.png' // Optional: your icon url
             });
         }
     };

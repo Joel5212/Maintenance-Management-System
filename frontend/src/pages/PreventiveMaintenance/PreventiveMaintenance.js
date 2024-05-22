@@ -267,9 +267,9 @@ const PreventiveMaintenance = () => {
         if (response.ok) {
             preventiveMaintenancesDispatch({ type: 'SET_PREVENTIVE', payload: json });
     
-            // Example: Determine overdue items
+            // overdue items
             const now = new Date();
-            const overdueItems = json.filter(item => new Date(item.dueDate) < now);
+            const overdueItems = json.filter(item => item.status === "Overdue");
             showOverdueNotification(overdueItems);
         }
     };
@@ -325,7 +325,7 @@ const PreventiveMaintenance = () => {
         if (Notification.permission === 'granted' && overdueItems.length > 0) {
             new Notification('Overdue Maintenances', {
                 body: `You have ${overdueItems.length} overdue maintenances!`,
-                icon: '/path/to/icon.png' // Optional: your icon url
+                
             });
         }
     };
