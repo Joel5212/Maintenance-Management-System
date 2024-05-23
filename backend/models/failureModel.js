@@ -7,7 +7,6 @@ const failureSchema = new Schema({
         type: String,
         required: true
     },
-
     observation: {
         type: String,
         required: true

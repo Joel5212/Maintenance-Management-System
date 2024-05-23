@@ -1,5 +1,5 @@
 const express = require('express')
-const { createFailure, getSimilarFailures, getFailures, deleteFailure, updateFailure } = require('../controllers/failuresController')
+const { createFailure, getSimilarFailures, getFailures, getFailure, deleteFailure, updateFailure } = require('../controllers/failuresController')
 const requireAuth = require('../middleware/requiredAuth')
 
 const router = express.Router()
@@ -11,6 +11,8 @@ router.post('/', createFailure)
 router.post('/get-similar-failures', getSimilarFailures)
 
 router.get('/:id', getFailures)
+
+router.get('/get-failure/:id', getFailure)
 
 router.delete('/:id', deleteFailure)
 

@@ -27,9 +27,10 @@ const Repairs = () => {
     const onMarkAsComplete = async (repair) => {
         const repairId = repair._id;
         const currentDate = new Date()
-        const updatedRepair = { status: "Complete", completedDate: currentDate };
+        console.log(currentDate)
+        const updatedRepair = { oldRepair: repair, status: "Complete", completedDate: currentDate };
 
-        const response = await fetch(`/api/repairs/${repairId}`, {
+        const response = await fetch(`/api/repairs/mark-as-complete/${repairId}`, {
             method: 'PATCH',
             body: JSON.stringify(updatedRepair),
             headers: {
@@ -40,10 +41,7 @@ const Repairs = () => {
 
         if (response.ok) {
             const json = await response.json();
-            // Reload the page after successful completion
-            // window.location.reload();
             repairsDispatch({ type: 'DELETE_REPAIR', payload: json })
-
             return json;
         } else {
             const json = await response.json();
@@ -133,11 +131,24 @@ const Repairs = () => {
             field: 'dueDate',
         },
         {
+            field: 'failureDate'
+        },
+        {
             field: 'priority',
         },
-
         {
-            field: 'status',
+            headerName: 'Status',
+            valueGetter: function (params) {
+                const startDate = params.data.startDate
+                if (startDate) {
+                    const status = params.data.status + "   (Active)"
+                    return status
+                }
+                else {
+                    const status = params.data.status + "   (Inactive)"
+                    return status
+                }
+            },
         },
         {
             headerName: 'Cost',
@@ -174,7 +185,21 @@ const Repairs = () => {
             headerName: "Asset Name",
             field: 'asset.name',
         },
+        {
+            headerName: 'Assigned To',
+            valueGetter: function (params) {
+                const assignedUser = params.data.assignedUser
+                const assignedTeam = params.data.assignedTeam
+                if (assignedUser) {
+                    return assignedUser.name
+                }
 
+                if (assignedTeam) {
+                    return assignedTeam.name
+                }
+                return null
+            },
+        },
         {
             field: 'startDate',
         },
@@ -185,7 +210,22 @@ const Repairs = () => {
             field: 'completedDate',
         },
         {
+            field: 'failureDate'
+        },
+        {
             field: 'priority',
+        },
+        {
+            field: 'status'
+        },
+        {
+            headerName: 'Cost',
+            valueGetter: function (params) {
+                const cost = params.data.cost
+                if (cost) {
+                    return `$${cost}`
+                }
+            },
         },
         {
             headerName: 'Asset Failed?',
@@ -193,13 +233,6 @@ const Repairs = () => {
                 const isFailure = params.data.isFailure ? "Yes" : "No"
                 return isFailure
             },
-        },
-
-        {
-            field: 'status',
-        },
-        {
-            field: 'cost',
         },
         {
             headerName: 'Actions',

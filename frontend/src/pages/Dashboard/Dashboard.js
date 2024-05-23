@@ -14,27 +14,45 @@ const Dashboard = () => {
   const location = useLocation()
   const { prevRoute, dispatch: prevRouterDispatch } = usePrevRouteContext()
   const [repairStatusStats, setRepairStatusStats] = useState([])
+  const [preventiveMaintenanceStatusStats, setPreventiveMaintenanceStatusStats] = useState([])
   const [repairPriorityStats, setRepairPriorityStats] = useState([])
+  const [preventiveMaintenancePriorityStats, setPreventiveMaintenancePriorityStats] = useState([])
   const [repairFailureReport, setRepairFailureReport] = useState([])
   const [performanceReport, setPerformanceReport] = useState([])
   const { user } = useAuthContext()
 
 
-  const fetchRepairAndPreventiveStatusStats = async () => {
+  const fetchRepairStatusStats = async () => {
     const response = await fetch('/api/dashboard/get-repair-status-stats/', {
       headers: {
         'Authorization': `Bearer ${user.token}`
       }
     })
-    const json = await response.json()
 
+    const json = await response.json()
+    console.log(json)
     if (response.ok) {
       let repairStatusStats = [json.incompleteRepairsCount, json.overdueRepairsCount, json.completedRepairsCount]
       setRepairStatusStats(repairStatusStats)
     }
   }
 
-  const fetchRepairAndPreventivePriorityStats = async () => {
+  const fetchPreventiveMaintenanceStatusStats = async () => {
+    const response = await fetch('/api/dashboard/get-preventive-maintenance-status-stats/', {
+      headers: {
+        'Authorization': `Bearer ${user.token}`
+      }
+    })
+
+    const json = await response.json()
+    console.log(json)
+    if (response.ok) {
+      let preventiveMaintenanceStatusStats = [json.incompletePreventiveMaintenancesCount, json.overduePreventiveMaintenancesCount, json.completedPreventiveMaintenancesCount]
+      setPreventiveMaintenanceStatusStats(preventiveMaintenanceStatusStats)
+    }
+  }
+
+  const fetchRepairPriorityStats = async () => {
     const response = await fetch('/api/dashboard/get-repair-priority-stats/', {
       headers: {
         'Authorization': `Bearer ${user.token}`
@@ -45,6 +63,20 @@ const Dashboard = () => {
     if (response.ok) {
       let repairPriorityStats = [json.lowPriorityRepairs, json.mediumPriorityRepairs, json.highPriorityRepairs]
       setRepairPriorityStats(repairPriorityStats)
+    }
+  }
+
+  const fetchPreventiveMaintenancePriorityStats = async () => {
+    const response = await fetch('/api/dashboard/get-preventive-maintenance-priority-stats/', {
+      headers: {
+        'Authorization': `Bearer ${user.token}`
+      }
+    })
+    const json = await response.json()
+    console.log(json)
+    if (response.ok) {
+      let preventiveMaintenancePriorityStats = [json.lowPriorityRepairs, json.mediumPriorityRepairs, json.highPriorityRepairs]
+      setPreventiveMaintenancePriorityStats(preventiveMaintenancePriorityStats)
     }
   }
 
@@ -112,11 +144,33 @@ const Dashboard = () => {
     ],
   };
 
+  const preventiveMaintenanceStatusStatsData = {
+    labels: ['Incomplete', 'Overdue', 'Complete'],
+    datasets: [
+      {
+        data: preventiveMaintenanceStatusStats,
+        backgroundColor: ['#FFCE56', '#D10000', '#00A300'],
+        hoverBackgroundColor: ['#FFCE56', '#D10000', '#00A300'],
+      },
+    ],
+  };
+
   const repairPriorityStatsData = {
     labels: ['Low', 'Medium', 'High'],
     datasets: [
       {
         data: repairPriorityStats,
+        backgroundColor: ['#00A300', '#FFCE56', '#D10000'],
+        hoverBackgroundColor: ['#00A300', '#FFCE56', '#D10000'],
+      },
+    ],
+  };
+
+  const preventiveMaintenancePriorityStatsData = {
+    labels: ['Low', 'Medium', 'High'],
+    datasets: [
+      {
+        data: preventiveMaintenancePriorityStats,
         backgroundColor: ['#00A300', '#FFCE56', '#D10000'],
         hoverBackgroundColor: ['#00A300', '#FFCE56', '#D10000'],
       },
@@ -177,8 +231,10 @@ const Dashboard = () => {
 
   useEffect(() => {
     fetchUsersAndTeamsPerformanceReport();
-    fetchRepairAndPreventiveStatusStats();
-    fetchRepairAndPreventivePriorityStats();
+    fetchRepairStatusStats();
+    fetchPreventiveMaintenanceStatusStats();
+    fetchRepairPriorityStats();
+    fetchPreventiveMaintenancePriorityStats();
     fetchRepairFailueReport();
     prevRouterDispatch({ type: 'SET_PREV_ROUTE', location: location.pathname })
   }, [])
@@ -199,7 +255,7 @@ const Dashboard = () => {
               </div>
               <div className="workorder-stats-chart">
                 <h2 className='chart-title'>Preventive Maintenances Status</h2>
-                <Pie data={repairStatusStatsData} />
+                <Pie data={preventiveMaintenanceStatusStatsData} />
               </div>
             </div>
           </div>
@@ -211,7 +267,7 @@ const Dashboard = () => {
               </div>
               <div className="workorder-stats-chart">
                 <h2 className='chart-title'>Preventive Maintenances Priority</h2>
-                <Doughnut data={repairPriorityStatsData} />
+                <Doughnut data={preventiveMaintenancePriorityStatsData} />
               </div>
             </div>
           </div>
