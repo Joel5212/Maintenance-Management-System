@@ -70,35 +70,33 @@ const repairSchema = new Schema({
         type: Boolean,
         required: true
     },
-
+    failureDate: {
+        type: Date,
+        required: false
+    },
     failure: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Failure',
         required: false
     },
-
     procedure: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'RepairProcedure',
         required: false
     },
-
     procedureTitle: {
         type: String,
         required: false
     },
-
     procedureDescription: {
         type: String,
         required: false
     },
-
     createdAt: {
         type: Date,
         default: Date.now,
         required: true
     },
-
 }, { timestamps: true })
 
 

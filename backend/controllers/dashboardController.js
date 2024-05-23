@@ -1,4 +1,5 @@
 const Repair = require('../models/repairModel')
+const PreventiveMaintenance = require('../models/preventiveMaintenanceModel')
 // const PreventiveMaintenance = require('../models/preventiveMaintenanceModel')
 const mongoose = require('mongoose');
 
@@ -43,6 +44,14 @@ const getRepairStatusStats = async (req, res) => {
     res.status(200).json({ incompleteRepairsCount, completedRepairsCount, overdueRepairsCount })
 }
 
+const getPreventiveMaintenanceStatusStats = async (req, res) => {
+    const incompletePreventiveMaintenancesCount = await PreventiveMaintenance.find({ status: "Incomplete" }).count()
+    const completedPreventiveMaintenancesCount = await PreventiveMaintenance.find({ status: "Complete" }).count()
+    const overduePreventiveMaintenancesCount = await PreventiveMaintenance.find({ status: "Overdue" }).count()
+
+    res.status(200).json({ incompletePreventiveMaintenancesCount, completedPreventiveMaintenancesCount, overduePreventiveMaintenancesCount })
+}
+
 const getRepairPriorityStats = async (req, res) => {
     const lowPriorityRepairs = await Repair.find({
         $and: [{ priority: "Low" }, { $or: [{ status: "Incomplete" }, { status: "Overdue" }] }]
@@ -53,6 +62,22 @@ const getRepairPriorityStats = async (req, res) => {
     }).count()
 
     const highPriorityRepairs = await Repair.find({
+        $and: [{ priority: "High" }, { $or: [{ status: "Incomplete" }, { status: "Overdue" }] }]
+    }).count()
+
+    res.status(200).json({ lowPriorityRepairs, mediumPriorityRepairs, highPriorityRepairs })
+}
+
+const getPreventiveMaintenancePriorityStats = async (req, res) => {
+    const lowPriorityRepairs = await PreventiveMaintenance.find({
+        $and: [{ priority: "Low" }, { $or: [{ status: "Incomplete" }, { status: "Overdue" }] }]
+    }).count()
+
+    const mediumPriorityRepairs = await PreventiveMaintenance.find({
+        $and: [{ priority: "Medium" }, { $or: [{ status: "Incomplete" }, { status: "Overdue" }] }]
+    }).count()
+
+    const highPriorityRepairs = await PreventiveMaintenance.find({
         $and: [{ priority: "High" }, { $or: [{ status: "Incomplete" }, { status: "Overdue" }] }]
     }).count()
 
@@ -98,7 +123,7 @@ const getRepairFailureReport = async (req, res) => {
         },
         {
             $sort: {
-                startDate: 1
+                failureDate: 1
             }
         },
         {
@@ -108,7 +133,7 @@ const getRepairFailureReport = async (req, res) => {
                 startAndEndDates: {
                     $push:
                     {
-                        startDate: "$startDate",
+                        startDate: "$failureDate",
                         completedDate: "$completedDate",
                     }
                 }
@@ -154,9 +179,17 @@ const getRepairFailureReport = async (req, res) => {
                 i += 1
             }
         }
-        let mtbf = (totalTimeBetweenFailures / 3600000) / (completedFailureReportForAsset.totalFailures - overlapCount);
-        mtbf = Math.round(mtbf * 100) / 100
-        completedFailureReportForAsset.mtbf = mtbf;
+
+        console.log(totalTimeBetweenFailures)
+
+        if (totalTimeBetweenFailures !== 0) {
+            let mtbf = (totalTimeBetweenFailures / 3600000) / ((completedFailureReportForAsset.totalFailures - 1) - overlapCount);
+            mtbf = Math.round(mtbf * 100) / 100
+            completedFailureReportForAsset.mtbf = mtbf;
+        }
+        else {
+            completedFailureReportForAsset.mtbf = 0;
+        }
     }
 
     res.status(200).json(completedFailureReportForEachAsset);
@@ -293,5 +326,5 @@ const getTeamsPerformanceReportForRepairs = async (req, res) => {
 //     res.status(200).json([incompletePreventiveMaintenancesCount, completedPreventiveMaintenancesCount, overduePreventiveMaintenancesCount])
 // }
 
-module.exports = { getRepairStatusStats, getRepairPriorityStats, getRepairFailureReport, getUsersPerformanceReportForRepairs, getTeamsPerformanceReportForRepairs }
+module.exports = { getRepairStatusStats, getPreventiveMaintenanceStatusStats, getRepairPriorityStats, getPreventiveMaintenancePriorityStats, getRepairFailureReport, getUsersPerformanceReportForRepairs, getTeamsPerformanceReportForRepairs }
 

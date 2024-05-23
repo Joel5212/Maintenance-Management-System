@@ -49,6 +49,14 @@ const getFailures = async (req, res) => {
     res.status(200).json(failures)
 }
 
+const getFailure = async (req, res) => {
+    const { id } = req.params
+
+    const failure = await Failure.findOne({ _id: id }).populate({ path: "procedure" })
+
+    res.status(200).json(failure)
+}
+
 const getSimilarFailures = async (req, res) => {
     const { observationQuery, category } = req.body
     console.log("HELLO")
@@ -145,4 +153,4 @@ const updateFailure = async (req, res) => {
     }
 }
 
-module.exports = { createFailure, getFailures, getSimilarFailures, updateFailure, deleteFailure }
+module.exports = { createFailure, getFailures, getFailure, getSimilarFailures, updateFailure, deleteFailure }

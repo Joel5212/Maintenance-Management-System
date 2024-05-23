@@ -20,12 +20,11 @@ const AddRepair = () => {
     const [title, setTitle] = useState(null)
     const [usersAndTeams, setUsersAndTeams] = useState([])
     const [assignTo, setAssignTo] = useState([])
-    const [assignToName, setAssignToName] = useState(null)
     const [teams, setTeams] = useState('')
     const [selectedTeam, setSelectedTeam] = useState([])
     const [selectedOption, setSelectedOption] = useState(null);
-    // const [startDate, setStartDate] = useState(new Date().toLocaleDateString('en-CA'));
     const [dueDate, setDueDate] = useState('')
+    const [failureDate, setFailureDate] = useState('')
     const [priority, setPriority] = useState('')
     const [status, setStatus] = useState('Incomplete')
     const [cost, setCost] = useState('')
@@ -37,6 +36,7 @@ const AddRepair = () => {
     const { user } = useAuthContext()
     const { prevRoute, dispatch: prevRouterDispatch } = usePrevRouteContext();
     const { repairs, dispatch: repairsDispatch } = useRepairsContext()
+    const [isActiveRepairCheckboxChecked, setIsActiveRepairCheckboxChecked] = useState(true);
 
     //Asset
     const [assets, setAssets] = useState('')
@@ -46,15 +46,14 @@ const AddRepair = () => {
 
     //Failure
     const [isFailureCheckboxChecked, setIsFailureCheckboxChecked] = useState(false);
-    const [failureTitle, setFailureTitle] = useState('')
-    const [failureObservation, setFailureObservation] = useState('')
-    const [failureCause, setFailureCause] = useState('')
+    const [failureTitle, setFailureTitle] = useState(null)
+    const [failureObservation, setFailureObservation] = useState(null)
+    const [failureCause, setFailureCause] = useState(null)
     const [selectedFailure, setSelectedFailure] = useState(null)
     const [showSelectFailureModal, setShowSelectFailureModal] = useState(false)
 
     //Failure Diagnosis
     const [showFailureDiagnosisFormModal, setShowFailureDiagnosisFormModal] = useState(false)
-
 
     //Procedure
     const [procedureTitle, setProcedureTitle] = useState('')
@@ -280,15 +279,9 @@ const AddRepair = () => {
         if (!selectedAsset) {
             emptyFields.push('asset')
         }
-        if (assignTo.length === 0) {
+        if (isActiveRepairCheckboxChecked && assignTo.length === 0) {
             emptyFields.push('assignTo');
         }
-
-        // if (emptyFields.length > 0) {
-        //     setError('Fill in all required fields');
-        //     setEmptyFields(emptyFields);
-        //     return; // Stop the form submission
-        // }
 
         if (procedureTitle || procedureDescription) {
             if (!procedureTitle) {
@@ -300,13 +293,17 @@ const AddRepair = () => {
             }
         }
 
-        if (failureTitle || failureObservation || failureCause) {
+        if (failureDate || failureTitle || failureObservation || failureCause) {
+            if (!failureDate) {
+                emptyFields.push('failureDate')
+            }
+
             if (!failureTitle) {
                 emptyFields.push('failureTitle')
             }
 
             if (!failureObservation) {
-                emptyFields.push('failureDescription')
+                emptyFields.push('failureObservation')
             }
 
             if (!failureCause) {
@@ -314,33 +311,6 @@ const AddRepair = () => {
             }
         }
 
-        /*
-        if (!startDate) {
-            emptyFields.push('startDate')
-        }
-
-        if (!dueDate) {
-            emptyFields.push('dueDate')
-        }
-
-        if (!priority) {
-            emptyFields.push('priority')
-        }
-
-        if (!status) {
-            emptyFields.push('status')
-        }
-
-        if (!cost) {
-            emptyFields.push('cost')
-        }
-
-        if (!description) {
-            emptyFields.push('description')
-        }
-        */
-
-        //Check if there are empty fields
         if (emptyFields.length === 0) {
 
             let assetId = null;
@@ -356,7 +326,7 @@ const AddRepair = () => {
             let userId = null;
             let userName = null;
 
-            if (assignTo) {
+            if (assignTo.length !== 0) {
                 if (assignTo[0].isUser) {
                     userId = assignTo[0].value
                     userName = assignTo[0].label
@@ -368,6 +338,7 @@ const AddRepair = () => {
             }
 
             let failureId = null
+
             let procedureId = null
 
             if (selectedFailure) {
@@ -378,13 +349,19 @@ const AddRepair = () => {
                 procedureId = selectedProcedure._id
             }
 
-            const unformattedStartDate = new Date()
+            let formattedStartDate = null
 
-            const formattedStartDate = unformattedStartDate.toLocaleDateString('en-CA', {
-                year: 'numeric',
-                day: '2-digit',
-                month: '2-digit',
-            })
+            let unformattedStartDate = null
+
+            if (isActiveRepairCheckboxChecked) {
+                unformattedStartDate = new Date()
+
+                // formattedStartDate = unformattedStartDate.toLocaleDateString('en-CA', {
+                //     year: 'numeric',
+                //     day: '2-digit',
+                //     month: '2-digit',
+                // })
+            }
 
             let formattedDueDate = null
 
@@ -394,20 +371,43 @@ const AddRepair = () => {
 
                 unformattedDueDate = new Date(dueDate)
 
-                unformattedDueDate.setDate(unformattedDueDate.getDate() + 1)
+                // unformattedDueDate.setDate(unformattedDueDate.getDate() + 1)
 
-                formattedDueDate = unformattedDueDate.toLocaleDateString('en-CA', {
-                    year: 'numeric',
-                    day: '2-digit',
-                    month: '2-digit',
-                })
+                // formattedDueDate = unformattedDueDate.toLocaleDateString('en-CA', {
+                //     year: 'numeric',
+                //     day: '2-digit',
+                //     month: '2-digit',
+                // })
 
                 // Check if dueDate is after startDate
-                if (new Date(formattedStartDate) > new Date(formattedDueDate)) {
+                if (new Date(unformattedStartDate) > new Date(unformattedDueDate)) {
                     setError("Due date cannot be before start date")
                     emptyFields.push("dueDate")
                     return
                 }
+            }
+
+            let formattedFailureDate = null
+
+            let unformattedFailureDate = null
+
+            if (failureDate) {
+
+                unformattedFailureDate = new Date(failureDate)
+
+                // unformattedFailureDate.setDate(unformattedFailureDate.getDate() + 1)
+
+                // formattedFailureDate = unformattedFailureDate.toLocaleDateString('en-CA', {
+                //     year: 'numeric',
+                //     day: '2-digit',
+                //     month: '2-digit',
+                // })
+
+                // if (new Date(unformattedFailureDate) > new Date(unformattedDueDate)) {
+                //     setError("Due date cannot be before start date")
+                //     emptyFields.push("dueDate")
+                //     return
+                // }
             }
 
             let categoryId = null
@@ -416,9 +416,7 @@ const AddRepair = () => {
                 categoryId = selectedAsset.category._id
             }
 
-            console.log()
-
-            const newRepair = { title: title, asset: assetId, startDate: unformattedStartDate, dueDate: unformattedDueDate, priority: priority, assignedUser: userId, assignedTeam: teamId, status: status, cost: cost, description: description, isFailure: isFailureCheckboxChecked, failure: failureId, failureTitle: failureTitle, failureCause: failureCause, failureObservation: failureObservation, procedure: procedureId, procedureTitle: procedureTitle, procedureDescription: procedureDescription, category: categoryId }
+            const newRepair = { title: title, asset: assetId, startDate: unformattedStartDate, dueDate: unformattedDueDate, priority: priority, assignedUser: userId, assignedTeam: teamId, status: status, cost: cost, description: description, isFailure: isFailureCheckboxChecked, failure: failureId, failureDate: unformattedFailureDate, failureTitle: failureTitle, failureCause: failureCause, failureObservation: failureObservation, procedure: procedureId, procedureTitle: procedureTitle, procedureDescription: procedureDescription, category: categoryId }
 
             console.log("checkpoint 1", newRepair)
 
@@ -440,8 +438,8 @@ const AddRepair = () => {
             }
 
             if (response.ok) {
-                // fetchRepairs()
-                repairsDispatch({ type: 'ADD_REPAIR', payload: json, asset: selectedAsset, userIdAndName: { _id: userId, name: userName }, teamIdAndName: { _id: teamId, name: teamName }, formattedStartDate: formattedStartDate, formattedDueDate: formattedDueDate })
+                // fetchRepairs()un
+                repairsDispatch({ type: 'ADD_REPAIR', payload: json, asset: selectedAsset, userIdAndName: { _id: userId, name: userName }, teamIdAndName: { _id: teamId, name: teamName } })
                 navigate(-1)
             }
         }
@@ -457,7 +455,12 @@ const AddRepair = () => {
     const handleFailureCheckbox = () => {
         console.log(isFailureCheckboxChecked)
         setIsFailureCheckboxChecked(!isFailureCheckboxChecked);
-    };
+    }
+
+    const handleActiveRepairCheckbox = () => {
+        console.log(isFailureCheckboxChecked)
+        setIsActiveRepairCheckboxChecked(!isActiveRepairCheckboxChecked);
+    }
 
     return (
         !showSelectAssetModal ? (!showSelectProcedureModal ? (!showSelectFailureModal ? (!showFailureDiagnosisFormModal ?
@@ -467,6 +470,13 @@ const AddRepair = () => {
                         <Link to='/repairs' ><button className='add-update-repair-back-btn'><ArrowBackIcon /></button></Link>
                         <h1 className="add-update-repair-title">Add Repair</h1>
                         <div className="add-update-repair-back-btn-invisible"></div>
+                    </div>
+                    <div className="add-update-repair-checkbox">
+                        <input
+                            type="checkbox"
+                            onChange={() => handleActiveRepairCheckbox()}
+                            checked={isActiveRepairCheckboxChecked} />
+                        <label style={{ marginLeft: '5px' }}>Active Repair?</label>
                     </div>
                     <div className='repair-inputs-row'>
                         <div className="label-input">
@@ -527,11 +537,12 @@ const AddRepair = () => {
                         <div className='label-input'>
                             <label>Due Date:</label>
                             <input
-                                type="date"
+                                type="datetime-local"
                                 onChange={(e) => setDueDate(e.target.value)}
                                 value={dueDate}
                                 placeholder='Enter Due Date'
                                 className={emptyFields.includes('dueDate') ? 'add-update-repair-form-input input-error' : 'add-update-repair-form-input'}
+                                disabled={!isActiveRepairCheckboxChecked ? true : false}
                             />
                         </div>
                         <div className='label-input'>
@@ -574,26 +585,34 @@ const AddRepair = () => {
                                 */}
                     </div >
                     <div className='add-update-repair-form-label-input'>
-                        <label for="description" >Description:</label>
+                        <label>Description:</label>
                         <textarea
                             id="description"
                             onChange={(e) => setDescription(e.target.value)}
                             value={description}
                             placeholder='Enter Description'
-                            className={emptyFields.includes('description') ? 'input-error' : ''}
-                            style={{ width: '100%', height: '250px', fontFamily: 'Times New Roman' }}
+                            className='add-update-repair-description'
                         />
                     </div>
-                    <div className="failure-checkbox" style={{ display: 'flex', alignItems: 'center' }}>
+                    <div className="add-update-repair-checkbox" style={{ display: 'flex', alignItems: 'center' }}>
                         <input
                             type="checkbox"
                             onChange={() => handleFailureCheckbox()}
                             checked={isFailureCheckboxChecked} />
-                        <label style={{ marginLeft: '5px' }}>Repair is due to asset failure</label>
+                        <label style={{ marginLeft: '5px' }}>Repair is due to asset failure?</label>
                     </div>
-
                     {isFailureCheckboxChecked === true && (
                         <div className='failure-inputs-container'>
+                            <div className='label-input'>
+                                <label>Failure Date:</label>
+                                <input
+                                    type="datetime-local"
+                                    onChange={(e) => setFailureDate(e.target.value)}
+                                    value={failureDate}
+                                    placeholder='Enter Failure Date'
+                                    className={emptyFields.includes('failureDate') ? 'add-update-repair-form-failure-datepicker-input input-error' : 'add-update-repair-form-failure-datepicker-input'}
+                                />
+                            </div>
                             <div className="add-update-repair-form-label-input">
                                 <label>Failure Title:</label>
                                 <div className="failure-repair-row-input">
@@ -619,7 +638,7 @@ const AddRepair = () => {
                                     onChange={(e) => setFailureObservation(e.target.value)}
                                     value={failureObservation}
                                     placeholder='Enter Failure Observation'
-                                    className={`add-update-repair-failure-description-input  ${emptyFields.includes('failureObservation') ? 'add-update-failure-input-error' : ''}`}
+                                    className={`add-update-repair-description  ${emptyFields.includes('failureObservation') ? 'add-update-failure-input-error' : ''}`}
                                     disabled={selectedFailure ? true : false}
                                 />
                             </div>
@@ -629,7 +648,7 @@ const AddRepair = () => {
                                     onChange={(e) => setFailureCause(e.target.value)}
                                     value={failureCause}
                                     placeholder='Enter Failure Cause'
-                                    className={`add-update-repair-failure-description-input  ${emptyFields.includes('failureCause') ? 'add-update-failure-input-error' : ''}`}
+                                    className={`add-update-repair-description  ${emptyFields.includes('failureCause') ? 'add-update-failure-input-error' : ''}`}
                                     disabled={selectedFailure ? true : false}
                                 />
                             </div>
@@ -671,7 +690,7 @@ const AddRepair = () => {
                                 onChange={(e) => setProcedureDescription(e.target.value)}
                                 value={procedureDescription}
                                 placeholder='Enter Procedure'
-                                className={`add-update-repair-procedure-description-input  ${emptyFields.includes('procedureDescription') ? 'add-update-failure-input-error' : ''}`}
+                                className={`add-update-repair-description ${emptyFields.includes('procedureDescription') ? 'add-update-failure-input-error' : ''}`}
                                 disabled={selectedProcedure || selectedFailure ? true : false}
                             />
                         </div>
@@ -696,7 +715,7 @@ const AddRepair = () => {
             : <FailureDiagnosisFormModal selectFailure={selectFailure} categoryId={selectedAsset.category._id} goBack={goBackFromSelectFailureDiagnosisFormModal} />) :
             <SelectFailureModal selectFailure={selectFailure} categoryId={selectedAsset.category._id} goBack={goBackFromSelectFailureModal} />) :
             <SelectProcedureModal selectProcedure={selectProcedure} categoryId={selectedAsset.category._id} goBack={goBackFromSelectProcedureModal} />) :
-            <SelectAssetModal title={"Select Parent Asset"} selectAsset={selectAsset} goBack={goBackFromSelectAssetModal} />
+            <SelectAssetModal title={"Select Asset"} selectAsset={selectAsset} goBack={goBackFromSelectAssetModal} />
     )
 }
 
