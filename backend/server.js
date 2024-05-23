@@ -18,7 +18,8 @@ const dashboardRoutes = require('./routes/dashboard')
 //cron job date checks
 const cron = require('node-cron');
 const moment = require('moment-timezone');
-const Repair = require('./models/repairModel'); // Adjust the path according to your project structure
+const Repair = require('./models/repairModel');
+const PreventiveMaintenance = require('./models/preventiveMaintenanceModel');
 
 
 
@@ -63,26 +64,27 @@ app.use('/api/dashboard', dashboardRoutes)
 
 // Connect to MongoDB
 mongoose.connect(process.env.MONGO_URI)
-  // Check for overdue repairs immediately after connection is established
   .then(async () => {
     console.log('Connected to database');
     const today = moment().utc().startOf('day').format('YYYY-MM-DDTHH:mm:ss.SSS[+00:00]');
-    console.log(today)
+    console.log(today);
     try {
       const overdueRepairs = await Repair.updateMany(
-        {
-          status: "Incomplete",
-          dueDate: { $lt: today },
-        },
+        { status: "Incomplete", dueDate: { $lt: today } },
         { $set: { status: 'Overdue' } }
       );
-
       console.log(`Updated ${overdueRepairs.modifiedCount} repairs to 'Overdue' status.`);
+
+      const overdueMaintenances = await PreventiveMaintenance.updateMany(
+        { status: "Incomplete", dueDate: { $lt: today } },
+        { $set: { status: 'Overdue' } }
+      );
+      console.log(`Updated ${overdueMaintenances.modifiedCount} preventive maintenances to 'Overdue' status.`);
     } catch (err) {
-      console.error('Error updating overdue repairs:', err);
+      console.error('Error updating documents:', err);
     }
 
-    // Listen to port after checking for overdue repairs
+    // Listen to port after checking for overdue documents
     app.listen(process.env.PORT, () => {
       console.log('Listening for requests on port', process.env.PORT);
     });
@@ -90,26 +92,27 @@ mongoose.connect(process.env.MONGO_URI)
   .catch((err) => {
     console.error('Failed to connect to MongoDB:', err);
   });
-
 // Cron job to check for overdue repairs every day at midnight (00:00)
 // Time syntax: ('Minute Hour * * *') using 24 hr clock
 cron.schedule('0 0 * * *', async () => {
-  console.log('Running a daily check for overdue repairs.');
+  console.log('Running a daily check for overdue repairs and preventive maintenances.');
 
   try {
-    // Current date in 'YYYY-MM-DD' format
     const today = moment().utc().startOf('day').format('YYYY-MM-DDTHH:mm:ss.SSS[+00:00]');
 
-    // Find repairs where dueDate is before today and status is not 'overdue'
+    // Updating overdue repairs
     const overdueRepairs = await Repair.updateMany(
-      {
-        status: "Incomplete",
-        dueDate: { $lt: today },
-      },
+      { status: "Incomplete", dueDate: { $lt: today } },
       { $set: { status: 'Overdue' } }
     );
-
     console.log(`Updated ${overdueRepairs.modifiedCount} repairs to 'Overdue' status.`);
+
+    // Updating overdue preventive maintenances
+    const overdueMaintenances = await PreventiveMaintenance.updateMany(
+      { status: "Incomplete", dueDate: { $lt: today } },
+      { $set: { status: 'Overdue' } }
+    );
+    console.log(`Updated ${overdueMaintenances.modifiedCount} preventive maintenances to 'Overdue' status.`);
   } catch (err) {
     console.error('Error running cron job:', err);
   }
