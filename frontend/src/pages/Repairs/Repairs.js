@@ -216,15 +216,19 @@ const Repairs = () => {
             headers: {
                 'Authorization': `Bearer ${user.token}`
             }
-        })
-        const json = await response.json()
-        console.log(json)
-
+        });
+        const json = await response.json();
+    
         if (response.ok) {
-            repairsDispatch({ type: 'SET_REPAIRS', payload: json })
+            repairsDispatch({ type: 'SET_REPAIRS', payload: json });
+    
+            // overdue items
+            const now = new Date();
+            const overdueRepairs = json.filter(item => item.status === "Overdue");
+            showOverdueNotification(overdueRepairs);
         }
-    }
-
+    };
+    
 
     useEffect(() => {
         console.log("prevRoute", prevRoute)
@@ -234,6 +238,22 @@ const Repairs = () => {
         }
         prevRouterDispatch({ type: 'SET_PREV_ROUTE', location: location.pathname })
     }, [repairsDispatch, user])
+
+    useEffect(() => {
+        if (Notification.permission !== 'granted') {
+            Notification.requestPermission();
+        }
+    }, []);
+
+    const showOverdueNotification = (overdueRepairs) => {
+        if (Notification.permission === 'granted' && overdueRepairs.length > 0) {
+            new Notification('Overdue Repairs', {
+                body: `You have ${overdueRepairs.length} overdue repairs!`,
+            });
+        }
+    };
+    
+    
 
     const defaultColDef = {
         flex: 1 // or 'autoWidth'

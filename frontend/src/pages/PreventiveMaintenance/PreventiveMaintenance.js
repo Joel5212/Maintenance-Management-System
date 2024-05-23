@@ -261,13 +261,19 @@ const PreventiveMaintenance = () => {
             headers: {
                 'Authorization': `Bearer ${user.token}`
             }
-        })
-        const json = await response.json()
-
+        });
+        const json = await response.json();
+    
         if (response.ok) {
-            preventiveMaintenancesDispatch({ type: 'SET_PREVENTIVE', payload: json })
+            preventiveMaintenancesDispatch({ type: 'SET_PREVENTIVE', payload: json });
+    
+            // overdue items
+            const now = new Date();
+            const overdueItems = json.filter(item => item.status === "Overdue");
+            showOverdueNotification(overdueItems);
         }
-    }
+    };
+    
 
     const getCompletedPreventiveMaintenances = async () => {
         const response = await fetch('/api/preventiveMaintenances/completed', {
@@ -309,6 +315,21 @@ const PreventiveMaintenance = () => {
         prevRouterDispatch({ type: 'SET_PREV_ROUTE', location: location_util.pathname })
     }, [preventiveMaintenancesDispatch, user])
 
+    useEffect(() => {
+        if (Notification.permission !== 'granted') {
+            Notification.requestPermission();
+        }
+    }, []);
+    
+    const showOverdueNotification = (overdueItems) => {
+        if (Notification.permission === 'granted' && overdueItems.length > 0) {
+            new Notification('Overdue Maintenances', {
+                body: `You have ${overdueItems.length} overdue maintenances!`,
+                
+            });
+        }
+    };
+    
     const defaultColDef = {
         flex: 1 // or 'autoWidth'
     };
