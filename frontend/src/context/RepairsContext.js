@@ -12,8 +12,9 @@ export const repairsReducer = (state, action) => {
         case 'ADD_REPAIR':
             const newRepair = action.payload;
             newRepair.asset = action.asset;
-            newRepair.startDate = action.formattedStartDate;
-            newRepair.dueDate = action.formattedDueDate
+            // newRepair.startDate = action.unformattedStartDate;
+            // newRepair.dueDate = action.unformattedDueDate
+            // newRepair.failureDate = action.unformattedFailureDate
             if (action.userIdAndName._id && action.userIdAndName.name) {
                 newRepair.assignedUser = action.userIdAndName;
             }

@@ -26,10 +26,11 @@ const Repairs = () => {
 
     const onMarkAsComplete = async (repair) => {
         const repairId = repair._id;
-        const currentDate = new Date().toISOString(); // Get current date in ISO format
-        const updatedRepair = { status: "Complete", completedDate: currentDate };
+        const currentDate = new Date()
+        console.log(currentDate)
+        const updatedRepair = { oldRepair: repair, status: "Complete", completedDate: currentDate };
 
-        const response = await fetch(`/api/repairs/${repairId}`, {
+        const response = await fetch(`/api/repairs/mark-as-complete/${repairId}`, {
             method: 'PATCH',
             body: JSON.stringify(updatedRepair),
             headers: {
@@ -40,10 +41,7 @@ const Repairs = () => {
 
         if (response.ok) {
             const json = await response.json();
-            // Reload the page after successful completion
-            // window.location.reload();
             repairsDispatch({ type: 'DELETE_REPAIR', payload: json })
-
             return json;
         } else {
             const json = await response.json();
@@ -112,22 +110,6 @@ const Repairs = () => {
             field: 'asset.name',
         },
         {
-            field: 'startDate',
-        },
-        {
-            field: 'dueDate',
-        },
-        {
-            field: 'priority',
-        },
-        {
-            headerName: 'Asset Failed?',
-            valueGetter: function (params) {
-                const isFailure = params.data.isFailure ? "Yes" : "No"
-                return isFailure
-            },
-        },
-        {
             headerName: 'Assigned To',
             valueGetter: function (params) {
                 const assignedUser = params.data.assignedUser
@@ -143,7 +125,30 @@ const Repairs = () => {
             },
         },
         {
-            field: 'status',
+            field: 'startDate',
+        },
+        {
+            field: 'dueDate',
+        },
+        {
+            field: 'failureDate'
+        },
+        {
+            field: 'priority',
+        },
+        {
+            headerName: 'Status',
+            valueGetter: function (params) {
+                const startDate = params.data.startDate
+                if (startDate) {
+                    const status = params.data.status + "   (Active)"
+                    return status
+                }
+                else {
+                    const status = params.data.status + "   (Inactive)"
+                    return status
+                }
+            },
         },
         {
             headerName: 'Cost',
@@ -152,6 +157,13 @@ const Repairs = () => {
                 if (cost) {
                     return `$${cost}`
                 }
+            },
+        },
+        {
+            headerName: 'Asset Failed?',
+            valueGetter: function (params) {
+                const isFailure = params.data.isFailure ? "Yes" : "No"
+                return isFailure
             },
         },
         {
@@ -174,25 +186,6 @@ const Repairs = () => {
             field: 'asset.name',
         },
         {
-            field: 'startDate',
-        },
-        {
-            field: 'dueDate',
-        },
-        {
-            field: 'completedDate',
-        },
-        {
-            field: 'priority',
-        },
-        {
-            headerName: 'Asset Failed?',
-            valueGetter: function (params) {
-                const isFailure = params.data.isFailure ? "Yes" : "No"
-                return isFailure
-            },
-        },
-        {
             headerName: 'Assigned To',
             valueGetter: function (params) {
                 const assignedUser = params.data.assignedUser
@@ -208,10 +201,38 @@ const Repairs = () => {
             },
         },
         {
-            field: 'status',
+            field: 'startDate',
         },
         {
-            field: 'cost',
+            field: 'dueDate',
+        },
+        {
+            field: 'completedDate',
+        },
+        {
+            field: 'failureDate'
+        },
+        {
+            field: 'priority',
+        },
+        {
+            field: 'status'
+        },
+        {
+            headerName: 'Cost',
+            valueGetter: function (params) {
+                const cost = params.data.cost
+                if (cost) {
+                    return `$${cost}`
+                }
+            },
+        },
+        {
+            headerName: 'Asset Failed?',
+            valueGetter: function (params) {
+                const isFailure = params.data.isFailure ? "Yes" : "No"
+                return isFailure
+            },
         },
         {
             headerName: 'Actions',
@@ -228,14 +249,18 @@ const Repairs = () => {
             headers: {
                 'Authorization': `Bearer ${user.token}`
             }
-        })
-        const json = await response.json()
-        console.log(json)
+        });
+        const json = await response.json();
 
         if (response.ok) {
-            repairsDispatch({ type: 'SET_REPAIRS', payload: json })
+            repairsDispatch({ type: 'SET_REPAIRS', payload: json });
+
+            // overdue items
+            const now = new Date();
+            const overdueRepairs = json.filter(item => item.status === "Overdue");
+            showOverdueNotification(overdueRepairs);
         }
-    }
+    };
 
 
     useEffect(() => {
@@ -246,6 +271,22 @@ const Repairs = () => {
         }
         prevRouterDispatch({ type: 'SET_PREV_ROUTE', location: location.pathname })
     }, [repairsDispatch, user])
+
+    useEffect(() => {
+        if (Notification.permission !== 'granted') {
+            Notification.requestPermission();
+        }
+    }, []);
+
+    const showOverdueNotification = (overdueRepairs) => {
+        if (Notification.permission === 'granted' && overdueRepairs.length > 0) {
+            new Notification('Overdue Repairs', {
+                body: `You have ${overdueRepairs.length} overdue repairs!`,
+            });
+        }
+    };
+
+
 
     const defaultColDef = {
         flex: 1 // or 'autoWidth'

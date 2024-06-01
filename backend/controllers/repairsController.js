@@ -10,7 +10,7 @@ const axios = require('axios');
 const createRepair = async (req, res) => {
     // adding doc to db
     try {
-        const { title, asset, startDate, dueDate, priority, assignedUser, assignedTeam, status, cost, description, isFailure, failure, failureTitle, failureCause, failureObservation, procedure, procedureTitle, procedureDescription, category } = req.body
+        const { title, asset, startDate, dueDate, priority, assignedUser, assignedTeam, status, cost, description, isFailure, failure, failureDate, failureTitle, failureCause, failureObservation, procedure, procedureTitle, procedureDescription, category } = req.body
 
         // Subtract one day from the current date, newDate() operates on UTC time, should be on PST
         // const startDate = new Date(new Date().toLocaleDateString('en-CA'))
@@ -25,7 +25,7 @@ const createRepair = async (req, res) => {
         let newRepair = null
 
         if (failure) {
-            newRepair = { title: title, asset: asset, startDate: startDate, dueDate: dueDate, priority: priority, assignedUser: assignedUser, assignedTeam: assignedTeam, status: status, cost: roundedCost, description: description, isFailure: isFailure, failure: failure, procedure: null, procedureTitle: null, procedureDescription: null }
+            newRepair = { title: title, asset: asset, startDate: startDate, dueDate: dueDate, priority: priority, assignedUser: assignedUser, assignedTeam: assignedTeam, status: status, cost: roundedCost, description: description, isFailure: isFailure, failureDate: failureDate, failure: failure, procedure: null, procedureTitle: null, procedureDescription: null }
         }
         else if (failureTitle && failureCause && failureObservation) {
             const categoryExists = await Category.findOne({ _id: ObjectId(category) })
@@ -52,16 +52,16 @@ const createRepair = async (req, res) => {
                 newFailure = await Failure.create({ title: failureTitle, observation: failureObservation, denseVectorOfObservation: denseVectorOfObservation, cause: failureCause, procedure: null, procedureTitle: null, procedureDescription: null, category: category })
             }
 
-            newRepair = { title: title, asset: asset, startDate: startDate, dueDate: dueDate, priority: priority, assignedUser: assignedUser, assignedTeam: assignedTeam, status: status, cost: roundedCost, description: description, isFailure: isFailure, failure: newFailure._id, procedure: null, procedureTitle: null, procedureDescription: null }
+            newRepair = { title: title, asset: asset, startDate: startDate, dueDate: dueDate, priority: priority, assignedUser: assignedUser, assignedTeam: assignedTeam, status: status, cost: roundedCost, description: description, isFailure: isFailure, failureDate: failureDate, failure: newFailure._id, procedure: null, procedureTitle: null, procedureDescription: null }
         }
         else if (procedure) {
-            newRepair = { title: title, asset: asset, startDate: startDate, dueDate: dueDate, priority: priority, assignedUser: assignedUser, assignedTeam: assignedTeam, status: status, cost: roundedCost, description: description, isFailure: isFailure, failure: null, procedure: procedure, procedureTitle: null, procedureDescription: null }
+            newRepair = { title: title, asset: asset, startDate: startDate, dueDate: dueDate, priority: priority, assignedUser: assignedUser, assignedTeam: assignedTeam, status: status, cost: roundedCost, description: description, isFailure: isFailure, failureDate: failureDate, failure: null, procedure: procedure, procedureTitle: null, procedureDescription: null }
         }
         else if (procedureTitle && procedureDescription) {
-            newRepair = { title: title, asset: asset, startDate: startDate, dueDate: dueDate, priority: priority, assignedUser: assignedUser, assignedTeam: assignedTeam, status: status, cost: roundedCost, description: description, isFailure: isFailure, failure: null, procedure: null, procedureTitle: procedureTitle, procedureDescription: procedureDescription }
+            newRepair = { title: title, asset: asset, startDate: startDate, dueDate: dueDate, priority: priority, assignedUser: assignedUser, assignedTeam: assignedTeam, status: status, cost: roundedCost, description: description, isFailure: isFailure, failureDate: failureDate, failure: null, procedure: null, procedureTitle: procedureTitle, procedureDescription: procedureDescription }
         }
         else {
-            newRepair = { title: title, asset: asset, startDate: startDate, dueDate: dueDate, priority: priority, assignedUser: assignedUser, assignedTeam: assignedTeam, status: status, cost: roundedCost, description: description, isFailure: isFailure, failure: null, procedure: null, procedureTitle: null, procedureDescription: null }
+            newRepair = { title: title, asset: asset, startDate: startDate, dueDate: dueDate, priority: priority, assignedUser: assignedUser, assignedTeam: assignedTeam, status: status, cost: roundedCost, description: description, isFailure: isFailure, failureDate: failureDate, failure: null, procedure: null, procedureTitle: null, procedureDescription: null }
         }
 
         const repair = await Repair.create(newRepair)
@@ -88,16 +88,19 @@ const getRepairs = async (req, res) => {
             {
                 $sort: { createdAt: -1 }
             },
-            {
-                $addFields: {
-                    dueDate: {
-                        $dateToString: { format: "%Y-%m-%d", date: "$dueDate" }
-                    },
-                    startDate: {
-                        $dateToString: { format: "%Y-%m-%d", date: "$startDate" }
-                    }
-                }
-            },
+            // {
+            //     $addFields: {
+            //         dueDate: {
+            //             $dateToString: { format: "%Y-%m-%d", date: "$dueDate" }
+            //         },
+            //         startDate: {
+            //             $dateToString: { format: "%Y-%m-%d", date: "$startDate" }
+            //         },
+            //         failureDate: {
+            //             $dateToString: { format: "%Y-%m-%d", date: "$failureDate" }
+            //         }
+            //     }
+            // },
             {
                 $lookup: {
                     from: "users", // Replace with the actual collection name of servicers
@@ -189,19 +192,19 @@ const getCompletedRepairs = async (req, res) => {
             {
                 $sort: { createdAt: -1 }
             },
-            {
-                $addFields: {
-                    dueDate: {
-                        $dateToString: { format: "%Y-%m-%d", date: "$dueDate" }
-                    },
-                    startDate: {
-                        $dateToString: { format: "%Y-%m-%d", date: "$startDate" }
-                    },
-                    completedDate: {
-                        $dateToString: { format: "%Y-%m-%d", date: "$completedDate" }
-                    },
-                }
-            },
+            // {
+            //     $addFields: {
+            //         dueDate: {
+            //             $dateToString: { format: "%Y-%m-%d", date: "$dueDate" }
+            //         },
+            //         startDate: {
+            //             $dateToString: { format: "%Y-%m-%d", date: "$startDate" }
+            //         },
+            //         completedDate: {
+            //             $dateToString: { format: "%Y-%m-%d", date: "$completedDate" }
+            //         },
+            //     }
+            // },
             {
                 $lookup: {
                     from: "users", // Replace with the actual collection name of servicers
@@ -273,37 +276,86 @@ const updateRepair = async (req, res) => {
 }
 */
 
-
 const updateRepair = async (req, res) => {
     const { id } = req.params
-
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-        return res.status(404).json({ error: 'No such repair' })
-    }
+    const { title, asset, startDate, dueDate, priority, assignedUser, assignedTeam, status, cost, description, isFailure, failure, failureDate, failureTitle, failureCause, failureObservation, procedure, procedureTitle, procedureDescription, category } = req.body
 
     try {
-        const repairToUpdate = await Repair.findById(id);
+        let roundedCost = null
 
-        if (!repairToUpdate) {
-            return res.status(404).json({ error: 'No such repair' });
+        if (cost) {
+            roundedCost = Math.round(cost * 100) / 100
         }
 
-        const { startDate, dueDate } = req.body;
+        let updatedRepair = null
 
-        // Check if dueDate is after startDate
-        if (startDate && dueDate && new Date(dueDate) <= new Date(startDate)) {
-            return res.status(400).json({ error: "Due date must be after start date" });
+        if (failure) {
+            updatedRepair = { title: title, asset: asset, startDate: startDate, dueDate: dueDate, priority: priority, assignedUser: assignedUser, assignedTeam: assignedTeam, status: status, cost: roundedCost, description: description, isFailure: isFailure, failureDate: failureDate, failure: failure, procedure: null, procedureTitle: null, procedureDescription: null }
+        }
+        else if (failureTitle && failureCause && failureObservation) {
+            const categoryExists = await Category.findOne({ _id: ObjectId(category) })
+
+            if (!categoryExists) {
+                return res.status(404).json({ error: 'Category does not exist' })
+            }
+
+            const observation = failureObservation
+
+            const flaskResponse = await axios.post('http://127.0.0.1:4000/convert-to-dense-vector', { observation })
+
+            const denseVectorOfObservation = flaskResponse.data.dense_vector_of_observation
+
+            let newFailure = null
+
+            if (procedure) {
+                newFailure = await Failure.create({ title: failureTitle, observation: failureObservation, denseVectorOfObservation: denseVectorOfObservation, cause: failureCause, procedure: procedure, procedureTitle: null, procedureDescription: null, category: category })
+            }
+            else if (!procedure && procedureTitle && procedureDescription) {
+                newFailure = await Failure.create({ title: failureTitle, observation: failureObservation, denseVectorOfObservation: denseVectorOfObservation, cause: failureCause, procedure: null, procedureTitle: procedureTitle, procedureDescription: procedureDescription, category: category })
+            }
+            else {
+                newFailure = await Failure.create({ title: failureTitle, observation: failureObservation, denseVectorOfObservation: denseVectorOfObservation, cause: failureCause, procedure: null, procedureTitle: null, procedureDescription: null, category: category })
+            }
+
+            updatedRepair = { title: title, asset: asset, startDate: startDate, dueDate: dueDate, priority: priority, assignedUser: assignedUser, assignedTeam: assignedTeam, status: status, cost: roundedCost, description: description, isFailure: isFailure, failureDate: failureDate, failure: newFailure._id, procedure: null, procedureTitle: null, procedureDescription: null }
+        }
+        else if (procedure) {
+            updatedRepair = { title: title, asset: asset, startDate: startDate, dueDate: dueDate, priority: priority, assignedUser: assignedUser, assignedTeam: assignedTeam, status: status, cost: roundedCost, description: description, isFailure: isFailure, failureDate: failureDate, failure: null, procedure: procedure, procedureTitle: null, procedureDescription: null }
+        }
+        else if (procedureTitle && procedureDescription) {
+            updatedRepair = { title: title, asset: asset, startDate: startDate, dueDate: dueDate, priority: priority, assignedUser: assignedUser, assignedTeam: assignedTeam, status: status, cost: roundedCost, description: description, isFailure: isFailure, failureDate: failureDate, failure: null, procedure: null, procedureTitle: procedureTitle, procedureDescription: procedureDescription }
+        }
+        else {
+            updatedRepair = { title: title, asset: asset, startDate: startDate, dueDate: dueDate, priority: priority, assignedUser: assignedUser, assignedTeam: assignedTeam, status: status, cost: roundedCost, description: description, isFailure: isFailure, failureDate: failureDate, failure: null, procedure: null, procedureTitle: null, procedureDescription: null }
         }
 
-        const updatedRepair = await Repair.findByIdAndUpdate(id, req.body, { new: true });
+        const repair = await Repair.findOneAndUpdate({ _id: ObjectId(id) }, { ...updatedRepair }, { new: true })
 
-        res.status(200).json(updatedRepair);
+        res.status(200).json(repair)
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        res.status(400).json({ error: error.message })
     }
 }
 
-// DELETE repair
+const markAsComplete = async (req, res) => {
+    const { id } = req.params
+    const { oldRepair, status, completedDate } = req.body
+
+    try {
+        let updatedRepair = oldRepair
+
+        updatedRepair.status = status
+        updatedRepair.completedDate = completedDate
+
+        console.log(updatedRepair)
+
+        const repair = await Repair.findOneAndUpdate({ _id: ObjectId(id) }, { ...updatedRepair }, { new: true })
+        res.status(200).json(repair)
+    } catch (error) {
+        res.status(400).json({ error: error.message })
+    }
+}
+
 const deleteRepair = async (req, res) => {
     const { id } = req.params
 
@@ -326,5 +378,6 @@ module.exports = {
     getRepair,
     getCompletedRepairs,
     updateRepair,
+    markAsComplete,
     deleteRepair
 }

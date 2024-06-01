@@ -14,6 +14,17 @@
     box-sizing: border-box;
 }
 
+.add-update-repair-form-failure-datepicker-input {
+    display: flex;
+    width: 350px !important;
+    height: 50px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-sizing: border-box;
+    align-self: flex-start;
+}
+
 .add-update-asset-select-input {
     width: 300px !important;
     height: 50px;
@@ -39,6 +50,12 @@
     width: 100%
 }
 
+.repair-status-label-input {
+    display: flex;
+    flex-direction: column;
+    width: 100%
+}
+
 .repairs-title {
     margin-left: 1%;
     font-family: Arial, sans-serif;
@@ -58,6 +75,8 @@
     align-items: center;
 } */
 
+
+/* Add repair form */
 .add-update-repair-form-container {
     width: 100%;
     height: 100%;
@@ -123,6 +142,11 @@
     /* Adjust as needed */
     max-width: 120px;
     /* Set a maximum width if necessary */
+}
+
+.add-update-repair-checkbox {
+    display: flex;
+    align-self: flex-start;
 }
 
 .bottom-pf-add-repair-form {
@@ -215,10 +239,10 @@
     border: 1px solid #ddd;
 }
 
-.add-update-repair-procedure-description-input {
-    width: 100%;
-    height: 300px;
-    font-size: 15px;
+.add-update-repair-description {
+    width: 100% !important;
+    height: 200px !important;
+    font-size: 15px !important;
     border: 1px solid #ddd;
 }
 
@@ -226,13 +250,6 @@
     display: flex;
     flex-direction: column;
     width: 100%
-}
-
-.add-update-repair-failure-description-input {
-    width: 100%;
-    height: 300px;
-    font-size: 15px;
-    border: 1px solid #ddd;
 }
 
 .add-update-failure-input-error {
@@ -303,12 +320,13 @@
     width: 100%
 }
 
+/* 
 .add-update-repair-failure-description-input {
     width: 100%;
-    height: 300px;
+    height: 225px;
     font-size: 15px;
     border: 1px solid #ddd;
-}
+} */
 
 .add-update-failure-input-error {
     border: 1px solid #ff0000;
@@ -480,10 +498,6 @@
         height: 100%;
         /* padding: 10px */
         /* padding-bottom: 50px; */
-    }
-
-    .add-update-repair-form-input {
-        width: 250px !important;
     }
 
     .add-update-asset-select-input {

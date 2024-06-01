@@ -1,56 +1,111 @@
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import { useEffect, useState } from 'react';
+import 'react-datepicker/dist/react-datepicker.css';
 import Dropdown from 'react-dropdown';
 import Select from 'react-dropdown-select';
 import 'react-dropdown/style.css';
-import { useRepairsContext } from "../../hooks/useRepairsContext";
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import { useEffect } from 'react';
-import { useLocation, Link } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useAuthContext } from '../../hooks/useAuthContext';
 import { usePrevRouteContext } from "../../hooks/usePrevRouteContext";
-import { useAuthContext } from '../../hooks/useAuthContext'
-import { UsersContext } from '../../context/UsersContext';
-
+import { useRepairsContext } from "../../hooks/useRepairsContext";
 import { SelectAssetModal } from '../../components/SelectAssetModal'
-
-const validator = require('validator')
-
+import { SelectProcedureModal } from '../../components/SelectProcedureModal';
+import { SelectFailureModal } from '../../components/SelectFailureModal';
+import { FailureDiagnosisFormModal } from '../../components/FailureDiagnosisFormModal';
 
 const ViewOrUpdateRepair = (props) => {
-    const [title, setTitle] = useState('')
-
-    const [assets, setAssets] = useState([])
-    const [parentAsset, setParentAsset] = useState('')
-    const [parentAssetName, setParentAssetName] = useState([])
-    const [showSelectAssetModal, setShowSelectAssetModal] = useState(false)
-
-    const [servicers, setServicers] = useState('')
-    const [selectedServicer, setSelectedServicer] = useState([])
+    const [title, setTitle] = useState(null)
+    const [usersAndTeams, setUsersAndTeams] = useState([])
+    const [assignTo, setAssignTo] = useState([])
     const [teams, setTeams] = useState('')
     const [selectedTeam, setSelectedTeam] = useState([])
-    const [selectedOption, setSelectedOption] = useState(null);
-
-    const [startDate, setStartDate] = useState(null)
+    const [selectedOption, setSelectedOption] = useState(null)
+    const [startDate, setStartDate] = useState('')
     const [dueDate, setDueDate] = useState('')
+    const [failureDate, setFailureDate] = useState('')
     const [priority, setPriority] = useState('')
-
-    const [status, setStatus] = useState('')
+    const [status, setStatus] = useState('Incomplete')
     const [cost, setCost] = useState('')
     const [description, setDescription] = useState('')
-
     const [error, setError] = useState(null)
-    const [emptyFields, setEmptyFields] = useState('')
-    const { user } = useAuthContext()
-    const { repair: repairContext } = useAuthContext()
-
-
-    const { repairs, dispatch: repairsDispatch } = useRepairsContext()
-    const { prevRoute, dispatch: prevRouterDispatch } = usePrevRouteContext();
-
-    const navigate = useNavigate()
+    const [emptyFields, setEmptyFields] = useState([])
     const location = useLocation()
+    const navigate = useNavigate()
+    const { user } = useAuthContext()
+    const { prevRoute, dispatch: prevRouterDispatch } = usePrevRouteContext();
+    const { repairs, dispatch: repairsDispatch } = useRepairsContext()
+    const [isActiveRepairCheckboxChecked, setIsActiveRepairCheckboxChecked] = useState(false);
+
+    //Asset
+    const [assets, setAssets] = useState('')
+    const [selectedAsset, setSelectedAsset] = useState('')
+    const [selectedAssetName, setSelectedAssetName] = useState([])
+    const [showSelectAssetModal, setShowSelectAssetModal] = useState(false)
+
+    //Failure
+    const [isFailureCheckboxChecked, setIsFailureCheckboxChecked] = useState(false);
+    const [failureTitle, setFailureTitle] = useState('')
+    const [failureObservation, setFailureObservation] = useState('')
+    const [failureCause, setFailureCause] = useState('')
+    const [selectedFailure, setSelectedFailure] = useState(null)
+    const [showSelectFailureModal, setShowSelectFailureModal] = useState(false)
+
+    //Failure Diagnosis
+    const [showFailureDiagnosisFormModal, setShowFailureDiagnosisFormModal] = useState(false)
+
+    //Procedure
+    const [procedureTitle, setProcedureTitle] = useState('')
+    const [procedureDescription, setProcedureDescription] = useState('')
+    const [selectedProcedure, setSelectedProcedure] = useState(null)
+    const [showSelectProcedureModal, setShowSelectProcedureModal] = useState(false)
 
     const { repair } = location.state
+
+    useEffect(() => {
+        fetchAndSetAssets()
+        fetchAndSetUsersAndTeams()
+
+        if (repair.startDate) {
+            setIsActiveRepairCheckboxChecked(true)
+            setStartDate(repair.startDate)
+        }
+
+        setStatus(repair.status)
+        setTitle(repair.title)
+        setSelectedAsset(repair.asset)
+        setSelectedAssetName(repair.asset.name)
+
+        if (repair.assignedUser) {
+            const users = []
+            users.push({ value: repair.assignedUser._id, label: repair.assignedUser.name, isUser: true })
+            setAssignTo(users)
+        }
+        else if (repair.assignedTeam) {
+            const teams = []
+            teams.push({ value: repair.assignedTeam._id, label: repair.assignedTeam.name, isUser: false })
+            setAssignTo(teams)
+        }
+
+        setDueDate(repair.dueDate)
+        setFailureDate(repair.failureDate)
+        setPriority(repair.priority)
+        setCost(repair.cost)
+        setDescription(repair.description)
+        setIsFailureCheckboxChecked(repair.isFailure)
+
+        if (repair.failure) {
+            fetchAndSetFailure()
+        }
+        else if (repair.procedureTitle && repair.procedureDescription) {
+            setProcedureTitle(repair.procedureTitle)
+            setProcedureDescription(repair.procedureDescription)
+        }
+        else if (repair.procedure) {
+            fetchAndSetRepairProcedure()
+        }
+
+        prevRouterDispatch({ type: 'SET_PREV_ROUTE', location: location.pathname })
+    }, [repairsDispatch, user])
 
     const fetchRepairs = async () => {
         const response = await fetch('/api/repairs', {
@@ -65,49 +120,132 @@ const ViewOrUpdateRepair = (props) => {
         }
     }
 
-    useEffect(() => {
-        fetchAndSetAssets()
-        fetchAndSetServicers()
-
-        setSelectedServicer(repair.servicers)
-        setTitle(repair.title)
-
-        setParentAsset(repair.asset)
-
-        setStartDate(repair.startDate)
-        setDueDate(repair.dueDate)
-        setPriority(repair.priority)
-        setStatus(repair.status)
-        setCost(repair.cost)
-        setDescription(repair.description)
-        prevRouterDispatch({ type: 'SET_PREV_ROUTE', location: location.pathname })
-    }, [repairsDispatch, user])
-
-
-
-    const fetchAndSetServicers = async () => {
-        const response = await fetch('/api/users', {
+    const fetchAndSetRepairProcedure = async () => {
+        const response = await fetch('/api/repair-procedures/get-repair-procedure/' + repair.procedure, {
             headers: {
                 'Authorization': `Bearer ${user.token}`
             }
         })
+
         const json = await response.json()
 
         if (response.ok) {
-            const servicers = []
-            if (json) {
-                for (const servicer of json) {
-                    const value = servicer._id
-                    const label = servicer.name
-                    servicers.push({ label, value })
-
-                }
-                console.log("servicers", servicers)
-                setServicers(servicers)
-            }
+            setSelectedProcedure(json)
+            setProcedureTitle(json.title)
+            setProcedureDescription(json.description)
         }
     }
 
+    const fetchAndSetFailure = async () => {
+        const response = await fetch('/api/failures/get-failure/' + repair.failure, {
+            headers: {
+                'Authorization': `Bearer ${user.token}`
+            }
+        })
+
+        const json = await response.json()
+
+        if (response.ok) {
+            setFailureTitle(json.title)
+            setFailureObservation(json.observation)
+            setFailureCause(json.cause)
+            if (json.procedureTitle && json.procedureDescription) {
+                setProcedureTitle(json.procedureTitle)
+                setProcedureDescription(json.procedureDescription)
+            }
+            else if (json.procedure) {
+                setProcedureTitle(json.procedure.title)
+                setProcedureDescription(json.procedure.description)
+            }
+            setSelectedFailure(json)
+        }
+    }
+
+    const fetchAndSetUsersAndTeams = async () => {
+        const usersAndTeams = []
+
+        const usersResponse = await fetch('/api/users', {
+            headers: {
+                'Authorization': `Bearer ${user.token}`
+            }
+        })
+
+        const usersJson = await usersResponse.json()
+
+        const teamsResponse = await fetch('/api/teams', {
+            headers: {
+                'Authorization': `Bearer ${user.token}`
+            }
+        })
+
+        const teamsJson = await teamsResponse.json()
+
+        if (usersResponse.ok && teamsResponse.ok) {
+            if (usersJson) {
+                for (const user of usersJson) {
+                    const value = user._id
+                    const label = user.name
+                    const isUser = true
+                    usersAndTeams.push({ label, value, isUser })
+                }
+            }
+
+            if (teamsJson) {
+                for (const team of teamsJson) {
+                    const value = team._id
+                    const label = team.name
+                    const isUser = false
+                    usersAndTeams.push({ label, value, isUser })
+                }
+            }
+        }
+        setUsersAndTeams(usersAndTeams)
+    }
+
+    const isProcedureNotChanged = () => {
+        if (selectedFailure && selectedFailure.procedureTitle && selectedFailure.procedureDescription) {
+            return ((selectedFailure.procedureTitle === procedureTitle) && (selectedFailure.procedureDescription === procedureDescription))
+        }
+        else if (selectedFailure && selectedFailure.procedure && selectedFailure.procedure.title && selectedFailure.procedure.description) {
+            return ((selectedFailure.procedure.title === procedureTitle) && (selectedFailure.procedure.description === procedureDescription))
+        }
+        else if (repair.procedureTitle && repair.procedureDescription) {
+            return ((repair.procedureTitle === procedureTitle) && (repair.procedureDescription === procedureDescription))
+        }
+        else if (repair.procedure) {
+            return ((repair.procedure.title === procedureTitle) && (repair.procedure.description === procedureDescription))
+        }
+    }
+
+    const isFailureNotChanged = () => {
+        if (selectedFailure) {
+            return ((selectedFailure.title === failureTitle) &&
+                (selectedFailure.observation === failureObservation) &&
+                (selectedFailure.cause === failureCause))
+        }
+    }
+
+    //Check if form is changed
+    const isFormUnchanged = () => {
+        return (
+            isActiveRepairCheckboxChecked === (repair.startDate != null) &&
+            title === repair.title &&
+            selectedAsset._id === repair.asset._id &&
+            failureDate === repair.failureDate &&
+            startDate === repair.startDate &&
+            dueDate === repair.dueDate &&
+            priority === repair.priority &&
+            (repair.assignedUser._id === assignTo[0].value || repair.assignedTeam._id === assignTo[0].value) &&
+            status === repair.status &&
+            cost === repair.cost &&
+            description === repair.description &&
+            isFailureCheckboxChecked === repair.isFailure &&
+            isFailureNotChanged() &&
+            isProcedureNotChanged()
+        )
+    }
+
+    //Asset Functions
     const fetchAndSetAssets = async () => {
         const response = await fetch('/api/Assets', {
             headers: {
@@ -131,48 +269,111 @@ const ViewOrUpdateRepair = (props) => {
         }
     }
 
-    const selectParentAsset = function () {
+    const enableSelectAssetModal = function () {
         setShowSelectAssetModal(true)
     }
 
-    const goBack = function () {
+    const goBackFromSelectAssetModal = function () {
         setShowSelectAssetModal(false)
     }
 
     const selectAsset = function (asset) {
-        setParentAsset(asset)
-        setParentAssetName(asset.name)
+        setSelectedAsset(asset)
+        setSelectedAssetName(asset.name)
         setShowSelectAssetModal(false)
     }
-    //Check if form is changed
-    const isFormUnchanged = () => {
-        return (
-            title === repair.title &&
-            assets === repair.assets &&
-            startDate === repair.startDate &&
-            dueDate === repair.dueDate &&
-            priority === repair.priority &&
-            servicers === repair.servicers &&
-            status === repair.status &&
-            cost === repair.status &&
-            description === repair.description
-        )
+
+    //Procedure functions
+    const enableSelectProcedureModal = function () {
+        if (selectedAsset && selectedAsset.category != null) {
+            if (!selectedFailure) {
+                setShowSelectProcedureModal(true)
+            }
+            else {
+                setError("Failure with procedure already selected")
+            }
+        }
+        else {
+            setError("Asset has no category")
+        }
     }
 
-    function formatGroupLabel(data) {
-        return (
-            <div style={{ fontWeight: 'bold' }}>
-                {data.label}
-            </div>
-        );
+    const selectProcedure = function (procedure) {
+        setSelectedProcedure(procedure)
+        setProcedureTitle(procedure.title)
+        setProcedureDescription(procedure.description)
+        setShowSelectProcedureModal(false)
+    }
+
+    const removeSelectedProcedure = function (procedure) {
+        setProcedureTitle('')
+        setProcedureDescription('')
+        setSelectedProcedure(null)
+    }
+
+    const goBackFromSelectProcedureModal = function () {
+        setShowSelectProcedureModal(false)
+    }
+
+    //Failure Functions 
+    const enableSelectFailureModal = function () {
+        if (selectedAsset && selectedAsset.category != null) {
+            setShowSelectFailureModal(true)
+            setError(null)
+        } else {
+            setError("Asset has no category")
+        }
+    }
+
+    const selectFailure = function (failure) {
+        setSelectedFailure(failure)
+        setFailureTitle(failure.title)
+        setFailureObservation(failure.observation)
+        setFailureCause(failure.cause)
+        if (failure.procedure) {
+            setProcedureTitle(failure.procedure.title)
+            setProcedureDescription(failure.procedure.description)
+        }
+        else {
+            setProcedureTitle(failure.procedureTitle)
+            setProcedureDescription(failure.procedureDescription)
+        }
+        setShowSelectFailureModal(false)
+        setShowFailureDiagnosisFormModal(false)
+    }
+
+    const removeSelectedFailure = function () {
+        setFailureTitle('')
+        setFailureObservation('')
+        setFailureCause('')
+        setSelectedFailure(null)
+    }
+
+    const goBackFromSelectFailureModal = function () {
+        setShowSelectFailureModal(false)
+    }
+
+    //Failure Diagnosis Functions
+    const enableSelectFailureDiagnosisFormModal = function () {
+        if (selectedAsset && selectedAsset.category != null) {
+            setShowFailureDiagnosisFormModal(true)
+            setError(null)
+        } else {
+            setError("Asset has no category")
+        }
+    }
+
+    const goBackFromSelectFailureDiagnosisFormModal = function () {
+        setShowFailureDiagnosisFormModal(false)
     }
 
     const handleSubmit = async (e) => {
-        console.log("YOOOOOO parentAsset", parentAssetName)
+        setError(null)
+        setEmptyFields([])
         e.preventDefault()
 
         if (!user) {
-            return;
+            return
         }
 
         const emptyFields = [];
@@ -182,77 +383,145 @@ const ViewOrUpdateRepair = (props) => {
             if (!title) {
                 emptyFields.push('title')
             }
-            /*
-            if (parentAssetName.length === 0) {
+            if (!selectedAsset) {
                 emptyFields.push('asset')
-            }*/
-            if (!selectedServicer) {
-                emptyFields.push('servicer');
+            }
+            if (isActiveRepairCheckboxChecked && assignTo.length === 0) {
+                emptyFields.push('assignTo');
             }
 
-            if (emptyFields.length > 0) {
-                setError(`Please fill in all required fields: ${emptyFields.join(', ')}`);
-                setEmptyFields(emptyFields);
-                return; // Stop the form submission
+            if (procedureTitle || procedureDescription) {
+                if (!procedureTitle) {
+                    emptyFields.push('procedureTitle')
+                }
+
+                if (!procedureDescription) {
+                    emptyFields.push('procedureDescription')
+                }
             }
 
-            /*
-            
+            if (failureDate || failureTitle || failureObservation || failureCause) {
+                if (!failureDate) {
+                    emptyFields.push('failureDate')
+                }
 
-            if (!startDate) {
-                emptyFields.push('startDate')
+                if (!failureTitle) {
+                    emptyFields.push('failureTitle')
+                }
+
+                if (!failureObservation) {
+                    emptyFields.push('failureObservation')
+                }
+
+                if (!failureCause) {
+                    emptyFields.push('failureCause')
+                }
             }
 
-            if (!dueDate) {
-                emptyFields.push('dueDate')
-            }
-
-            if (!priority) {
-                emptyFields.push('priority')
-            }
-
-            
-            if (!status) {
-                emptyFields.push('status')
-            }
-
-            if (!cost) {
-                emptyFields.push('cost')
-            }
-
-            if (!description) {
-                emptyFields.push('description')
-            }
-
-            */
             if (emptyFields.length === 0) {
 
-                let assetId = null
+                let assetId = null;
+                let assetName = null;
 
-                if (parentAsset) {
-                    assetId = parentAsset._id
-                }
-                console.log("assetId", assetId)
-
-
-                let servicerId = null
-                let servicerName = ''
-
-                if (selectedServicer.length !== 0) {
-                    servicerId = selectedServicer[0].value
-                    servicerName = selectedServicer[0].label
+                if (selectedAsset) {
+                    assetId = selectedAsset._id
+                    assetName = selectedAsset.name
                 }
 
+                let teamId = null;
+                let teamName = null;
+                let userId = null;
+                let userName = null;
 
+                if (assignTo.length !== 0) {
+                    if (assignTo[0].isUser) {
+                        userId = assignTo[0].value
+                        userName = assignTo[0].label
+                    }
+                    else {
+                        teamId = assignTo[0].value
+                        teamName = assignTo[0].label
+                    }
+                }
 
+                let failureId = null
+                let procedureId = null
 
-                const newRepair = { title: title, asset: assetId, startDate: startDate, dueDate: dueDate, priority: priority, servicers: servicerId, status: status, cost: cost, description: description }
+                if (selectedFailure) {
+                    failureId = selectedFailure._id
+                }
 
-                const _id = repair._id
-                console.log('check 1', newRepair)
-                const response = await fetch('/api/repairs/' + _id, {
+                if (selectedProcedure) {
+                    procedureId = selectedProcedure._id
+                }
+
+                let formattedStartDate = null
+
+                let unformattedStartDate = null
+
+                if (isActiveRepairCheckboxChecked) {
+                    unformattedStartDate = new Date()
+
+                    formattedStartDate = unformattedStartDate.toLocaleDateString('en-CA', {
+                        year: 'numeric',
+                        day: '2-digit',
+                        month: '2-digit',
+                    })
+                }
+
+                let formattedDueDate = null
+
+                let unformattedDueDate = null
+
+                if (dueDate) {
+
+                    unformattedDueDate = new Date(dueDate)
+
+                    unformattedDueDate.setDate(unformattedDueDate.getDate())
+
+                    formattedDueDate = unformattedDueDate.toLocaleDateString('en-CA', {
+                        year: 'numeric',
+                        day: '2-digit',
+                        month: '2-digit',
+                    })
+
+                    // Check if dueDate is after startDate
+                    if (new Date(formattedStartDate) > new Date(formattedDueDate)) {
+                        setError("Due date cannot be before start date")
+                        emptyFields.push("dueDate")
+                        return
+                    }
+                }
+
+                let formattedFailureDate = null
+
+                let unformattedFailureDate = null
+
+                if (failureDate) {
+
+                    unformattedFailureDate = new Date(failureDate)
+
+                    unformattedFailureDate.setDate(unformattedFailureDate.getDate())
+
+                    formattedFailureDate = unformattedFailureDate.toLocaleDateString('en-CA', {
+                        year: 'numeric',
+                        day: '2-digit',
+                        month: '2-digit',
+                    })
+                }
+
+                let categoryId = null
+
+                if (selectedAsset.category) {
+                    categoryId = selectedAsset.category._id
+                }
+
+                const updatedRepair = { title: title, asset: assetId, startDate: unformattedStartDate, dueDate: unformattedDueDate, priority: priority, assignedUser: userId, assignedTeam: teamId, status: status, cost: cost, description: description, isFailure: isFailureCheckboxChecked, failure: failureId, failureTitle: failureTitle, failureDate: failureDate, failureCause: failureCause, failureObservation: failureObservation, procedure: procedureId, procedureTitle: procedureTitle, procedureDescription: procedureDescription, category: categoryId }
+
+                console.log('check 1', updatedRepair)
+                const response = await fetch('/api/repairs/' + repair._id, {
                     method: 'PATCH',
-                    body: JSON.stringify(newRepair),
+                    body: JSON.stringify(updatedRepair),
                     headers: {
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${user.token}`
@@ -280,144 +549,288 @@ const ViewOrUpdateRepair = (props) => {
         else {
             error = 'Form is unchanged'
         }
-
         setEmptyFields(emptyFields)
         setError(error)
     }
 
+    const handleFailureCheckbox = () => {
+        console.log(isFailureCheckboxChecked)
+        setIsFailureCheckboxChecked(!isFailureCheckboxChecked);
+    }
+
+    const handleActiveRepairCheckbox = () => {
+        console.log(isFailureCheckboxChecked)
+        setDueDate("")
+        setIsActiveRepairCheckboxChecked(!isActiveRepairCheckboxChecked);
+    }
+
     const priorities = ["Low", "Medium", "High"];
-    const statuses = ["Incomplete", "Overdue", "Complete"]
 
+    return !showSelectAssetModal ? (!showSelectProcedureModal ? (!showSelectFailureModal ? (!showFailureDiagnosisFormModal ?
+        <div className="add-update-repair-form-container">
+            <form className="add-update-repair-form" onSubmit={handleSubmit}>
+                <div className='add-update-repair-top'>
+                    <Link to='/repairs' ><button className='add-update-repair-back-btn'><ArrowBackIcon /></button></Link>
+                    <h1 className="add-update-repair-title">View/Update Repair</h1>
+                    <div className="add-update-repair-back-btn-invisible"></div>
+                </div>
+                <div className="add-update-repair-checkbox">
+                    <input
+                        type="checkbox"
+                        onChange={() => handleActiveRepairCheckbox()}
+                        checked={isActiveRepairCheckboxChecked} />
+                    <label style={{ marginLeft: '5px' }}>Active Repair?</label>
+                </div>
+                <div className='repair-inputs-row'>
+                    <div className="label-input">
+                        <label>Title:</label>
+                        <input
+                            onChange={(e) => setTitle(e.target.value)}
+                            value={title}
+                            placeholder='Enter title'
+                            className={emptyFields.includes('title') ? 'add-update-repair-form-input input-error' : 'add-update-repair-form-input'}
+                        />
+                    </div>
 
-    return (
-        <div className="add-update-repair-container">
-            {showSelectAssetModal === false ?
-                <div className="add-update-repair-form-container">
-                    <Link to='/repairs' className='back-button-link'><button className='back-button'><ArrowBackIcon /></button></Link>
-
-                    <form className="add-update-repair-form" onSubmit={handleSubmit}>
-                        <h1 className="add-update-repair-title">Update Repair</h1>
-                        <div className='top'>
-                            <div className="label-input">
-                                <label>Title:</label>
-                                <input
-                                    onChange={(e) => setTitle(e.target.value)}
-                                    value={title}
-                                    placeholder='Enter title'
-                                    className={emptyFields.includes('title') ? 'input-error' : 'input'}
-                                />
-                            </div>
-                            <div className="label-input">
-                                <label>Asset:</label>
-                                <div className="add-parent-asset-container">
-                                    <input
-                                        value={parentAssetName}
-                                        placeholder={repair.asset}
-                                        className='add-parent-asset-input'
-                                        disabled={true}
-                                    />
-                                    <button className='add-parent-asset-btn' onClick={selectParentAsset}>
-                                        +
-                                    </button>
-                                </div>
-                            </div>
-                            <div className="label-input">
-                                <label>Cost ($):</label>
-                                <input
-                                    onChange={(e) => {
-                                        const inputCost = e.target.value;
-                                        // Check if the input is a number
-                                        if (!isNaN(inputCost)) {
-                                            // If it's a number, update the state
-                                            setCost(inputCost);
-                                        }
-                                    }}
-
-                                    value={cost}
-                                    placeholder='Enter Cost'
-                                    className={emptyFields.includes('cost') ? 'input-error' : 'input'}
-
-                                />
-                            </div>
-                            <div className="label-input">
-                                <label>Priority:</label>
-                                <Dropdown
-                                    options={priorities}
-                                    onChange={(selectedPriority) => setPriority(selectedPriority.value)}
-                                    value={priority}
-                                    placeholder='Select a Priority'
-                                    className={emptyFields.includes('priority') ? 'dropdown-error' : ''}
-                                />
-                            </div>
+                    <div className="label-input">
+                        <label>Asset:</label>
+                        <div className="add-parent-asset-container">
+                            <input
+                                value={selectedAssetName}
+                                placeholder='Select Asset'
+                                className={`add-update-asset-select-input ${emptyFields.includes('asset') ? 'input-error' : ''}`}
+                                disabled={true}
+                            />
+                            <button className='add-parent-asset-btn' onClick={enableSelectAssetModal}>
+                                +
+                            </button>
                         </div>
-                        <div className='middle'>
-                            <div className='label-input'>
-                                <label>Start Date:</label>
-                                <input
-                                    type='date'
-                                    onChange={(e) => setStartDate(e.target.value)}
-                                    value={startDate}
-                                    placeholder='Enter Start Date'
-                                    className={emptyFields.includes('startDate') ? 'input-error' : 'input'}
-                                    disabled='true'
-                                />
-                            </div>
-                            
-                            <div className="label-input">
-                                <label>Servicers:</label>
-                                <Select
-                                    value={selectedServicer}
-                                    options={servicers}
-                                    placeholder={selectedServicer}
-                                    onChange={(selectedServicer) => setSelectedServicer(selectedServicer)}
-                                    formatGroupLabel={formatGroupLabel}
-                                />
-                            </div>
-                            <div className='label-input'>
-                                <label>Due Date:</label>
-                                <input
-                                    type='date'
-                                    onChange={(e) => setDueDate(e.target.value)}
-                                    value={dueDate}
-                                    placeholder='Enter Due Date'
-                                    className={emptyFields.includes('dueDate') ? 'input-error' : 'input'}
-                                />
-                            </div>
-                            <div className='label-input'>
-                                <label>Status:</label>
-                                <Dropdown
-                                    options={statuses}
-                                    onChange={(selectedStatus) => setStatus(selectedStatus.value)}
-                                    value={status}
-                                    placeholder='Select a Status'
-                                    className={emptyFields.includes('status') ? 'dropdown-error' : ''}
-                                    disabled
-                                />
-                            </div>
+                    </div>
 
-                        </div>
-                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%', fontFamily: 'Arial' }}>
-                            <label for="description" style={{ fontFamily: 'Times New Roman' }}>Description:</label>
-                            <textarea
-                                id="description"
-                                onChange={(e) => setDescription(e.target.value)}
-                                value={description}
-                                placeholder='Enter Description'
-                                className={emptyFields.includes('description') ? 'input-error' : ''}
-                                style={{ width: '100%', height: '200px', fontFamily: 'Times New Roman' }}
+                    <div className="label-input">
+                        <label>Assign To:</label>
+                        <div className='dropdown'>
+                            <Select
+                                options={usersAndTeams}
+                                onChange={(userOrTeamIdAndName) => setAssignTo(userOrTeamIdAndName)}
+                                values={assignTo}
+                                placeholder="Select Servicer or Team"
+                                className={emptyFields.includes('assignTo') ? 'add-update-repair-form-input input-error' : 'add-update-repair-form-input'}
                             />
                         </div>
-                        <div className='bottom'>
-                            <button className='btn btn-effect' type='submit'>Update</button>
-                            <div className="error-div">
-                                {error && <div className='error'>{error}</div>}
+                    </div>
+
+
+
+                </div>
+                <div className='repair-inputs-row'>
+                    {/* Start Date not visible to user on repair creation
+                        <div className='label-input'>
+                            <label>Start Date:</label>
+                            <input
+                                type='date'
+                                onChange={(e) => setStartDate(e.target.value)}
+                                value={startDate}
+                                placeholder='Enter Start Date'
+                                className={emptyFields.includes('startDate') ? 'input-error' : 'input'}
+                                disabled='true'
+                            />
+                        </div>
+                        */}
+                    <div className='label-input'>
+                        <label>Due Date:</label>
+                        <input
+                            type="datetime-local"
+                            onChange={(e) => setDueDate(e.target.value)}
+                            value={dueDate}
+                            placeholder='Enter Due Date'
+                            className={emptyFields.includes('dueDate') ? 'add-update-repair-form-input input-error' : 'add-update-repair-form-input'}
+                            disabled={!isActiveRepairCheckboxChecked ? true : false}
+                        />
+                    </div>
+                    <div className='label-input'>
+                        <label>Priority:</label>
+                        <Dropdown
+                            options={priorities}
+                            onChange={(selectedPriority) => setPriority(selectedPriority.value)}
+                            value={priority}
+                            placeholder='Select Priority'
+                            className={emptyFields.includes('priority') ? 'dropdown-error' : ''}
+                        />
+                    </div>
+                    <div className='label-input'>
+                        <label>Cost ($):</label>
+                        <input
+                            onChange={(e) => {
+                                const cost = e.target.value;
+                                // Check if the input is a number
+                                if (!isNaN(cost)) {
+                                    // If number, update the state
+                                    setCost(cost);
+                                }
+                            }}
+                            value={cost}
+                            placeholder='Enter Cost'
+                            className={emptyFields.includes('cost') ? 'add-update-repair-form-input input-error' : 'add-update-repair-form-input'}
+                        />
+                    </div>
+                    {/*
+                        <div className='label-input'>
+                            <label>Status:</label>
+                            <Dropdown
+                                options={statuses}
+                                onChange={(selectedStatus) => setStatus(selectedStatus.value)}
+                                value={status}
+                                placeholder={'Select status'}
+                                className={`dropdown-disabled ${emptyFields.includes('status') ? 'dropdown-error' : ''}`}
+                                disabled={true} />
+                        </div>
+                            */}
+                </div >
+
+                <div className='repair-status-label-input'>
+                    <label>Status:</label>
+                    <input
+                        value={startDate ? status + " (Active)" : status + " (Inactive)"}
+                        className='add-update-repair-form-input'
+                        disabled={true}
+                    />
+                </div>
+
+                <div className='add-update-repair-form-label-input'>
+                    <label>Description:</label>
+                    <textarea
+                        id="description"
+                        onChange={(e) => setDescription(e.target.value)}
+                        value={description}
+                        placeholder='Enter Description'
+                        className='add-update-repair-description'
+                    />
+                </div>
+
+                <div className="add-update-repair-checkbox" style={{ display: 'flex', alignItems: 'center' }}>
+                    <input
+                        type="checkbox"
+                        onChange={() => handleFailureCheckbox()}
+                        checked={isFailureCheckboxChecked} />
+                    <label style={{ marginLeft: '5px' }}>Repair is due to asset failure?</label>
+                </div>
+
+                {isFailureCheckboxChecked === true && (
+                    <div className='failure-inputs-container'>
+                        <div className='label-input'>
+                            <label>Failure Date:</label>
+                            <input
+                                type="datetime-local"
+                                onChange={(e) => setFailureDate(e.target.value)}
+                                value={failureDate}
+                                placeholder='Enter Failure Date'
+                                className={emptyFields.includes('failureDate') ? 'add-update-repair-form-input input-error' : 'add-update-repair-form-input'}
+                            />
+                        </div>
+                        <div className="add-update-repair-form-label-input">
+                            <label>Failure Title:</label>
+                            <div className="failure-repair-row-input">
+                                <input
+                                    onChange={(e) => setFailureTitle(e.target.value)}
+                                    value={failureTitle}
+                                    placeholder='Enter Failure Title'
+                                    className={`add-update-repair-failure-title-input ${emptyFields.includes('failureTitle') ? 'add-update-failure-input-error' : ''}`}
+                                    disabled={selectedFailure ? true : false}
+                                />
+                                <div className='select-failure-container'>
+                                    {!selectedFailure ?
+                                        <div className='select-failure-group'>
+                                            <div className='select-failure-btn' onClick={enableSelectFailureModal}>+ Select Failure</div> <div className='or-div'>or</div>
+                                            <div className='select-failure-btn' onClick={enableSelectFailureDiagnosisFormModal}>+ Select Failure Using Diagnostic tool</div>
+                                        </div> : <div className='select-failure-btn' onClick={removeSelectedFailure}>- Remove Failure</div>}
+                                </div>
                             </div>
                         </div>
-                    </form>
-                </div> : <SelectAssetModal title={"Select Parent Asset"} selectAsset={selectAsset} goBack={goBack} />}
-        </div>
+                        <div className="add-update-repair-form-label-input">
+                            <label>Failure Observation:</label>
+                            <textarea
+                                onChange={(e) => setFailureObservation(e.target.value)}
+                                value={failureObservation}
+                                placeholder='Enter Failure Observation'
+                                className={`add-update-repair-description  ${emptyFields.includes('failureObservation') ? 'add-update-failure-input-error' : ''}`}
+                                disabled={selectedFailure ? true : false}
+                            />
+                        </div>
+                        <div className="add-update-repair-form-label-input">
+                            <label>Failure Cause:</label>
+                            <textarea
+                                onChange={(e) => setFailureCause(e.target.value)}
+                                value={failureCause}
+                                placeholder='Enter Failure Cause'
+                                className={`add-update-repair-description  ${emptyFields.includes('failureCause') ? 'add-update-failure-input-error' : ''}`}
+                                disabled={selectedFailure ? true : false}
+                            />
+                        </div>
+                    </div>
+                )}
 
-    )
+                {/* <div>
+                        <button
+                            className="procedure-button"
+                            type="button"
+                            onClick={handleSelectProcedure}>
+                            + Select a Procedure
+                        </button>
+                    </div> */}
+
+
+                <div className='procedure-repair-inputs-container'>
+                    <div className='add-update-repair-form-label-input'>
+                        <label>Procedure Title:</label>
+                        <div className="procedure-repair-row-input">
+                            <input
+                                onChange={(e) => setProcedureTitle(e.target.value)}
+                                value={procedureTitle}
+                                placeholder='Enter Failure Title'
+                                className={`add-update-repair-procedure-title-input ${emptyFields.includes('procedureTitle') ? 'add-update-failure-input-error' : ''}`}
+                                disabled={selectedProcedure || selectedFailure ? true : false}
+                            />
+
+                            <div className='select-repair-procedure-container'>
+                                {!selectedProcedure ?
+                                    <div className='select-procedure-in-repair-form-btn' onClick={enableSelectProcedureModal}>+ Select Procedure</div> :
+                                    <div className='select-procedure-in-repair-form-btn' onClick={removeSelectedProcedure}>- Remove Procedure</div>}
+                            </div>
+                        </div>
+                    </div>
+                    <div className="add-update-repair-form-label-input">
+                        <label>Procedure:</label>
+                        <textarea
+                            onChange={(e) => setProcedureDescription(e.target.value)}
+                            value={procedureDescription}
+                            placeholder='Enter Procedure'
+                            className={`add-update-repair-description ${emptyFields.includes('procedureDescription') ? 'add-update-failure-input-error' : ''}`}
+                            disabled={selectedProcedure || selectedFailure ? true : false}
+                        />
+                    </div>
+                </div>
+
+                <div className='bottom-pf-add-repair-form '>
+                    <button className='btn btn-effect' type='submit'>Update</button>
+                    {error ? <div className='repair-form-error'>{error}</div> : <div className='repair-form-empty-error'></div>}
+                </div>
+
+                {/* <div className="saveProcedureCheckbox" style={{ display: 'flex', alignItems: 'center' }}>
+                        <input
+                            type="checkbox"
+                            onChange={(e) => handleSaveProcedureCheckbox(e.target.checked)}
+                        />
+                        <label style={{ marginLeft: '5px' }}>Save Procedure for Category?</label>
+                    </div> */}
+
+
+            </form>
+        </div>
+        : <FailureDiagnosisFormModal selectFailure={selectFailure} categoryId={selectedAsset.category._id} goBack={goBackFromSelectFailureDiagnosisFormModal} />) :
+        <SelectFailureModal selectFailure={selectFailure} categoryId={selectedAsset.category._id} goBack={goBackFromSelectFailureModal} />) :
+        <SelectProcedureModal selectProcedure={selectProcedure} categoryId={selectedAsset.category._id} goBack={goBackFromSelectProcedureModal} />) :
+        <SelectAssetModal title={"Select Asset"} selectAsset={selectAsset} goBack={goBackFromSelectAssetModal} />
 
 }
 
